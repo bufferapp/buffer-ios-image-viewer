@@ -9,6 +9,7 @@
 #import "BFRImageContainerViewController.h"
 
 #import <DACircularProgress/DACircularProgressView.h>
+#import "AFNetworking.h"
 
 @interface BFRImageContainerViewController () <UIScrollViewDelegate>
 @property (strong, nonatomic) UIScrollView *scrollView;
