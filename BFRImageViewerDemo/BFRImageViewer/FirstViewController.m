@@ -30,7 +30,7 @@
         [self check3DTouch];
     }
     
-    self.imgURL = [NSURL URLWithString:@"https://pmcvariety.files.wordpress.com/2014/04/36820.jpg?w=670&h=377&crop=1"];
+    self.imgURL = [NSURL URLWithString:@"https://bufferblog-wpengine.netdna-ssl.com/wp-content/uploads/2015/10/social-media-icons-800x565.jpg"];
 }
 
 - (void)didReceiveMemoryWarning {

@@ -16,4 +16,6 @@
 @property (nonatomic, assign) NSUInteger pageIndex;
 /*! Assigning YES to this property will make the background transparent. */
 @property (nonatomic, getter=isUsingTransparentBackground) BOOL useTransparentBackground;
+/*! If there is more than one image in the containing @c BFRImageViewController - this property is set to YES to make swiping from image to image easier. */
+@property (nonatomic, getter=shouldDisableHorizontalDrag) BOOL disableHorizontalDrag;
 @end

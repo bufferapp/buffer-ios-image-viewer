@@ -11,7 +11,7 @@
 #import <DACircularProgress/DACircularProgressView.h>
 #import "AFNetworking.h"
 
-@interface BFRImageContainerViewController () <UIScrollViewDelegate>
+@interface BFRImageContainerViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 @property (strong, nonatomic) UIScrollView *scrollView;
 @property (strong, nonatomic) UIImageView *imgView;
 @property (strong, nonatomic) UIImage *imgLoaded;
@@ -135,6 +135,9 @@
     
     //Dragging to dismiss
     UIPanGestureRecognizer *panImg = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleDrag:)];
+    if (self.shouldDisableHorizontalDrag) {
+        panImg.delegate = self;
+    }
     [resizableImageView addGestureRecognizer:panImg];
     
     return resizableImageView;
@@ -146,6 +149,13 @@
         [self.scrollView addSubview:self.imgView];
         [self setMaxMinZoomScalesForCurrentBounds];
     }
+}
+
+#pragma mark - Gesture Recognizer Delegate
+//If we have more than one image, this will cancel out dragging horizontally to make it easy to navigate between images
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    CGPoint velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.scrollView];
+    return fabs(velocity.y) > fabs(velocity.x);
 }
 
 #pragma mark - Scrollview Delegate

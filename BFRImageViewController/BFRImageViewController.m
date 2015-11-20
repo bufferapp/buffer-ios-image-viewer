@@ -53,6 +53,7 @@
         BFRImageContainerViewController *imgVC = [BFRImageContainerViewController new];
         imgVC.imgSrc = imgSrc;
         imgVC.useTransparentBackground = self.isUsingTransparentBackground;
+        imgVC.disableHorizontalDrag = (self.images.count > 1);
         [self.imageViewControllers addObject:imgVC];
     }
     
@@ -74,31 +75,6 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-#pragma mark - UI Methods
-- (void)viewWillLayoutSubviews {
-    [super viewWillLayoutSubviews];
-    
-    //Buttons
-    [self.doneButton setFrame:CGRectMake(self.view.bounds.size.width - 75, 30, 55, 26)];
-    [self.view bringSubviewToFront:self.doneButton];
-}
-
-- (UIButton *)createDoneButton {
-    UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-    CGRect screenBound = self.view.bounds;
-    CGFloat screenWidth = screenBound.size.width;
-    [btn setFrame:CGRectMake(screenWidth - 75, 30, 55, 26)];
-    [btn setTitleColor:[UIColor colorWithWhite:0.9 alpha:0.9] forState:UIControlStateNormal|UIControlStateHighlighted];
-    [btn setTitle:@"Done" forState:UIControlStateNormal];
-    [btn.titleLabel setFont:[UIFont boldSystemFontOfSize:11.0f]];
-    [btn setBackgroundColor:[UIColor colorWithWhite:0.1 alpha:0.5]];
-    btn.layer.cornerRadius = 3.0f;
-    btn.layer.borderColor = [UIColor colorWithWhite:0.9 alpha:0.9].CGColor;
-    btn.layer.borderWidth = 1.0f;
-    
-    return btn;
 }
 
 #pragma mark - Pager Datasource
