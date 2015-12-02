@@ -8,6 +8,7 @@
 
 #import "BFRImageContainerViewController.h"
 
+#import <Photos/Photos.h>
 #import <DACircularProgress/DACircularProgressView.h>
 #import "AFNetworking.h"
 
@@ -41,9 +42,11 @@
         self.progressView = [self createProgressView];
         [self.view addSubview:self.progressView];
         [self retrieveImageFromURL];
-    } else {
+    } else if ([self.imgSrc isKindOfClass:[UIImage class]]) {
         self.imgLoaded = (UIImage *)self.imgSrc;
         [self addImageToScrollView];
+    } else if ([self.imgSrc isKindOfClass:[PHAsset class]]){
+        [self retrieveImageFromAsset];
     }
     
     //Animator - used to snap the image back to the center when done dragging
@@ -278,6 +281,18 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:@"DismissUI" object:nil];
 }
 
+- (void)retrieveImageFromAsset {
+    if (![self.imgSrc isKindOfClass:[PHAsset class]]) {
+        return;
+    }
+    
+    PHImageRequestOptions *reqOptions = [PHImageRequestOptions new];
+    reqOptions.synchronous = YES;
+    [[PHImageManager defaultManager] requestImageDataForAsset:self.imgSrc options:reqOptions resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+        self.imgLoaded = [UIImage imageWithData:imageData];
+        [self addImageToScrollView];
+    }];
+}
 - (void)retrieveImageFromURL {
     NSURLRequest *request = [[NSURLRequest alloc] initWithURL:(NSURL *)self.imgSrc cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:0];
     
