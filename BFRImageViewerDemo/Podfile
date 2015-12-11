@@ -6,7 +6,7 @@
 target 'BFRImageViewer' do
 
 pod 'DACircularProgress'
-pod 'AFNetworking'
+pod 'AFNetworking', '~> 3.0'
 
 end
 
