@@ -294,26 +294,24 @@
     }];
 }
 - (void)retrieveImageFromURL {
-    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:(NSURL *)self.imgSrc cachePolicy:NSURLRequestReturnCacheDataElseLoad timeoutInterval:0];
+    NSURL *url = (NSURL *)self.imgSrc;
     
-    AFHTTPRequestOperation *imgOperation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    AFHTTPSessionManager *imgOperation = [[AFHTTPSessionManager alloc] init];
     imgOperation.responseSerializer = [AFImageResponseSerializer serializer];
     
-    [imgOperation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+    [imgOperation GET:url.absoluteString parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
+        [self.progressView setProgress:downloadProgress.fractionCompleted];
+    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         self.imgLoaded = responseObject;
         [self addImageToScrollView];
         [self.progressView removeFromSuperview];
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error){
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
         [self.progressView removeFromSuperview];
+        
+        NSLog(@"error %@", error);
+        
         [self showError];
     }];
-    
-    [imgOperation setDownloadProgressBlock:^(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
-        CGFloat progress = ((CGFloat)totalBytesRead)/((CGFloat)totalBytesExpectedToRead);
-        [self.progressView setProgress:progress];
-    }];
-    
-    [[NSOperationQueue mainQueue] addOperation:imgOperation];
 }
 
 - (void)showError {
