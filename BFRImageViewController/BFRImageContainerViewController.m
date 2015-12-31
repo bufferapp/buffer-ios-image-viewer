@@ -10,7 +10,8 @@
 
 #import <Photos/Photos.h>
 #import <DACircularProgress/DACircularProgressView.h>
-#import "AFNetworking.h"
+#import "SDWebImageManager.h"
+#import "SDWebImageDownloader.h"
 
 @interface BFRImageContainerViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 @property (strong, nonatomic) UIScrollView *scrollView;
@@ -295,23 +296,27 @@
 }
 - (void)retrieveImageFromURL {
     NSURL *url = (NSURL *)self.imgSrc;
-    
-    AFHTTPSessionManager *imgOperation = [[AFHTTPSessionManager alloc] init];
-    imgOperation.responseSerializer = [AFImageResponseSerializer serializer];
-    
-    [imgOperation GET:url.absoluteString parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
-        [self.progressView setProgress:downloadProgress.fractionCompleted];
-    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        self.imgLoaded = responseObject;
-        [self addImageToScrollView];
-        [self.progressView removeFromSuperview];
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        [self.progressView removeFromSuperview];
-        
-        NSLog(@"error %@", error);
-        
-        [self showError];
+
+    SDWebImageManager *manager = [SDWebImageManager sharedManager];
+    [manager downloadImageWithURL:url options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+        float fractionCompleted = (float)receivedSize/(float)expectedSize;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.progressView setProgress:fractionCompleted];
+        });
+    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error) {
+                [self.progressView removeFromSuperview];
+                NSLog(@"error %@", error);
+                [self showError];
+                return;
+            }
+            self.imgLoaded = image;
+            [self addImageToScrollView];
+            [self.progressView removeFromSuperview];
+        });
     }];
+   
 }
 
 - (void)showError {

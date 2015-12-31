@@ -10,5 +10,5 @@ Pod::Spec.new do |s|
     s.platform     = :ios, '8.0'
     s.requires_arc = true
     s.dependency 'DACircularProgress'
-    s.dependency 'AFNetworking'
+    s.dependency 'SDWebImage'
 end

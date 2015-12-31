@@ -6,7 +6,7 @@
 target 'BFRImageViewer' do
 
 pod 'DACircularProgress'
-pod 'AFNetworking', '~> 3.0'
+pod 'SDWebImage', '~> 3.7'
 
 end
 
@@ -17,4 +17,3 @@ end
 target 'BFRImageViewerUITests' do
 
 end
-
