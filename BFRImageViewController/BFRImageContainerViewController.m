@@ -39,15 +39,21 @@
     
     //Fetch image - or just display it
     if ([self.imgSrc isKindOfClass:[NSURL class]]) {
-        //Loading view
         self.progressView = [self createProgressView];
         [self.view addSubview:self.progressView];
         [self retrieveImageFromURL];
     } else if ([self.imgSrc isKindOfClass:[UIImage class]]) {
         self.imgLoaded = (UIImage *)self.imgSrc;
         [self addImageToScrollView];
-    } else if ([self.imgSrc isKindOfClass:[PHAsset class]]){
+    } else if ([self.imgSrc isKindOfClass:[PHAsset class]]) {
         [self retrieveImageFromAsset];
+    } else if ([self.imgSrc isKindOfClass:[NSString class]]) {
+        //Loading view
+        NSURL *url = [NSURL URLWithString:self.imgSrc];
+        self.imgSrc = url;
+        self.progressView = [self createProgressView];
+        [self.view addSubview:self.progressView];
+        [self retrieveImageFromURL];
     }
     
     //Animator - used to snap the image back to the center when done dragging
