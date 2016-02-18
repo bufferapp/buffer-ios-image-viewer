@@ -10,16 +10,22 @@
 #import "BFRImageContainerViewController.h"
 
 @interface BFRImageViewController () <UIPageViewControllerDataSource>
+
 /*! This view controller just acts as a container to hold a page view controller, which pages between the view controllers that hold an image. */
 @property (strong, nonatomic) UIPageViewController *pagerVC;
+
 /*! Each image displayed is shown in its own instance of a BFRImageViewController. This array holds all of those view controllers, one per image. */
 @property (strong, nonatomic) NSMutableArray *imageViewControllers;
+
 /*! Each image is represented via a @c NSURL or an actual @c UIImage. */
 @property (strong, nonatomic) NSArray *images;
+
 /*! This will automatically hide the "Done" button after five seconds. */
 @property (strong, nonatomic) NSTimer *timerHideUI;
+
 /*! The button that sticks to the top right of the view that is responsible for dismissing this view controller. */
 @property (strong, nonatomic) UIButton *doneButton;
+
 @end
 
 @implementation BFRImageViewController
