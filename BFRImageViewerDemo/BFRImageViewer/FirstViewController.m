@@ -17,34 +17,24 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
-    UIButton *openImageFromURL = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    openImageFromURL.translatesAutoresizingMaskIntoConstraints = NO;
-    [openImageFromURL setTitle:@"Open Image" forState:UIControlStateNormal];
-    [openImageFromURL addTarget:self action:@selector(openImage) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:openImageFromURL];
-    [openImageFromURL.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor].active = YES;
-    [openImageFromURL.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor].active = YES;
     
-    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
-        [self check3DTouch];
-    }
+    [self addImageButtonToView];
+    [self check3DTouch];
     
     self.imgURL = [NSURL URLWithString:@"https://bufferblog-wpengine.netdna-ssl.com/wp-content/uploads/2015/10/social-media-icons-800x565.jpg"];
 }
 
-- (void)didReceiveMemoryWarning {
-    // Dispose of any resources that can be recreated.
-}
-
 - (void)openImage {
+    //Here, the image source could be an array containing/a mix of URL strings, NSURLs, PHAssets, or UIImages
     BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:@[self.imgURL]];
     [self presentViewController:imageVC animated:YES completion:nil];
 }
 
 #pragma mark - 3D Touch
 - (void)check3DTouch {
-    [self registerForPreviewingWithDelegate:self sourceView:self.view];
+    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
+        [self registerForPreviewingWithDelegate:self sourceView:self.view];
+    }
 }
 
 - (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext viewControllerForLocation:(CGPoint)location {
@@ -59,5 +49,16 @@
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
         [self check3DTouch];
     }
+}
+
+#pragma mark - Misc 
+- (void)addImageButtonToView {
+    UIButton *openImageFromURL = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    openImageFromURL.translatesAutoresizingMaskIntoConstraints = NO;
+    [openImageFromURL setTitle:@"Open Image" forState:UIControlStateNormal];
+    [openImageFromURL addTarget:self action:@selector(openImage) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:openImageFromURL];
+    [openImageFromURL.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor].active = YES;
+    [openImageFromURL.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor].active = YES;
 }
 @end

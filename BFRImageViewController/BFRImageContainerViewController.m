@@ -14,12 +14,25 @@
 #import "SDWebImageDownloader.h"
 
 @interface BFRImageContainerViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
+
+/*! This is responsible for panning and zooming the images. */
 @property (strong, nonatomic) UIScrollView *scrollView;
+
+/*! The actual view which will display the @c UIImage, this is housed inside of the scrollView property. */
 @property (strong, nonatomic) UIImageView *imgView;
+
+/*! The image created from the passed in imgSrc property. */
 @property (strong, nonatomic) UIImage *imgLoaded;
+
+/*! If the imgSrc property requires a network call, this displays inside the view to denote the loading progress. */
 @property (strong, nonatomic) DACircularProgressView *progressView;
+
+/*! The animator which attaches the behaviors needed to drag the image. */
 @property (strong, nonatomic) UIDynamicAnimator *animator;
+
+/*! The behavior which allows for the image to "snap" back to the center if it's vertical offset isn't passed the closing points. */
 @property (strong, nonatomic) UIAttachmentBehavior *imgAttatchment;
+
 @end
 
 @implementation BFRImageContainerViewController
@@ -240,6 +253,7 @@
 
 
 #pragma mark - Dragging Methods
+/*! This method has three different states due to the gesture recognizer. In them, we either add the required behaviors using UIDynamics, update the image's position based off of the touch points of the drag, or if it's ended we snap it back to the center or dismiss this view controller if the vertical offset meets the requirements. */
 - (void)handleDrag:(UIPanGestureRecognizer *)recognizer {
     
     if (recognizer.state == UIGestureRecognizerStateBegan) {
@@ -283,11 +297,7 @@
     }
 }
 
-#pragma mark - Misc. Methods
-- (void)dismissUI {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"DismissUI" object:nil];
-}
-
+#pragma mark - Image Asset Retrieval
 - (void)retrieveImageFromAsset {
     if (![self.imgSrc isKindOfClass:[PHAsset class]]) {
         return;
@@ -323,6 +333,11 @@
         });
     }];
    
+}
+
+#pragma mark - Misc. Methods
+- (void)dismissUI {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"DismissUI" object:nil];
 }
 
 - (void)showError {
