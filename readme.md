@@ -2,6 +2,8 @@
 
 ![Demo](/demo.gif?raw=true "Demo")
 
+[![CocoaPods](https://img.shields.io/cocoapods/p/BFRImageViewer.svg)]() [![CocoaPods](https://img.shields.io/cocoapods/v/BFRImageViewer.svg)]() [![CocoaPods](https://img.shields.io/cocoapods/l/BFRImageViewer.svg)]()
+
 ###Summary###
 The BFRImageViewer is a turnkey solution to present images within your iOS app 🎉! It's based off of the excellent [IDMPhotoBrowser](https://github.com/ideaismobile/IDMPhotoBrowser), but tweaked for our own needs.
 
@@ -9,16 +11,17 @@ If features swipe gestures to dismiss, image scaling, zooming and panning, suppo
 
 ###Installation###
 The BFRImageViewer is hosted on CocoaPods and is the recommended way to install it:
-
-`pod 'BFRImageViewer'`
+```ruby
+pod 'BFRImageViewer'
+```
 
 
 ###Quickstart###
 To get up and running quickly with BFRImageViewer, just initialize it - that's really about it!
-
-     //Image source can be an array containing a mix of PHAssets, NSURLs, url strings, or UIImage
-     BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:@[image]];
-
+```objc
+//Image source can be an array containing a mix of PHAssets, NSURLs, url strings, or UIImage
+BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:@[image]];
+```
 From there, you'll have every photo automagically loaded up and be able to page between them. If you want some additional context, just fire up the demo project and take a peek 👌!
 
 ###Going Forward###
