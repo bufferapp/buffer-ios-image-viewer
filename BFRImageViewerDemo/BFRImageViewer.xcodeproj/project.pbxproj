@@ -8,7 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		1183E425AC8B8175AB61D812 /* libPods-BFRImageViewer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA726C313DD042C27168921 /* libPods-BFRImageViewer.a */; };
-		578DFD571CB6E7FF00BFBD00 /* cross@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 578DFD561CB6E7FF00BFBD00 /* cross@2x.png */; };
+		578DFD5B1CB6F17B00BFBD00 /* cross.png in Resources */ = {isa = PBXBuildFile; fileRef = 578DFD581CB6F17B00BFBD00 /* cross.png */; };
+		578DFD5C1CB6F17B00BFBD00 /* cross@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 578DFD591CB6F17B00BFBD00 /* cross@2x.png */; };
+		578DFD5D1CB6F17B00BFBD00 /* cross@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 578DFD5A1CB6F17B00BFBD00 /* cross@3x.png */; };
 		944B4DB01BFFC0C000B9BF87 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DAF1BFFC0C000B9BF87 /* main.m */; };
 		944B4DB31BFFC0C000B9BF87 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DB21BFFC0C000B9BF87 /* AppDelegate.m */; };
 		944B4DB61BFFC0C000B9BF87 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DB51BFFC0C000B9BF87 /* FirstViewController.m */; };
@@ -42,7 +44,9 @@
 /* Begin PBXFileReference section */
 		113CF836F9192623D62E0FD9 /* Pods-BFRImageViewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BFRImageViewer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BFRImageViewer/Pods-BFRImageViewer.debug.xcconfig"; sourceTree = "<group>"; };
 		1CA726C313DD042C27168921 /* libPods-BFRImageViewer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BFRImageViewer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		578DFD561CB6E7FF00BFBD00 /* cross@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cross@2x.png"; sourceTree = "<group>"; };
+		578DFD581CB6F17B00BFBD00 /* cross.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cross.png; sourceTree = "<group>"; };
+		578DFD591CB6F17B00BFBD00 /* cross@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cross@2x.png"; sourceTree = "<group>"; };
+		578DFD5A1CB6F17B00BFBD00 /* cross@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cross@3x.png"; sourceTree = "<group>"; };
 		944B4DAB1BFFC0C000B9BF87 /* BFRImageViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BFRImageViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		944B4DAF1BFFC0C000B9BF87 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		944B4DB11BFFC0C000B9BF87 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -97,9 +101,11 @@
 		578DFD551CB6E7F400BFBD00 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				578DFD561CB6E7FF00BFBD00 /* cross@2x.png */,
+				578DFD581CB6F17B00BFBD00 /* cross.png */,
+				578DFD591CB6F17B00BFBD00 /* cross@2x.png */,
+				578DFD5A1CB6F17B00BFBD00 /* cross@3x.png */,
 			);
-			name = Resources;
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		91E179B05F74058BF21E15EB /* Frameworks */ = {
@@ -305,10 +311,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				578DFD5C1CB6F17B00BFBD00 /* cross@2x.png in Resources */,
 				944B4DC11BFFC0C000B9BF87 /* LaunchScreen.storyboard in Resources */,
+				578DFD5D1CB6F17B00BFBD00 /* cross@3x.png in Resources */,
 				944B4DBE1BFFC0C000B9BF87 /* Assets.xcassets in Resources */,
+				578DFD5B1CB6F17B00BFBD00 /* cross.png in Resources */,
 				944B4DBC1BFFC0C000B9BF87 /* Main.storyboard in Resources */,
-				578DFD571CB6E7FF00BFBD00 /* cross@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

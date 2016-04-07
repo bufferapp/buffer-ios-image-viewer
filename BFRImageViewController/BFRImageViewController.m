@@ -88,7 +88,7 @@
         self.doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [self.doneButton setImage:crossImage forState:UIControlStateNormal];
         [self.doneButton addTarget:self action:@selector(handleDoneAction) forControlEvents:UIControlEventTouchUpInside];
-        self.doneButton.frame = CGRectMake(20, 20, 17, 16.5);
+        self.doneButton.frame = CGRectMake(20, 20, 17, 17);
 
         [self.view addSubview:self.doneButton];
     }

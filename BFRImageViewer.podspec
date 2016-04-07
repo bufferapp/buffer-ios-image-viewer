@@ -16,6 +16,7 @@ Pod::Spec.new do |s|
   	s.social_media_url = "https://twitter.com/bufferdevs"
     s.source       = { :git => "https://github.com/bufferapp/buffer-ios-image-viewer.git", :tag => 'v1.0.7'  }
     s.source_files = 'Classes', 'BFRImageViewController/**/*.{h,m}'
+    s.resources    = ['BFRImageViewController/**/*.{png}']
     s.platform     = :ios, '8.0'
     s.requires_arc = true
     s.frameworks = "UIKit", "Photos"
