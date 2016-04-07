@@ -23,7 +23,7 @@
 /*! This will automatically hide the "Done" button after five seconds. */
 @property (strong, nonatomic) NSTimer *timerHideUI;
 
-/*! The button that sticks to the top right of the view that is responsible for dismissing this view controller. */
+/*! The button that sticks to the top left of the view that is responsible for dismissing this view controller. */
 @property (strong, nonatomic) UIButton *doneButton;
 
 @end
@@ -52,6 +52,9 @@
     if (self.shouldHideStatusBar) {
         [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     }
+
+    //Viewer done button setup
+    [self setupDoneButton];
     
     //Setup image view controllers
     self.imageViewControllers = [NSMutableArray new];
@@ -77,6 +80,18 @@
     
     //Register for touch events on the images/scrollviews to hide UI chrome
     [self registerNotifcations];
+}
+
+- (void)setupDoneButton {
+    if (self.enableDoneButton) {
+        UIImage *crossImage = [UIImage imageNamed:@"cross"];
+        self.doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [self.doneButton setImage:crossImage forState:UIControlStateNormal];
+        [self.doneButton addTarget:self action:@selector(handleDoneAction) forControlEvents:UIControlEventTouchUpInside];
+        self.doneButton.frame = CGRectMake(20, 20, 17, 16.5);
+
+        [self.view addSubview:self.doneButton];
+    }
 }
 
 - (void)dealloc {
@@ -126,6 +141,10 @@
 - (void)handlePop {
     self.view.backgroundColor = [UIColor blackColor];
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+}
+
+- (void)handleDoneAction {
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 /*! The images and scrollview are not part of this view controller, so instances of @c BFRimageContainerViewController will post notifications when they are touched for things to happen. */
