@@ -38,6 +38,7 @@
         NSAssert(images.count > 0, @"You must supply at least one image source to use this class.");
         self.images = images;
         self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        self.enableDoneButton = YES;
     }
     
     return self;

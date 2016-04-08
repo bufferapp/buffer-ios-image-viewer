@@ -26,8 +26,7 @@
 
 - (void)openImage {
     //Here, the image source could be an array containing/a mix of URL strings, NSURLs, PHAssets, or UIImages
-    BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:@[self.imgURL]];
-    imageVC.enableDoneButton = YES;
+    BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:@[self.imgURL]];    
     [self presentViewController:imageVC animated:YES completion:nil];
 }
 
