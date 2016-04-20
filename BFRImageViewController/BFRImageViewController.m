@@ -26,6 +26,9 @@
 /*! The button that sticks to the top left of the view that is responsible for dismissing this view controller. */
 @property (strong, nonatomic) UIButton *doneButton;
 
+/*! This will determine whether to change certain behaviors for 3D touch considerations based on its value. */
+@property (nonatomic, getter=isBeingUsedFor3DTouch) BOOL usedFor3DTouch;
+
 @end
 
 @implementation BFRImageViewController
@@ -44,6 +47,20 @@
     return self;
 }
 
+- (instancetype)initForPeekWithImageSource:(NSArray *)images {
+    self = [super init];
+    
+    if (self) {
+        NSAssert(images.count > 0, @"You must supply at least one image source to use this class.");
+        self.images = images;
+        self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+        self.enableDoneButton = YES;
+        self.usedFor3DTouch = YES;
+    }
+    
+    return self;
+}
+
 #pragma mark - View Lifecycle
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -54,8 +71,10 @@
         [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     }
 
-    //Viewer done button setup
-    [self setupDoneButton];
+    //Add chrome to UI now if we aren't waiting to be peeked into
+    if (!self.isBeingUsedFor3DTouch) {
+        [self addChromeToUI];
+    }
     
     //Setup image view controllers
     self.imageViewControllers = [NSMutableArray new];
@@ -83,7 +102,7 @@
     [self registerNotifcations];
 }
 
-- (void)setupDoneButton {
+- (void)addChromeToUI {
     if (self.enableDoneButton) {
         UIImage *crossImage = [UIImage imageNamed:@"cross"];
         self.doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -142,6 +161,7 @@
 - (void)handlePop {
     self.view.backgroundColor = [UIColor blackColor];
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+    [self addChromeToUI];
 }
 
 - (void)handleDoneAction {
