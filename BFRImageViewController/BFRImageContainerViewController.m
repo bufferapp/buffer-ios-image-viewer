@@ -140,13 +140,18 @@
     [resizableImageView setUserInteractionEnabled:YES];
     [resizableImageView addGestureRecognizer:singleImgTap];
     
-    //Recent the image on double tap
+    //Reset the image on double tap
     UITapGestureRecognizer *doubleImgTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(recenterImageOriginOrZoomToPoint:)];
     doubleImgTap.numberOfTapsRequired = 2;
     [resizableImageView addGestureRecognizer:doubleImgTap];
     
+    //Share options
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showActivitySheet:)];
+    [resizableImageView addGestureRecognizer:longPress];
+    
     //Ensure the single tap doesn't fire when a user attempts to double tap
     [singleImgTap requireGestureRecognizerToFail:doubleImgTap];
+    [singleImgTap requireGestureRecognizerToFail:longPress];
     
     //Dragging to dismiss
     UIPanGestureRecognizer *panImg = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleDrag:)];
@@ -244,7 +249,7 @@
 }
 
 
-#pragma mark - Dragging Methods
+#pragma mark - Dragging and Long Press Methods
 /*! This method has three different states due to the gesture recognizer. In them, we either add the required behaviors using UIDynamics, update the image's position based off of the touch points of the drag, or if it's ended we snap it back to the center or dismiss this view controller if the vertical offset meets the requirements. */
 - (void)handleDrag:(UIPanGestureRecognizer *)recognizer {
     
@@ -286,6 +291,26 @@
             [self.scrollView setZoomScale:self.scrollView.minimumZoomScale animated:YES];
             UISnapBehavior *snapBack = [[UISnapBehavior alloc] initWithItem:self.imgView snapToPoint:self.scrollView.center];
             [self.animator addBehavior:snapBack];
+        }
+    }
+}
+
+- (void)showActivitySheet:(UILongPressGestureRecognizer *)longPress {
+    
+    UIActivityViewController *activityVC;
+    if (longPress.state == UIGestureRecognizerStateBegan) {
+        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+            activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[self.imgLoaded] applicationActivities:nil];
+            [self presentViewController:activityVC animated:YES completion:nil];
+        } else {
+            activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[self.imgLoaded] applicationActivities:nil];
+            activityVC.modalPresentationStyle = UIModalPresentationPopover;
+            activityVC.preferredContentSize = CGSizeMake(320,400);
+            UIPopoverPresentationController *popoverVC = activityVC.popoverPresentationController;
+            popoverVC.sourceView = self.imgView;
+            CGPoint touchPoint = [longPress locationInView:self.imgView];
+            popoverVC.sourceRect = CGRectMake(touchPoint.x, touchPoint.y, 1, 1);
+            [self presentViewController:activityVC animated:YES completion:nil];
         }
     }
 }
