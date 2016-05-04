@@ -21,7 +21,7 @@
     [self addImageButtonToView];
     [self check3DTouch];
     
-    self.imgURL = [NSURL URLWithString:@"https://bufferblog-wpengine.netdna-ssl.com/wp-content/uploads/2015/10/social-media-icons-800x565.jpg"];
+    self.imgURL = [NSURL URLWithString:@"https://buffer-pictures.s3.amazonaws.com/bf262f3f08c3a9b73f4b0e2ca344ec7a.d33a579bc979528c3a33fee6e28bafa1.jpg"];
 }
 
 - (void)openImage {
