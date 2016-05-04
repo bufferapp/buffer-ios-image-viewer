@@ -77,10 +77,10 @@
     //Scrollview
     [self.scrollView setFrame:self.view.bounds];
     
-    //Set the aspect ration of the image
+    //Set the aspect ratio of the image
     float hfactor = self.imgLoaded.size.width / self.view.bounds.size.width;
     float vfactor = self.imgLoaded.size.height /  self.view.bounds.size.height;
-    float factor = fmax(hfactor, vfactor);
+    float factor = fmax(hfactor, vfactor) < 1.0 ? 1.0 : fmax(hfactor, vfactor);
     
     //Divide the size by the greater of the vertical or horizontal shrinkage factor
     float newWidth = self.imgLoaded.size.width / factor;
@@ -133,14 +133,6 @@
     resizableImageView.clipsToBounds = YES;
     resizableImageView.contentMode = UIViewContentModeScaleAspectFill;
     resizableImageView.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
-    
-    //Scale to keep its aspect ration
-    CGRect screenBound = [[UIScreen mainScreen] bounds];
-    CGFloat screenWidth = screenBound.size.width;
-    CGFloat screenHeight = screenBound.size.height;
-    float scaleFactor = (self.imgLoaded ? self.imgLoaded.size.width : screenWidth) / screenWidth;
-    CGRect finalImageViewFrame = CGRectMake(0, (screenHeight/2)-((self.imgLoaded.size.height / scaleFactor)/2), screenWidth, self.imgLoaded.size.height / scaleFactor);
-    resizableImageView.layer.frame = finalImageViewFrame;
     
     //Toggle UI controls
     UITapGestureRecognizer *singleImgTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissUI)];
@@ -264,6 +256,7 @@
         
         UIOffset centerOffset = UIOffsetMake(imgLocation.x - CGRectGetMidX(self.imgView.bounds),
                                              imgLocation.y - CGRectGetMidY(self.imgView.bounds));
+
         self.imgAttatchment = [[UIAttachmentBehavior alloc] initWithItem:self.imgView offsetFromCenter:centerOffset attachedToAnchor:location];
         [self.animator addBehavior:self.imgAttatchment];
     } else if (recognizer.state == UIGestureRecognizerStateChanged) {
@@ -310,6 +303,7 @@
         [self addImageToScrollView];
     }];
 }
+
 - (void)retrieveImageFromURL {
     NSURL *url = (NSURL *)self.imgSrc;
 
