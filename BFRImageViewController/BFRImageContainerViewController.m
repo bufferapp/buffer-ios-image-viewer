@@ -82,10 +82,6 @@
     float vfactor = self.imgLoaded.size.height /  self.view.bounds.size.height;
     float factor = fmax(hfactor, vfactor);
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        factor = fmax(hfactor, vfactor) < 1.0 ? 1.0 : fmax(hfactor, vfactor);
-    }
-    
     //Divide the size by the greater of the vertical or horizontal shrinkage factor
     float newWidth = self.imgLoaded.size.width / factor;
     float newHeight = self.imgLoaded.size.height / factor;
