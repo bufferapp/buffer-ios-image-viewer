@@ -70,11 +70,6 @@
     if (self.shouldHideStatusBar) {
         [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     }
-
-    //Add chrome to UI now if we aren't waiting to be peeked into
-    if (!self.isBeingUsedFor3DTouch) {
-        [self addChromeToUI];
-    }
     
     //Setup image view controllers
     self.imageViewControllers = [NSMutableArray new];
@@ -98,6 +93,11 @@
     [[self view] addSubview:[self.pagerVC view]];
     [self.pagerVC didMoveToParentViewController:self];
     
+    //Add chrome to UI now if we aren't waiting to be peeked into
+    if (!self.isBeingUsedFor3DTouch) {
+        [self addChromeToUI];
+    }
+    
     //Register for touch events on the images/scrollviews to hide UI chrome
     [self registerNotifcations];
 }
@@ -111,6 +111,7 @@
         self.doneButton.frame = CGRectMake(20, 20, 17, 17);
 
         [self.view addSubview:self.doneButton];
+        [self.view bringSubviewToFront:self.doneButton];
     }
 }
 
