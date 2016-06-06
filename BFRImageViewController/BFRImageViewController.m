@@ -42,6 +42,7 @@
         self.images = images;
         self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         self.enableDoneButton = YES;
+        self.showDoneButtonOnLeft = YES;
     }
     
     return self;
@@ -55,6 +56,7 @@
         self.images = images;
         self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         self.enableDoneButton = YES;
+        self.showDoneButtonOnLeft = YES;
         self.usedFor3DTouch = YES;
     }
     
@@ -111,8 +113,12 @@
         self.doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [self.doneButton setImage:crossImage forState:UIControlStateNormal];
         [self.doneButton addTarget:self action:@selector(handleDoneAction) forControlEvents:UIControlEventTouchUpInside];
-        self.doneButton.frame = CGRectMake(20, 20, 17, 17);
-
+        if (self.showDoneButtonOnLeft) {
+            self.doneButton.frame = CGRectMake(20, 20, 17, 17);
+        } else {
+            self.doneButton.frame = CGRectMake(CGRectGetMaxX(self.view.frame) - 37, 20, 17, 17);
+        }
+        
         [self.view addSubview:self.doneButton];
         [self.view bringSubviewToFront:self.doneButton];
     }
