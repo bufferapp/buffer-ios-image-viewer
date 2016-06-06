@@ -25,4 +25,7 @@
 /*! Flag property that lets disable the doneButton. Default to YES */
 @property (nonatomic) BOOL enableDoneButton;
 
+/*! Flag property that lets customize the doneButton position (left or right side). Default to YES */
+@property (nonatomic) BOOL showDoneButtonOnLeft;
+
 @end
