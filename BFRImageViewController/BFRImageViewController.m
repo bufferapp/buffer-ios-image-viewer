@@ -104,7 +104,10 @@
 
 - (void)addChromeToUI {
     if (self.enableDoneButton) {
-        UIImage *crossImage = [UIImage imageNamed:@"cross"];
+        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+        NSString *imagePath = [bundle pathForResource:@"cross" ofType:@"png"];
+        UIImage *crossImage = [[UIImage alloc] initWithContentsOfFile:imagePath];
+        
         self.doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [self.doneButton setImage:crossImage forState:UIControlStateNormal];
         [self.doneButton addTarget:self action:@selector(handleDoneAction) forControlEvents:UIControlEventTouchUpInside];
