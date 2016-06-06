@@ -1,8 +1,11 @@
 #BFRImageViewer#
 
+<p align="center">
 ![Demo](/demo.gif?raw=true "Demo")
-
+</p>
+<p align="center">
 [![CocoaPods](https://img.shields.io/cocoapods/p/BFRImageViewer.svg)]() [![CocoaPods](https://img.shields.io/cocoapods/v/BFRImageViewer.svg)]() [![CocoaPods](https://img.shields.io/cocoapods/l/BFRImageViewer.svg)]()
+</p>
 
 ###Summary###
 The BFRImageViewer is a turnkey solution to present images within your iOS app 🎉! It's based off of the excellent [IDMPhotoBrowser](https://github.com/ideaismobile/IDMPhotoBrowser), but tweaked for our own needs.
@@ -22,6 +25,10 @@ To get up and running quickly with BFRImageViewer, just initialize it - that's r
 //Image source can be an array containing a mix of PHAssets, NSURLs, url strings, or UIImage
 BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:@[image]];
 ```
+```swift
+//Image source can be an array containing a mix of PHAssets, NSURLs, url strings, or UIImage
+let imageVC = BFRImageViewController(imageSource: [image])
+```
 From there, you'll have every photo automagically loaded up and be able to page between them. If you want some additional context, just fire up the demo project and take a peek 👌!
 
 ###Going Forward###
@@ -31,7 +38,7 @@ We are always happy to talk shop, so feel free to give us a shout on Twitter:
 
 + Andy - [@ay8s](http://www.twitter.com/ay8s)
 + Jordan - [@jordanmorgan10](http://www.twitter.com/jordanmorgan10)
-+ Humber -[@goku2](http://www.twitter.com/goku2)
++ Humber - [@goku2](http://www.twitter.com/goku2)
 
 Or, hey - why not work on the BFRImageViewer and get paid for it!? [We're hiring](http://www.buffer.com/journey)!
 
