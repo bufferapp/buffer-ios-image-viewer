@@ -1,10 +1,12 @@
 #BFRImageViewer#
 
 <p align="center">
-![Demo](/demo.gif?raw=true "Demo")
+  <img src="/demo.gif?raw=true" alt="Demo" />
 </p>
 <p align="center">
-[![CocoaPods](https://img.shields.io/cocoapods/p/BFRImageViewer.svg)]() [![CocoaPods](https://img.shields.io/cocoapods/v/BFRImageViewer.svg)]() [![CocoaPods](https://img.shields.io/cocoapods/l/BFRImageViewer.svg)]()
+  <img src="https://img.shields.io/cocoapods/p/BFRImageViewer.svg" />
+  <img src="https://img.shields.io/cocoapods/v/BFRImageViewer.svg" />
+  <img src="https://img.shields.io/cocoapods/l/BFRImageViewer.svg" />
 </p>
 
 ###Summary###
