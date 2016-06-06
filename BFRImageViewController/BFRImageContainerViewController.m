@@ -92,7 +92,10 @@
     
     //Reposition image view
     CGRect newRect = CGRectMake(leftOffset, topOffset, newWidth, newHeight);
-    self.imgView.frame = newRect;
+    
+    //Check for any NaNs, which should get corrected in the next drawing cycle
+    BOOL isInvalidRect = (isnan(leftOffset) || isnan(topOffset) || isnan(newWidth) || isnan(newHeight));
+    self.imgView.frame = isInvalidRect ? CGRectZero : newRect;
 }
 
 #pragma mark - UI Methods
