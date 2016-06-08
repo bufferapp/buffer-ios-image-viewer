@@ -22,10 +22,10 @@
 /*! When peeking, iOS already hides the status bar for you. In that case, leave this to the default value of NO. If you are using this class outside of 3D touch, set this to YES. */
 @property (nonatomic, getter=shouldHideStatusBar) BOOL hideStatusBar;
 
-/*! Flag property that lets disable the doneButton. Default to YES */
+/*! Flag property that toggles the doneButton. Defaults to YES */
 @property (nonatomic) BOOL enableDoneButton;
 
-/*! Flag property that lets customize the doneButton position (left or right side). Default to YES */
+/*! Flag property that sets the doneButton position (left or right side). Defaults to YES */
 @property (nonatomic) BOOL showDoneButtonOnLeft;
 
 @end

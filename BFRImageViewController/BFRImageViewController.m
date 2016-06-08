@@ -104,6 +104,16 @@
     [self registerNotifcations];
 }
 
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    [self updateChromeFrames];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - Chrome
 - (void)addChromeToUI {
     if (self.enableDoneButton) {
         NSBundle *bundle = [NSBundle bundleForClass:[self class]];
@@ -113,19 +123,19 @@
         self.doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [self.doneButton setImage:crossImage forState:UIControlStateNormal];
         [self.doneButton addTarget:self action:@selector(handleDoneAction) forControlEvents:UIControlEventTouchUpInside];
-        if (self.showDoneButtonOnLeft) {
-            self.doneButton.frame = CGRectMake(20, 20, 17, 17);
-        } else {
-            self.doneButton.frame = CGRectMake(CGRectGetMaxX(self.view.frame) - 37, 20, 17, 17);
-        }
         
         [self.view addSubview:self.doneButton];
         [self.view bringSubviewToFront:self.doneButton];
+        
+        [self updateChromeFrames];
     }
 }
 
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+- (void)updateChromeFrames {
+    if (self.enableDoneButton) {
+        CGFloat buttonX = self.showDoneButtonOnLeft ? 20 : CGRectGetMaxX(self.view.bounds) - 37;
+        self.doneButton.frame = CGRectMake(buttonX, 20, 17, 17);
+    }
 }
 
 #pragma mark - Pager Datasource
@@ -148,7 +158,6 @@
     NSUInteger index = ((BFRImageContainerViewController *)viewController).pageIndex;
     
     if (index == self.imageViewControllers.count - 1) {
-        
         return nil;
     }
     
