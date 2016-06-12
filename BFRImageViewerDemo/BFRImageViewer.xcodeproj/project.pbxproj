@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		07CD680D7C0A67961949D4BC /* Pods_BFRImageViewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C28758915D2B4BE8DAD7A9DA /* Pods_BFRImageViewer.framework */; };
 		21C1D1C16AD6D2070AB1AEA9 /* Pods_BFRImageViewerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0ACA129A7171200D609F763 /* Pods_BFRImageViewerTests.framework */; };
+		24E3767F1D0D2CEF00180398 /* BufferImageContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24E3767D1D0D2CEF00180398 /* BufferImageContainerViewController.swift */; };
+		24E376801D0D2CEF00180398 /* BufferImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24E3767E1D0D2CEF00180398 /* BufferImageViewController.swift */; };
+		24E376821D0D2E2900180398 /* BufferImageRetriever.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24E376811D0D2E2900180398 /* BufferImageRetriever.swift */; };
+		24E376841D0D2F6E00180398 /* BufferImageContainerViewController+SDWebImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24E376831D0D2F6E00180398 /* BufferImageContainerViewController+SDWebImage.swift */; };
 		2A6CFCD9D7838835E54B89DE /* Pods_BFRImageViewerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAB376418002F8D72E33AEEE /* Pods_BFRImageViewerUITests.framework */; };
 		578DFD5B1CB6F17B00BFBD00 /* cross.png in Resources */ = {isa = PBXBuildFile; fileRef = 578DFD581CB6F17B00BFBD00 /* cross.png */; };
 		578DFD5C1CB6F17B00BFBD00 /* cross@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 578DFD591CB6F17B00BFBD00 /* cross@2x.png */; };
@@ -22,8 +26,6 @@
 		944B4DC11BFFC0C000B9BF87 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 944B4DBF1BFFC0C000B9BF87 /* LaunchScreen.storyboard */; };
 		944B4DCC1BFFC0C000B9BF87 /* BFRImageViewerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DCB1BFFC0C000B9BF87 /* BFRImageViewerTests.m */; };
 		944B4DD71BFFC0C000B9BF87 /* BFRImageViewerUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DD61BFFC0C000B9BF87 /* BFRImageViewerUITests.m */; };
-		944B4DE91BFFC0E300B9BF87 /* BFRImageContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DE61BFFC0E300B9BF87 /* BFRImageContainerViewController.m */; };
-		944B4DEA1BFFC0E300B9BF87 /* BFRImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DE81BFFC0E300B9BF87 /* BFRImageViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +46,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		24E3767D1D0D2CEF00180398 /* BufferImageContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BufferImageContainerViewController.swift; sourceTree = "<group>"; };
+		24E3767E1D0D2CEF00180398 /* BufferImageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BufferImageViewController.swift; sourceTree = "<group>"; };
+		24E376811D0D2E2900180398 /* BufferImageRetriever.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BufferImageRetriever.swift; sourceTree = "<group>"; };
+		24E376831D0D2F6E00180398 /* BufferImageContainerViewController+SDWebImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "BufferImageContainerViewController+SDWebImage.swift"; sourceTree = "<group>"; };
 		2AAE50DFA6FE9AE0F4AA183D /* Pods-BFRImageViewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BFRImageViewer.release.xcconfig"; path = "Pods/Target Support Files/Pods-BFRImageViewer/Pods-BFRImageViewer.release.xcconfig"; sourceTree = "<group>"; };
 		35E79692E7A8DCABB88250EC /* Pods-BFRImageViewerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BFRImageViewerUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-BFRImageViewerUITests/Pods-BFRImageViewerUITests.release.xcconfig"; sourceTree = "<group>"; };
 		578DFD581CB6F17B00BFBD00 /* cross.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cross.png; sourceTree = "<group>"; };
@@ -68,10 +74,6 @@
 		944B4DD21BFFC0C000B9BF87 /* BFRImageViewerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BFRImageViewerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		944B4DD61BFFC0C000B9BF87 /* BFRImageViewerUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BFRImageViewerUITests.m; sourceTree = "<group>"; };
 		944B4DD81BFFC0C000B9BF87 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		944B4DE51BFFC0E300B9BF87 /* BFRImageContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BFRImageContainerViewController.h; sourceTree = "<group>"; };
-		944B4DE61BFFC0E300B9BF87 /* BFRImageContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BFRImageContainerViewController.m; sourceTree = "<group>"; };
-		944B4DE71BFFC0E300B9BF87 /* BFRImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BFRImageViewController.h; sourceTree = "<group>"; };
-		944B4DE81BFFC0E300B9BF87 /* BFRImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BFRImageViewController.m; sourceTree = "<group>"; };
 		B0ACA129A7171200D609F763 /* Pods_BFRImageViewerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BFRImageViewerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B7BA2A586F519194BD3FAFA8 /* Pods-BFRImageViewerUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BFRImageViewerUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BFRImageViewerUITests/Pods-BFRImageViewerUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		C28758915D2B4BE8DAD7A9DA /* Pods_BFRImageViewer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BFRImageViewer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -188,11 +190,11 @@
 		944B4DE41BFFC0E300B9BF87 /* BFRImageViewController */ = {
 			isa = PBXGroup;
 			children = (
+				24E3767D1D0D2CEF00180398 /* BufferImageContainerViewController.swift */,
+				24E376831D0D2F6E00180398 /* BufferImageContainerViewController+SDWebImage.swift */,
+				24E3767E1D0D2CEF00180398 /* BufferImageViewController.swift */,
+				24E376811D0D2E2900180398 /* BufferImageRetriever.swift */,
 				578DFD551CB6E7F400BFBD00 /* Resources */,
-				944B4DE51BFFC0E300B9BF87 /* BFRImageContainerViewController.h */,
-				944B4DE61BFFC0E300B9BF87 /* BFRImageContainerViewController.m */,
-				944B4DE71BFFC0E300B9BF87 /* BFRImageViewController.h */,
-				944B4DE81BFFC0E300B9BF87 /* BFRImageViewController.m */,
 			);
 			name = BFRImageViewController;
 			path = ../../BFRImageViewController;
@@ -486,11 +488,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				24E376841D0D2F6E00180398 /* BufferImageContainerViewController+SDWebImage.swift in Sources */,
+				24E3767F1D0D2CEF00180398 /* BufferImageContainerViewController.swift in Sources */,
 				944B4DB91BFFC0C000B9BF87 /* SecondViewController.m in Sources */,
-				944B4DEA1BFFC0E300B9BF87 /* BFRImageViewController.m in Sources */,
+				24E376821D0D2E2900180398 /* BufferImageRetriever.swift in Sources */,
 				944B4DB31BFFC0C000B9BF87 /* AppDelegate.m in Sources */,
-				944B4DE91BFFC0E300B9BF87 /* BFRImageContainerViewController.m in Sources */,
 				944B4DB61BFFC0C000B9BF87 /* FirstViewController.m in Sources */,
+				24E376801D0D2CEF00180398 /* BufferImageViewController.swift in Sources */,
 				944B4DB01BFFC0C000B9BF87 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

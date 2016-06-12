@@ -15,11 +15,22 @@ Pod::Spec.new do |s|
                        "Humber Aquino" => "humber@bufferapp.com"}
   	s.social_media_url = "https://twitter.com/bufferdevs"
     s.source       = { :git => "https://github.com/bufferapp/buffer-ios-image-viewer.git", :tag => 'v1.0.16'  }
-    s.source_files = 'Classes', 'BFRImageViewController/**/*.{h,m}'
     s.resources    = ['BFRImageViewController/**/*.{png}']
     s.platform     = :ios, '8.0'
     s.requires_arc = true
     s.frameworks = "UIKit", "Photos"
     s.dependency 'DACircularProgress'
-    s.dependency 'SDWebImage'
+
+    s.default_subspecs = 'Default'
+
+    s.subspec 'Default' do |ss|
+      ss.source_files = 'Classes', 'BFRImageViewController/**/*.{swift}'
+      s.exclude_files = 'BFRImageViewController/**/BufferImageContainerViewController+SDWebImage.swift'
+    end
+
+    s.subspec 'SDWebImage' do |ss|
+        ss.source_files = 'Classes', 'BFRImageViewController/**/*.{swift}'
+        ss.dependency 'SDWebImage'
+    end
+
 end
