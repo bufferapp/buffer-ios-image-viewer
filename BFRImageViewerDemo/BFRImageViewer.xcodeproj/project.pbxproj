@@ -190,11 +190,11 @@
 		944B4DE41BFFC0E300B9BF87 /* BFRImageViewController */ = {
 			isa = PBXGroup;
 			children = (
+				578DFD551CB6E7F400BFBD00 /* Resources */,
 				24E3767D1D0D2CEF00180398 /* BufferImageContainerViewController.swift */,
-				24E376831D0D2F6E00180398 /* BufferImageContainerViewController+SDWebImage.swift */,
 				24E3767E1D0D2CEF00180398 /* BufferImageViewController.swift */,
 				24E376811D0D2E2900180398 /* BufferImageRetriever.swift */,
-				578DFD551CB6E7F400BFBD00 /* Resources */,
+				24E376831D0D2F6E00180398 /* BufferImageContainerViewController+SDWebImage.swift */,
 			);
 			name = BFRImageViewController;
 			path = ../../BFRImageViewController;
