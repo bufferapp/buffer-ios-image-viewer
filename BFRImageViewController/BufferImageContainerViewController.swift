@@ -1,6 +1,6 @@
 //
 //  BufferImageContainerViewController.swift
-//  Buffer
+//  BFRImageViewer
 //
 //  Created by Jordan Morgan on 11/10/15.
 //
