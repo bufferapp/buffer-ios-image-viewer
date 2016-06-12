@@ -55,34 +55,34 @@ internal class BufferImageContainerViewController: UIViewController {
         super.viewDidLoad()
         
         //View setup
-        self.automaticallyAdjustsScrollViewInsets = false
-        self.view.backgroundColor = .clearColor()
+        automaticallyAdjustsScrollViewInsets = false
+        view.backgroundColor = .clearColor()
         
         //Scrollview (for pinching in and out of image)
-        self.scrollView = self.createScrollView()
-        self.view.addSubview(self.scrollView)
+        scrollView = createScrollView()
+        view.addSubview(scrollView)
         
         //Fetch image - or just display it
-        if let _ = imgSrc as? NSURL {
-            self.progressView = self.createProgressView()
-            self.view.addSubview(self.progressView!)
-            self.retrieveImageFromURL()
+        if let imgSrc = imgSrc as? NSURL {
+            progressView = createProgressView()
+            view.addSubview(progressView!)
+            retrieveImageFromURL(imgSrc)
         } else if let imgSrc = imgSrc as? UIImage {
-            self.imgLoaded = imgSrc
-            self.addImageToScrollView()
-        } else if let _ = imgSrc as? PHAsset {
-            self.retrieveImageFromAsset()
-        } else if let imgSrc = imgSrc as? String {
+            imgLoaded = imgSrc
+            addImageToScrollView()
+        } else if let imgAsset = imgSrc as? PHAsset {
+            retrieveImageFromAsset(imgAsset)
+        } else if let imgSrc = imgSrc as? String,
+            let url = NSURL(string: imgSrc) {
             //Loading view
-            let url = NSURL(string: imgSrc)
-            self.imgSrc = url
-            self.progressView = self.createProgressView()
-            self.view.addSubview(self.progressView!)
-            self.retrieveImageFromURL()
+//            self.imgSrc  = url
+            progressView = createProgressView()
+            view.addSubview(progressView!)
+            retrieveImageFromURL(url)
         }
         
         //Animator - used to snap the image back to the center when done dragging
-        self.animator = UIDynamicAnimator(referenceView: self.scrollView)
+        animator = UIDynamicAnimator(referenceView: scrollView)
     }
     
     override func viewWillLayoutSubviews() {
@@ -90,11 +90,11 @@ internal class BufferImageContainerViewController: UIViewController {
             let _ = imgView else { return }
         
         //Scrollview
-        self.scrollView.frame = self.view.bounds
+        scrollView.frame = view.bounds
         
         //Set the aspect ratio of the image
-        let hfactor = imgLoaded.size.width  / self.view.bounds.size.width
-        let vfactor = imgLoaded.size.height /  self.view.bounds.size.height
+        let hfactor = imgLoaded.size.width  / view.bounds.size.width
+        let vfactor = imgLoaded.size.height /  view.bounds.size.height
         let factor  = fmax(hfactor, vfactor)
         
         //Divide the size by the greater of the vertical or horizontal shrinkage factor
@@ -102,21 +102,21 @@ internal class BufferImageContainerViewController: UIViewController {
         let newHeight = imgLoaded.size.height / factor
         
         //Then figure out offset to center vertically or horizontally
-        let leftOffset = (self.view.bounds.size.width   - newWidth)  / 2
-        let topOffset  = ( self.view.bounds.size.height - newHeight) / 2
+        let leftOffset = (view.bounds.size.width   - newWidth)  / 2
+        let topOffset  = ( view.bounds.size.height - newHeight) / 2
         
         //Reposition image view
         let newRect = CGRectMake(leftOffset, topOffset, newWidth, newHeight)
         
         //Check for any NaNs, which should get corrected in the next drawing cycle
         let isInvalidRect = (isnan(leftOffset) || isnan(topOffset) || isnan(newWidth) || isnan(newHeight))
-        self.imgView!.frame = isInvalidRect ? CGRectZero : newRect
+        imgView!.frame = isInvalidRect ? CGRectZero : newRect
     }
     
     // MARK: - UI Methods
     
     func createScrollView() -> UIScrollView {
-        let sv = UIScrollView(frame: self.view.bounds)
+        let sv = UIScrollView(frame: view.bounds)
         sv.delegate = self
         sv.showsHorizontalScrollIndicator = false
         sv.showsVerticalScrollIndicator   = false
@@ -133,8 +133,8 @@ internal class BufferImageContainerViewController: UIViewController {
     }
     
     func createProgressView() -> DACircularProgressView {
-        let screenWidth  = self.view.bounds.size.width
-        let screenHeight = self.view.bounds.size.height
+        let screenWidth  = view.bounds.size.width
+        let screenHeight = view.bounds.size.height
         
         let progressView = DACircularProgressView(frame: CGRectMake((screenWidth-35.0)/2.0, (screenHeight-35.0)/2, 35.0, 35.0))
         progressView.progress = 0.0
@@ -147,8 +147,8 @@ internal class BufferImageContainerViewController: UIViewController {
     }
     
     func createImageView() -> UIImageView {
-        let resizableImageView = UIImageView(image: self.imgLoaded)
-        resizableImageView.frame           = self.view.bounds;
+        let resizableImageView = UIImageView(image: imgLoaded)
+        resizableImageView.frame           = view.bounds
         resizableImageView.clipsToBounds   = true
         resizableImageView.contentMode     = .ScaleAspectFill
         resizableImageView.backgroundColor = UIColor(white:0, alpha:1)
@@ -174,7 +174,7 @@ internal class BufferImageContainerViewController: UIViewController {
         
         //Dragging to dismiss
         let panImg = UIPanGestureRecognizer(target:self, action:#selector(handleDrag(_:)))
-        if self.disableHorizontalDrag {
+        if disableHorizontalDrag {
             panImg.delegate = self
         }
         resizableImageView.addGestureRecognizer(panImg)
@@ -183,10 +183,10 @@ internal class BufferImageContainerViewController: UIViewController {
     }
     
     func addImageToScrollView() {
-        if case .None = self.imgView {
-            self.imgView = self.createImageView()
-            self.scrollView.addSubview(self.imgView!)
-            self.setMaxMinZoomScalesForCurrentBounds()
+        if case .None = imgView {
+            imgView = createImageView()
+            scrollView.addSubview(imgView!)
+            setMaxMinZoomScalesForCurrentBounds()
         }
     }
     
@@ -197,7 +197,7 @@ internal class BufferImageContainerViewController: UIViewController {
         guard let imgView = imgView else { return }
         
         if recognizer.state == .Began {
-            self.animator.removeAllBehaviors()
+            animator.removeAllBehaviors()
             
             let location    = recognizer.locationInView(scrollView)
             let imgLocation = recognizer.locationInView(imgView)
@@ -205,36 +205,36 @@ internal class BufferImageContainerViewController: UIViewController {
             let centerOffset = UIOffsetMake(imgLocation.x - CGRectGetMidX(imgView.bounds),
                                             imgLocation.y - CGRectGetMidY(imgView.bounds))
             
-            self.imgAttatchment = UIAttachmentBehavior(item:imgView, offsetFromCenter:centerOffset, attachedToAnchor:location)
-            self.animator.addBehavior(self.imgAttatchment!)
+            imgAttatchment = UIAttachmentBehavior(item:imgView, offsetFromCenter:centerOffset, attachedToAnchor:location)
+            animator.addBehavior(imgAttatchment!)
         } else if recognizer.state == .Changed {
-            self.imgAttatchment?.anchorPoint = recognizer.locationInView(self.scrollView)
+            imgAttatchment?.anchorPoint = recognizer.locationInView(scrollView)
         } else if recognizer.state == .Ended {
-            let location = recognizer.locationInView(self.scrollView)
-            let closeTopThreshhold = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height * 0.35)
-            let closeBottomThreshhold = CGRectMake(0, self.view.bounds.size.height - closeTopThreshhold.size.height, self.view.bounds.size.width, self.view.bounds.size.height * 0.35)
+            let location = recognizer.locationInView(scrollView)
+            let closeTopThreshhold = CGRectMake(0, 0, view.bounds.size.width, view.bounds.size.height * 0.35)
+            let closeBottomThreshhold = CGRectMake(0, view.bounds.size.height - closeTopThreshhold.size.height, view.bounds.size.width, view.bounds.size.height * 0.35)
             
             //Check if we should close - or just snap back to the center
             if CGRectContainsPoint(closeTopThreshhold, location) || CGRectContainsPoint(closeBottomThreshhold, location) {
-                self.animator.removeAllBehaviors()
+                animator.removeAllBehaviors()
                 self.imgView!.userInteractionEnabled   = false
-                self.scrollView.userInteractionEnabled = false
+                scrollView.userInteractionEnabled = false
                 
                 let exitGravity = UIGravityBehavior(items:[imgView])
                 if CGRectContainsPoint(closeTopThreshhold, location) {
                     exitGravity.gravityDirection = CGVectorMake(0.0, -1.0)
                 }
                 exitGravity.magnitude = 15.0
-                self.animator.addBehavior(exitGravity)
+                animator.addBehavior(exitGravity)
                 
                 let delta = Int64(0.35 * Double(NSEC_PER_SEC))
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delta), dispatch_get_main_queue(), {
                     self.dismissUI()
                 })
             } else {
-                self.scrollView.setZoomScale(self.scrollView.minimumZoomScale, animated:true)
-                let snapBack = UISnapBehavior(item:imgView, snapToPoint:self.scrollView.center)
-                self.animator.addBehavior(snapBack)
+                scrollView.setZoomScale(scrollView.minimumZoomScale, animated:true)
+                let snapBack = UISnapBehavior(item:imgView, snapToPoint:scrollView.center)
+                animator.addBehavior(snapBack)
             }
         }
     }
@@ -251,23 +251,20 @@ internal class BufferImageContainerViewController: UIViewController {
             activityVC.preferredContentSize = CGSizeMake(320,400)
             let popoverVC = activityVC.popoverPresentationController
             popoverVC?.sourceView = imgView
-            let touchPoint = longPress.locationInView(self.imgView)
+            let touchPoint = longPress.locationInView(imgView)
             popoverVC?.sourceRect = CGRectMake(touchPoint.x, touchPoint.y, 1, 1)
         }
         
-        self.presentViewController(activityVC, animated:true, completion:nil)
+        presentViewController(activityVC, animated:true, completion:nil)
     }
     
     // MARK: - Image Asset Retrieval
     
-    func retrieveImageFromAsset() {
-        guard let imgSrc = imgSrc as? PHAsset else {
-            return
-        }
+    func retrieveImageFromAsset(imgAsset: PHAsset) {
         
         let reqOptions = PHImageRequestOptions()
         reqOptions.synchronous = true
-        PHImageManager.defaultManager().requestImageDataForAsset(imgSrc, options:reqOptions) {
+        PHImageManager.defaultManager().requestImageDataForAsset(imgAsset, options:reqOptions) {
             (imageData, dataUTI, orientation, info) in
             
             if let imageData = imageData {
@@ -277,10 +274,7 @@ internal class BufferImageContainerViewController: UIViewController {
         }
     }
     
-    func retrieveImageFromURL() {
-        guard let url = imgSrc as? NSURL else {
-            return
-        }
+    func retrieveImageFromURL(url: NSURL) {
         
         imageRetriever.retrieveImageFromURL(url, progressCallback: {
             progress in
@@ -323,7 +317,7 @@ internal class BufferImageContainerViewController: UIViewController {
         }
         controller.addAction(closeAction)
         
-        self.presentViewController(controller, animated:true, completion:nil)
+        presentViewController(controller, animated:true, completion:nil)
     }
 }
 
@@ -332,12 +326,12 @@ extension BufferImageContainerViewController: UIScrollViewDelegate {
     // MARK: - Scrollview Delegate
     
     @objc func viewForZoomingInScrollView(scrollView: UIScrollView) -> UIView? {
-        return self.scrollView.subviews.first
+        return scrollView.subviews.first
     }
     
     @objc func scrollViewDidZoom(scrollView: UIScrollView) {
-        self.animator.removeAllBehaviors()
-        self.centerScrollViewContents()
+        animator.removeAllBehaviors()
+        centerScrollViewContents()
     }
     
     // MARK: - Scrollview Util Methods
@@ -347,7 +341,7 @@ extension BufferImageContainerViewController: UIScrollViewDelegate {
         guard let imgView = imgView else { return }
         
         // Sizes
-        let boundsSize = self.scrollView.bounds.size
+        let boundsSize = scrollView.bounds.size
         let imageSize  = imgView.frame.size
         
         // Calculate Min
@@ -361,24 +355,24 @@ extension BufferImageContainerViewController: UIScrollViewDelegate {
         maxScale = maxScale / UIScreen.mainScreen().scale
         
         if maxScale < minScale {
-            maxScale = minScale * 2;
+            maxScale = minScale * 2
         }
         //        }
         
         //Apply zoom
-        self.scrollView.maximumZoomScale = maxScale
-        self.scrollView.minimumZoomScale = minScale
-        self.scrollView.zoomScale = minScale
+        scrollView.maximumZoomScale = maxScale
+        scrollView.minimumZoomScale = minScale
+        scrollView.zoomScale        = minScale
     }
     
     /*! Called during zooming of the image to ensure it stays centered */
     func centerScrollViewContents() {
         guard let imgView = imgView else { return }
         
-        let boundsSize = self.scrollView.bounds.size
+        let boundsSize    = scrollView.bounds.size
         var contentsFrame = imgView.frame
         
-        if (contentsFrame.size.width < boundsSize.width) {
+        if contentsFrame.size.width < boundsSize.width {
             contentsFrame.origin.x = (boundsSize.width - contentsFrame.size.width) / 2.0
         } else {
             contentsFrame.origin.x = 0.0
@@ -395,13 +389,13 @@ extension BufferImageContainerViewController: UIScrollViewDelegate {
     
     /*! Called when an image is double tapped. Either zooms out or to specific point */
     @objc func recenterImageOriginOrZoomToPoint(tap: UITapGestureRecognizer) {
-        if self.scrollView.zoomScale == self.scrollView.maximumZoomScale {
+        if scrollView.zoomScale == scrollView.maximumZoomScale {
             //Zoom out since we zoomed in here
-            self.scrollView.setZoomScale(self.scrollView.minimumZoomScale, animated:true)
+            scrollView.setZoomScale(scrollView.minimumZoomScale, animated:true)
         } else {
             //Zoom to a point
-            let touchPoint = tap.locationInView(self.scrollView)
-            self.scrollView.zoomToRect(CGRectMake(touchPoint.x, touchPoint.y, 1, 1), animated:true)
+            let touchPoint = tap.locationInView(scrollView)
+            scrollView.zoomToRect(CGRectMake(touchPoint.x, touchPoint.y, 1, 1), animated:true)
         }
     }
     
@@ -417,7 +411,7 @@ extension BufferImageContainerViewController: UIGestureRecognizerDelegate {
             return true
         }
         
-        let velocity = gestureRecognizer.velocityInView(self.scrollView)
+        let velocity = gestureRecognizer.velocityInView(scrollView)
         return fabs(velocity.y) > fabs(velocity.x)
     }
     
