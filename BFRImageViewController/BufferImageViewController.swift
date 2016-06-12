@@ -10,42 +10,53 @@ import UIKit
 
 public class BufferImageViewController: UIViewController {
     
-    /*! Assigning **true** to this property will make the background transparent. */
+    /// Assigning **true** to this property will make the background transparent.
     public var  useTransparentBackground = false
     
-    /*! When peeking, iOS already hides the status bar for you. In that case, leave this to the default value of NO. If you are using this class outside of 3D touch, set this to **true**. */
+    /// When peeking, iOS already hides the status bar for you. In that case, leave this to the default value of NO. If you are using this class outside of 3D touch, set this to **true**.
     public var hideStatusBar = false
     
-    /*! Flag property that toggles the doneButton. Defaults to **true** */
+    /// Flag property that toggles the doneButton. Defaults to **true**
     public var enableDoneButton = true
     
-    /*! Flag property that sets the doneButton position (left or right side). Defaults to **true** */
+    /// Flag property that sets the doneButton position (left or right side). Defaults to **true**
     public var showDoneButtonOnLeft = true
     
-    /*! This view controller just acts as a container to hold a page view controller, which pages between the view controllers that hold an image. */
+    /// This view controller just acts as a container to hold a page view controller, which pages between the view controllers that hold an image.
     let pagerVC: UIPageViewController = UIPageViewController(transitionStyle: .Scroll, navigationOrientation: .Horizontal, options:nil)
     
-    /*! Each image displayed is shown in its own instance of a BFRImageViewController. This array holds all of those view controllers, one per image. */
+    /// Each image displayed is shown in its own instance of a BFRImageViewController. This array holds all of those view controllers, one per image.
     var imageViewControllers: [BufferImageContainerViewController] = [BufferImageContainerViewController]()
     
-    /*! Each image is represented via a @c NSURL or an actual @c UIImage. */
+    /// Each image is represented via a @c NSURL or an actual @c UIImage.
     var images: [AnyObject] = [AnyObject]()
     
-    /*! This will automatically hide the "Done" button after five seconds. */
-    // TODO Implement timer
+    /// This will automatically hide the "Done" button after five seconds.
     var timerHideUI: NSTimer?
+    // TODO Implement timer
     
-    /*! The button that sticks to the top left of the view that is responsible for dismissing this view controller. */
+    /// The button that sticks to the top left of the view that is responsible for dismissing this view controller.
     var doneButton: UIButton?
     
-    /*! This will determine whether to change certain behaviors for 3D touch considerations based on its value. */
+    /// This will determine whether to change certain behaviors for 3D touch considerations based on its value.
     var usedFor3DTouch: Bool = false
     
     var imageRetriever: BufferImageRetriever!
     
     // MARK: - Initializers
     
-    /*! Initializes an instance of @C BFRImageViewController from the image source provided. The array can contain a mix of @c NSURL, @c UIImage, @c PHAsset, or @c NSStrings of URLS. This can be a mix of all these types, or just one. */
+    /**
+     Initializes an instance of BFRImageViewController from the image source provided. The array can contain a mix of NSURL, UIImage, PHAsset, or NSStrings of URLS. This can be a mix of all these types, or just one.
+     
+     - parameter imageSource: Images represented by one or more:
+     - NSURL
+     - UIImage
+     - PHAsset
+     - Strings of URLs
+     - parameter imageRetriever: Will retrieve images from remote URLs
+     
+     - returns: A newly initialized BufferImageViewController object.
+     */
     public init(imageSource images: [AnyObject], imageRetriever: BufferImageRetriever) {
         super.init(nibName: nil, bundle: nil)
         
@@ -58,7 +69,19 @@ public class BufferImageViewController: UIViewController {
         self.imageRetriever       = imageRetriever
     }
     
-    /*! Initializes an instance of @C BFRImageViewController from the image source provided. The array can contain a mix of @c NSURL, @c UIImage, @c PHAsset, or @c NSStrings of URLS. This can be a mix of all these types, or just one. Additionally, this customizes the user interface to defer showing some of its user interface elements, such as the close button, until it's been fully popped.*/
+    /**
+     Initializes an instance of BFRImageViewController from the image source provided. The array can contain a mix of NSURL, UIImage, PHAsset, or NSStrings of URLS. This can be a mix of all these types, or just one.
+     Additionally, this customizes the user interface to defer showing some of its user interface elements, such as the close button, until it's been fully popped.
+     
+     - parameter forPeekWithImageSource: Images represented by one or more:
+        - NSURL
+        - UIImage
+        - PHAsset
+        - Strings of URLs
+     - parameter imageRetriever: Will retrieve images from remote URLs
+     
+     - returns: A newly initialized BufferImageViewController object.
+     */
     public init(forPeekWithImageSource images: [AnyObject], imageRetriever: BufferImageRetriever) {
         super.init(nibName: nil, bundle: nil)
         
@@ -173,7 +196,7 @@ public class BufferImageViewController: UIViewController {
         self.dismissViewControllerAnimated(true, completion:nil)
     }
     
-    /*! The images and scrollview are not part of this view controller, so instances of @c BFRimageContainerViewController will post notifications when they are touched for things to happen. */
+    /// The images and scrollview are not part of this view controller, so instances of @c BFRimageContainerViewController will post notifications when they are touched for things to happen.
     func registerNotifcations() {
         let notificationCenter = NSNotificationCenter.defaultCenter()
         

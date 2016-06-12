@@ -17,13 +17,13 @@ struct SDImageRetriever: BufferImageRetriever {
     
     // MARK: - Image Asset Retrieval
     
-    func retrieveImageFromURL(url: NSURL, progressCallback: (Double) -> Void, completionCallback: (UIImage?, NSError?) -> Void) {
+    func retrieveImageFromURL(url: NSURL, progressCallback: (Float) -> Void, completionCallback: (UIImage?, NSError?) -> Void) {
         
         let manager = SDWebImageManager.sharedManager()
-        manager.downloadImageWithURL(url, options: SDWebImageOptions.init(rawValue: 0), progress: {
+        manager.downloadImageWithURL(url, options: SDWebImageOptions.RefreshCached, progress: {
             (receivedSize, expectedSize) in
             
-            let fractionCompleted = Double(receivedSize / expectedSize)
+            let fractionCompleted = Float(receivedSize) / Float(expectedSize)
             progressCallback(fractionCompleted)
             
             }, completed: {

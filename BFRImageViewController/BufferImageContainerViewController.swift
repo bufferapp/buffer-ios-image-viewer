@@ -10,40 +10,40 @@ import UIKit
 import Photos
 import DACircularProgress
 
-/*! This class holds an image to view, if you need an image viewer alloc @C BFRImageViewController instead. This class isn't meant to instanitated outside of it. */
+/// This class holds an image to view, if you need an image viewer alloc @C BFRImageViewController instead. This class isn't meant to instanitated outside of it.
 internal class BufferImageContainerViewController: UIViewController {
     
-    /*! Source of the image, which should either be @c NSURL or @c UIImage. */
+    /// Source of the image, which should either be @c NSURL or @c UIImage.
     var imgSrc: AnyObject!
     
-    /*! Cache manager to retrieve images. */
+    /// Cache manager to retrieve images.
     var imageRetriever: BufferImageRetriever!
     
-    /*! A helper integer to simplify using this view controller inside a @c UIPagerViewController when swiping between views. */
+    /// A helper integer to simplify using this view controller inside a @c UIPagerViewController when swiping between views.
     var pageIndex: Int = 0
     
-    /*! Assigning **true** to this property will make the background transparent. */
+    /// Assigning **true** to this property will make the background transparent.
     var useTransparentBackground: Bool = false
     
-    /*! If there is more than one image in the containing @c BFRImageViewController - this property is set to **true** to make swiping from image to image easier. */
+    /// If there is more than one image in the containing @c BFRImageViewController - this property is set to **true** to make swiping from image to image easier.
     var disableHorizontalDrag: Bool = true
     
-    /*! This is responsible for panning and zooming the images. */
+    /// This is responsible for panning and zooming the images.
     private var scrollView: UIScrollView!
     
-    /*! The actual view which will display the @c UIImage, this is housed inside of the scrollView property. */
+    /// The actual view which will display the @c UIImage, this is housed inside of the scrollView property.
     private var imgView: UIImageView?
     
-    /*! The image created from the passed in imgSrc property. */
+        /// The image created from the passed in imgSrc property.
     private var imgLoaded: UIImage?
     
-    /*! If the imgSrc property requires a network call, this displays inside the view to denote the loading progress. */
+    /// If the imgSrc property requires a network call, this displays inside the view to denote the loading progress.
     private var progressView: DACircularProgressView?
     
-    /*! The animator which attaches the behaviors needed to drag the image. */
+    /// The animator which attaches the behaviors needed to drag the image.
     private var animator: UIDynamicAnimator!
     
-    /*! The behavior which allows for the image to "snap" back to the center if it's vertical offset isn't passed the closing points. */
+    /// The behavior which allows for the image to "snap" back to the center if it's vertical offset isn't passed the closing points.
     private var imgAttatchment: UIAttachmentBehavior?
     
     
@@ -75,7 +75,7 @@ internal class BufferImageContainerViewController: UIViewController {
         } else if let imgSrc = imgSrc as? String,
             let url = NSURL(string: imgSrc) {
             //Loading view
-//            self.imgSrc  = url
+            //            self.imgSrc  = url
             progressView = createProgressView()
             view.addSubview(progressView!)
             retrieveImageFromURL(url)
@@ -137,7 +137,7 @@ internal class BufferImageContainerViewController: UIViewController {
         let screenHeight = view.bounds.size.height
         
         let progressView = DACircularProgressView(frame: CGRectMake((screenWidth-35.0)/2.0, (screenHeight-35.0)/2, 35.0, 35.0))
-        progressView.progress = 0.0
+        progressView.progress       = 0.0
         progressView.thicknessRatio = 0.1
         progressView.roundedCorners = 0
         progressView.trackTintColor    = UIColor(white:0.2, alpha:1)
@@ -192,7 +192,14 @@ internal class BufferImageContainerViewController: UIViewController {
     
     // MARK: - Dragging and Long Press Methods
     
-    /*! This method has three different states due to the gesture recognizer. In them, we either add the required behaviors using UIDynamics, update the image's position based off of the touch points of the drag, or if it's ended we snap it back to the center or dismiss this view controller if the vertical offset meets the requirements. */
+    /**
+     This method has three different states due to the gesture recognizer. In them, we either:
+     - Add the required behaviors using UIDynamics
+     - Update the image's position based off of the touch points of the drag
+     - Or if it's ended we snap it back to the center or dismiss this view controller (if the vertical offset meets the requirements)
+     
+     - parameter recognizer: Gesture recognizer
+     */
     @objc func handleDrag(recognizer: UIPanGestureRecognizer) {
         guard let imgView = imgView else { return }
         
@@ -336,7 +343,7 @@ extension BufferImageContainerViewController: UIScrollViewDelegate {
     
     // MARK: - Scrollview Util Methods
     
-    /*! This calculates the correct zoom scale for the scrollview once we have the image's size */
+    /// This calculates the correct zoom scale for the scrollview once we have the image's size
     func setMaxMinZoomScalesForCurrentBounds() {
         guard let imgView = imgView else { return }
         
@@ -365,7 +372,7 @@ extension BufferImageContainerViewController: UIScrollViewDelegate {
         scrollView.zoomScale        = minScale
     }
     
-    /*! Called during zooming of the image to ensure it stays centered */
+    /// Called during zooming of the image to ensure it stays centered
     func centerScrollViewContents() {
         guard let imgView = imgView else { return }
         
@@ -387,7 +394,7 @@ extension BufferImageContainerViewController: UIScrollViewDelegate {
         self.imgView?.frame = contentsFrame
     }
     
-    /*! Called when an image is double tapped. Either zooms out or to specific point */
+    /// Called when an image is double tapped. Either zooms out or to specific point
     @objc func recenterImageOriginOrZoomToPoint(tap: UITapGestureRecognizer) {
         if scrollView.zoomScale == scrollView.maximumZoomScale {
             //Zoom out since we zoomed in here
@@ -405,7 +412,7 @@ extension BufferImageContainerViewController: UIGestureRecognizerDelegate {
     
     // MARK: - Gesture Recognizer Delegate
     
-    //If we have more than one image, this will cancel out dragging horizontally to make it easy to navigate between images
+    // If we have more than one image, this will cancel out dragging horizontally to make it easy to navigate between images
     @objc func gestureRecognizerShouldBegin(gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer else {
             return true

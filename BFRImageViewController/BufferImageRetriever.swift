@@ -15,11 +15,11 @@ import UIKit
 public protocol BufferImageRetriever {
     
     /**
-     Retrieves, if possible, an image from a URL.
+     Retrieves, if possible, an image from an URL.
     
      - parameter url:                URL which points to an image.
-     - parameter progressCallback:   Called during the operation to inform download progress.
+     - parameter progressCallback:   Called during the operation to inform download progress (fraction).
      - parameter completionCallback: Called when the operation ends.
      */
-    func retrieveImageFromURL(url: NSURL, progressCallback: (Double) -> Void, completionCallback: (UIImage?, NSError?) -> Void)
+    func retrieveImageFromURL(url: NSURL, progressCallback: (Float) -> Void, completionCallback: (UIImage?, NSError?) -> Void)
 }
