@@ -7,7 +7,7 @@
 //
 
 #import "SecondViewController.h"
-#import "BFRImageViewController.h"
+#import "BFRImageViewer-Swift.h"
 
 @interface SecondViewController () <UIViewControllerPreviewingDelegate>
 @property (strong, nonatomic) NSArray *imgURLs;
@@ -41,7 +41,7 @@
 }
 
 - (void)openImage {
-    BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:self.imgURLs];
+    BufferImageViewController *imageVC = [[BufferImageViewController alloc] initWithImageSource:self.imgURLs];
     [self presentViewController:imageVC animated:YES completion:nil];
 }
 
@@ -51,7 +51,7 @@
 }
 
 - (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext viewControllerForLocation:(CGPoint)location {
-    return [[BFRImageViewController alloc] initWithImageSource:self.imgURLs];
+    return [[BufferImageViewController alloc] initWithImageSource:self.imgURLs];
 }
 
 - (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext commitViewController:(UIViewController *)viewControllerToCommit {
