@@ -104,7 +104,7 @@ public class BufferImageViewController: UIViewController {
         super.viewDidLoad()
         
         //View setup
-        self.view.backgroundColor = self.useTransparentBackground ? .clearColor() : .blackColor()
+        self.view.backgroundColor = self.useTransparentBackground ? UIColor.clearColor() : UIColor(white: 0, alpha: 1)
         
         //Setup image view controllers
         for imgSrc in self.images {
@@ -206,6 +206,27 @@ public class BufferImageViewController: UIViewController {
             .addObserver(self, selector:#selector(dismiss), name:"ImageLoadingError", object:nil)
         notificationCenter
             .addObserver(self, selector:#selector(handlePop), name:"ViewControllerPopped", object:nil)
+        notificationCenter
+            .addObserver(self, selector:#selector(imageSnappedBack), name:"ImageSnappedBack", object:nil)
+        notificationCenter
+            .addObserver(self, selector:#selector(imageDragged(_:)), name:"ImageDragged", object:nil)
+    }
+    
+    func imageDragged(notification: NSNotification) {
+        guard let offset = notification.object as? CGFloat else {
+            return
+        }
+        
+        self.view.alpha = 1-offset
+//        self.view.backgroundColor = UIColor(white: offset, alpha: 1-offset)
+    }
+    
+    func imageSnappedBack() {
+        let minusAlpha: Double = 1 - Double(view.alpha)
+        UIView.animateWithDuration(minusAlpha) {
+            self.view.backgroundColor = UIColor(white: 0, alpha: 1)
+            self.view.alpha = 1.0
+        }
     }
     
 }

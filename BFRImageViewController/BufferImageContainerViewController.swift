@@ -203,32 +203,41 @@ internal class BufferImageContainerViewController: UIViewController {
     @objc func handleDrag(recognizer: UIPanGestureRecognizer) {
         guard let imgView = imgView else { return }
         
+        let location = recognizer.locationInView(scrollView)
+        let offset: CGFloat
+        if location.y > scrollView.frame.midY {
+            // Bottom half
+            offset = (location.y / view.frame.midY) - 1
+        } else {
+            // Top half
+            offset = 1 - (location.y / view.frame.midY)
+        }
+        NSNotificationCenter.defaultCenter()
+            .postNotificationName("ImageDragged", object: offset)
+        
         if recognizer.state == .Began {
             animator.removeAllBehaviors()
             
-            let location    = recognizer.locationInView(scrollView)
             let imgLocation = recognizer.locationInView(imgView)
-            
-            let centerOffset = UIOffsetMake(imgLocation.x - CGRectGetMidX(imgView.bounds),
-                                            imgLocation.y - CGRectGetMidY(imgView.bounds))
+            let centerOffset = UIOffsetMake(imgLocation.x - imgView.bounds.midX,
+                                            imgLocation.y - imgView.bounds.midY)
             
             imgAttatchment = UIAttachmentBehavior(item:imgView, offsetFromCenter:centerOffset, attachedToAnchor:location)
             animator.addBehavior(imgAttatchment!)
         } else if recognizer.state == .Changed {
             imgAttatchment?.anchorPoint = recognizer.locationInView(scrollView)
         } else if recognizer.state == .Ended {
-            let location = recognizer.locationInView(scrollView)
-            let closeTopThreshhold = CGRectMake(0, 0, view.bounds.size.width, view.bounds.size.height * 0.35)
-            let closeBottomThreshhold = CGRectMake(0, view.bounds.size.height - closeTopThreshhold.size.height, view.bounds.size.width, view.bounds.size.height * 0.35)
+            let closeTopThreshold = CGRectMake(0, 0, view.bounds.size.width, view.bounds.size.height * 0.35)
+            let closeBottomThreshold = CGRectMake(0, view.bounds.size.height - closeTopThreshold.size.height, view.bounds.size.width, view.bounds.size.height * 0.35)
             
             //Check if we should close - or just snap back to the center
-            if CGRectContainsPoint(closeTopThreshhold, location) || CGRectContainsPoint(closeBottomThreshhold, location) {
+            if closeTopThreshold.contains(location) || closeBottomThreshold.contains(location) {
                 animator.removeAllBehaviors()
-                self.imgView!.userInteractionEnabled   = false
-                scrollView.userInteractionEnabled = false
+                self.imgView!.userInteractionEnabled = false
+                scrollView.userInteractionEnabled    = false
                 
                 let exitGravity = UIGravityBehavior(items:[imgView])
-                if CGRectContainsPoint(closeTopThreshhold, location) {
+                if closeTopThreshold.contains(location) {
                     exitGravity.gravityDirection = CGVectorMake(0.0, -1.0)
                 }
                 exitGravity.magnitude = 15.0
@@ -242,6 +251,7 @@ internal class BufferImageContainerViewController: UIViewController {
                 scrollView.setZoomScale(scrollView.minimumZoomScale, animated:true)
                 let snapBack = UISnapBehavior(item:imgView, snapToPoint:scrollView.center)
                 animator.addBehavior(snapBack)
+                NSNotificationCenter.defaultCenter().postNotificationName("ImageSnappedBack", object:nil)
             }
         }
     }
