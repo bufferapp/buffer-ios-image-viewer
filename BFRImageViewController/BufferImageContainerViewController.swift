@@ -34,7 +34,7 @@ internal class BufferImageContainerViewController: UIViewController {
     /// The actual view which will display the @c UIImage, this is housed inside of the scrollView property.
     private var imgView: UIImageView?
     
-        /// The image created from the passed in imgSrc property.
+    /// The image created from the passed in imgSrc property.
     private var imgLoaded: UIImage?
     
     /// If the imgSrc property requires a network call, this displays inside the view to denote the loading progress.
@@ -94,7 +94,7 @@ internal class BufferImageContainerViewController: UIViewController {
         
         //Set the aspect ratio of the image
         let hfactor = imgLoaded.size.width  / view.bounds.size.width
-        let vfactor = imgLoaded.size.height /  view.bounds.size.height
+        let vfactor = imgLoaded.size.height / view.bounds.size.height
         let factor  = fmax(hfactor, vfactor)
         
         //Divide the size by the greater of the vertical or horizontal shrinkage factor
@@ -102,8 +102,8 @@ internal class BufferImageContainerViewController: UIViewController {
         let newHeight = imgLoaded.size.height / factor
         
         //Then figure out offset to center vertically or horizontally
-        let leftOffset = (view.bounds.size.width   - newWidth)  / 2
-        let topOffset  = ( view.bounds.size.height - newHeight) / 2
+        let leftOffset = (view.bounds.size.width   - newWidth) / 2
+        let topOffset  = (view.bounds.size.height - newHeight) / 2
         
         //Reposition image view
         let newRect = CGRectMake(leftOffset, topOffset, newWidth, newHeight)

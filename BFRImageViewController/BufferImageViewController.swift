@@ -46,13 +46,13 @@ public class BufferImageViewController: UIViewController {
     // MARK: - Initializers
     
     /**
-     Initializes an instance of BFRImageViewController from the image source provided. The array can contain a mix of NSURL, UIImage, PHAsset, or NSStrings of URLS. This can be a mix of all these types, or just one.
+     Initializes an instance of BFRImageViewController from the image source provided. The array can contain a mix of `NSURL`, `UIImage`, `PHAsset`, or `Strings` of URLS. This can be a mix of all these types, or just one.
      
      - parameter imageSource: Images represented by one or more:
-     - NSURL
-     - UIImage
-     - PHAsset
-     - Strings of URLs
+        - `NSURL`
+        - `UIImage`
+        - `PHAsset`
+        - `Strings` of URLs
      - parameter imageRetriever: Will retrieve images from remote URLs
      
      - returns: A newly initialized BufferImageViewController object.
@@ -70,14 +70,14 @@ public class BufferImageViewController: UIViewController {
     }
     
     /**
-     Initializes an instance of BFRImageViewController from the image source provided. The array can contain a mix of NSURL, UIImage, PHAsset, or NSStrings of URLS. This can be a mix of all these types, or just one.
+     Initializes an instance of BFRImageViewController from the image source provided. The array can contain a mix of `NSURL`, `UIImage`, `PHAsset`, or `Strings` of URLS. This can be a mix of all these types, or just one.
      Additionally, this customizes the user interface to defer showing some of its user interface elements, such as the close button, until it's been fully popped.
      
      - parameter forPeekWithImageSource: Images represented by one or more:
-        - NSURL
-        - UIImage
-        - PHAsset
-        - Strings of URLs
+        - `NSURL`
+        - `UIImage`
+        - `PHAsset`
+        - `Strings` of URLs
      - parameter imageRetriever: Will retrieve images from remote URLs
      
      - returns: A newly initialized BufferImageViewController object.
