@@ -42,7 +42,6 @@
         self.images = images;
         self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         self.enableDoneButton = YES;
-        self.showDoneButtonOnLeft = YES;
     }
     
     return self;
@@ -56,7 +55,6 @@
         self.images = images;
         self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         self.enableDoneButton = YES;
-        self.showDoneButtonOnLeft = YES;
         self.usedFor3DTouch = YES;
     }
     
@@ -78,6 +76,7 @@
     for (id imgSrc in self.images) {
         BFRImageContainerViewController *imgVC = [BFRImageContainerViewController new];
         imgVC.imgSrc = imgSrc;
+        imgVC.pageIndex += self.startingIndex;
         imgVC.useTransparentBackground = self.isUsingTransparentBackground;
         imgVC.disableHorizontalDrag = (self.images.count > 1);
         [self.imageViewControllers addObject:imgVC];
@@ -88,7 +87,7 @@
     if (self.imageViewControllers.count > 1) {
         self.pagerVC.dataSource = self;
     }
-    [self.pagerVC setViewControllers:@[self.imageViewControllers.firstObject] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+    [self.pagerVC setViewControllers:@[self.imageViewControllers[self.startingIndex]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
     //Add pager to view hierarchy
     [self addChildViewController:self.pagerVC];
@@ -104,38 +103,21 @@
     [self registerNotifcations];
 }
 
-- (void)viewWillLayoutSubviews {
-    [super viewWillLayoutSubviews];
-    [self updateChromeFrames];
+- (void)addChromeToUI {
+    if (self.enableDoneButton) {
+        UIImage *crossImage = [UIImage imageNamed:@"cross"];
+        self.doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [self.doneButton setImage:crossImage forState:UIControlStateNormal];
+        [self.doneButton addTarget:self action:@selector(handleDoneAction) forControlEvents:UIControlEventTouchUpInside];
+        self.doneButton.frame = CGRectMake(20, 20, 17, 17);
+
+        [self.view addSubview:self.doneButton];
+        [self.view bringSubviewToFront:self.doneButton];
+    }
 }
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-#pragma mark - Chrome
-- (void)addChromeToUI {
-    if (self.enableDoneButton) {
-        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-        NSString *imagePath = [bundle pathForResource:@"cross" ofType:@"png"];
-        UIImage *crossImage = [[UIImage alloc] initWithContentsOfFile:imagePath];
-        
-        self.doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [self.doneButton setImage:crossImage forState:UIControlStateNormal];
-        [self.doneButton addTarget:self action:@selector(handleDoneAction) forControlEvents:UIControlEventTouchUpInside];
-        
-        [self.view addSubview:self.doneButton];
-        [self.view bringSubviewToFront:self.doneButton];
-        
-        [self updateChromeFrames];
-    }
-}
-
-- (void)updateChromeFrames {
-    if (self.enableDoneButton) {
-        CGFloat buttonX = self.showDoneButtonOnLeft ? 20 : CGRectGetMaxX(self.view.bounds) - 37;
-        self.doneButton.frame = CGRectMake(buttonX, 20, 17, 17);
-    }
 }
 
 #pragma mark - Pager Datasource
@@ -158,6 +140,7 @@
     NSUInteger index = ((BFRImageContainerViewController *)viewController).pageIndex;
     
     if (index == self.imageViewControllers.count - 1) {
+        
         return nil;
     }
     
