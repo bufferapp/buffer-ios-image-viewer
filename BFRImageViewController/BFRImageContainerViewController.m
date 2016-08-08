@@ -99,6 +99,10 @@
     self.imgView.frame = isInvalidRect ? CGRectZero : newRect;
 }
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 #pragma mark - UI Methods
 - (UIScrollView *)createScrollView {
     UIScrollView *sv = [[UIScrollView alloc] initWithFrame:self.view.bounds];
