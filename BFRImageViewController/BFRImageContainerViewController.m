@@ -71,6 +71,7 @@
     
     //Animator - used to snap the image back to the center when done dragging
     self.animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.scrollView];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePop) name:@"ViewControllerPopped" object:nil];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -96,6 +97,10 @@
     //Check for any NaNs, which should get corrected in the next drawing cycle
     BOOL isInvalidRect = (isnan(leftOffset) || isnan(topOffset) || isnan(newWidth) || isnan(newHeight));
     self.imgView.frame = isInvalidRect ? CGRectZero : newRect;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - UI Methods
@@ -136,6 +141,7 @@
     resizableImageView.clipsToBounds = YES;
     resizableImageView.contentMode = UIViewContentModeScaleAspectFill;
     resizableImageView.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
+    resizableImageView.layer.cornerRadius = self.isBeingUsedFor3DTouch ? 14.0f : 0.0f;
     
     //Toggle UI controls
     UITapGestureRecognizer *singleImgTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissUI)];
@@ -264,7 +270,7 @@
         
         UIOffset centerOffset = UIOffsetMake(imgLocation.x - CGRectGetMidX(self.imgView.bounds),
                                              imgLocation.y - CGRectGetMidY(self.imgView.bounds));
-
+        
         self.imgAttatchment = [[UIAttachmentBehavior alloc] initWithItem:self.imgView offsetFromCenter:centerOffset attachedToAnchor:location];
         [self.animator addBehavior:self.imgAttatchment];
     } else if (recognizer.state == UIGestureRecognizerStateChanged) {
@@ -334,7 +340,7 @@
 
 - (void)retrieveImageFromURL {
     NSURL *url = (NSURL *)self.imgSrc;
-
+    
     SDWebImageManager *manager = [SDWebImageManager sharedManager];
     [manager downloadImageWithURL:url options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
         float fractionCompleted = (float)receivedSize/(float)expectedSize;
@@ -354,7 +360,7 @@
             [self.progressView removeFromSuperview];
         });
     }];
-   
+    
 }
 
 #pragma mark - Misc. Methods
@@ -370,4 +376,9 @@
     [controller addAction:closeAction];
     [self presentViewController:controller animated:YES completion:nil];
 }
+
+- (void)handlePop {
+    self.imgView.layer.cornerRadius = 0.0f;
+}
+
 @end

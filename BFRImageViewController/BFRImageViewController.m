@@ -78,6 +78,7 @@
     for (id imgSrc in self.images) {
         BFRImageContainerViewController *imgVC = [BFRImageContainerViewController new];
         imgVC.imgSrc = imgSrc;
+        imgVC.usedFor3DTouch = self.isBeingUsedFor3DTouch;
         imgVC.useTransparentBackground = self.isUsingTransparentBackground;
         imgVC.disableHorizontalDrag = (self.images.count > 1);
         [self.imageViewControllers addObject:imgVC];
