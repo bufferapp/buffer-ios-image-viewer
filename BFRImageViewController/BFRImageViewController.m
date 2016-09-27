@@ -115,11 +115,7 @@
 #pragma mark - Status bar
 
 -(BOOL)prefersStatusBarHidden{
-    return self.shouldHideStatusBar;
-}
-
-- (UIStatusBarStyle)preferredStatusBarStyle {
-    return UIStatusBarStyleLightContent;
+    return YES;
 }
 
 #pragma mark - Chrome
@@ -187,8 +183,6 @@
 
 - (void)handlePop {
     self.view.backgroundColor = [UIColor blackColor];
-    self.hideStatusBar = YES;
-    [self setNeedsStatusBarAppearanceUpdate];
     [self addChromeToUI];
 }
 
