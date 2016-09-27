@@ -113,7 +113,6 @@
 }
 
 #pragma mark - Status bar
-
 -(BOOL)prefersStatusBarHidden{
     return YES;
 }
@@ -126,6 +125,7 @@
         UIImage *crossImage = [[UIImage alloc] initWithContentsOfFile:imagePath];
         
         self.doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [self.doneButton setAccessibilityLabel:@"Close"];
         [self.doneButton setImage:crossImage forState:UIControlStateNormal];
         [self.doneButton addTarget:self action:@selector(handleDoneAction) forControlEvents:UIControlEventTouchUpInside];
         
