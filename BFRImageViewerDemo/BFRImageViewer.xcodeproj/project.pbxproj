@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1183E425AC8B8175AB61D812 /* libPods-BFRImageViewer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA726C313DD042C27168921 /* libPods-BFRImageViewer.a */; };
-		170B88F61D9C6133004FE2E7 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 170B88F51D9C6133004FE2E7 /* Localizable.strings */; };
+		170B88F91D9C624B004FE2E7 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 170B88FB1D9C624B004FE2E7 /* Localizable.strings */; };
 		578DFD5B1CB6F17B00BFBD00 /* cross.png in Resources */ = {isa = PBXBuildFile; fileRef = 578DFD581CB6F17B00BFBD00 /* cross.png */; };
 		578DFD5C1CB6F17B00BFBD00 /* cross@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 578DFD591CB6F17B00BFBD00 /* cross@2x.png */; };
 		578DFD5D1CB6F17B00BFBD00 /* cross@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 578DFD5A1CB6F17B00BFBD00 /* cross@3x.png */; };
@@ -25,7 +25,10 @@
 
 /* Begin PBXFileReference section */
 		113CF836F9192623D62E0FD9 /* Pods-BFRImageViewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BFRImageViewer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BFRImageViewer/Pods-BFRImageViewer.debug.xcconfig"; sourceTree = "<group>"; };
-		170B88F51D9C6133004FE2E7 /* Localizable.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
+		170B88F71D9C6217004FE2E7 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Main.strings; sourceTree = "<group>"; };
+		170B88F81D9C6217004FE2E7 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		170B88FD1D9C6265004FE2E7 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		170B88FE1D9C626D004FE2E7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1CA726C313DD042C27168921 /* libPods-BFRImageViewer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BFRImageViewer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		578DFD581CB6F17B00BFBD00 /* cross.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cross.png; sourceTree = "<group>"; };
 		578DFD591CB6F17B00BFBD00 /* cross@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cross@2x.png"; sourceTree = "<group>"; };
@@ -64,6 +67,7 @@
 		578DFD551CB6E7F400BFBD00 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				170B88FB1D9C624B004FE2E7 /* Localizable.strings */,
 				578DFD581CB6F17B00BFBD00 /* cross.png */,
 				578DFD591CB6F17B00BFBD00 /* cross@2x.png */,
 				578DFD5A1CB6F17B00BFBD00 /* cross@3x.png */,
@@ -111,7 +115,6 @@
 				944B4DBD1BFFC0C000B9BF87 /* Assets.xcassets */,
 				944B4DBF1BFFC0C000B9BF87 /* LaunchScreen.storyboard */,
 				944B4DC21BFFC0C000B9BF87 /* Info.plist */,
-				170B88F51D9C6133004FE2E7 /* Localizable.strings */,
 				944B4DAE1BFFC0C000B9BF87 /* Supporting Files */,
 			);
 			path = BFRImageViewer;
@@ -191,6 +194,7 @@
 			knownRegions = (
 				en,
 				Base,
+				es,
 			);
 			mainGroup = 944B4DA21BFFC0C000B9BF87;
 			productRefGroup = 944B4DAC1BFFC0C000B9BF87 /* Products */;
@@ -210,7 +214,7 @@
 				578DFD5C1CB6F17B00BFBD00 /* cross@2x.png in Resources */,
 				944B4DC11BFFC0C000B9BF87 /* LaunchScreen.storyboard in Resources */,
 				578DFD5D1CB6F17B00BFBD00 /* cross@3x.png in Resources */,
-				170B88F61D9C6133004FE2E7 /* Localizable.strings in Resources */,
+				170B88F91D9C624B004FE2E7 /* Localizable.strings in Resources */,
 				944B4DBE1BFFC0C000B9BF87 /* Assets.xcassets in Resources */,
 				578DFD5B1CB6F17B00BFBD00 /* cross.png in Resources */,
 				944B4DBC1BFFC0C000B9BF87 /* Main.storyboard in Resources */,
@@ -284,10 +288,21 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		170B88FB1D9C624B004FE2E7 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				170B88FD1D9C6265004FE2E7 /* es */,
+				170B88FE1D9C626D004FE2E7 /* en */,
+			);
+			name = Localizable.strings;
+			path = ../../BFRImageViewerDemo/BFRImageViewer;
+			sourceTree = "<group>";
+		};
 		944B4DBA1BFFC0C000B9BF87 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
 				944B4DBB1BFFC0C000B9BF87 /* Base */,
+				170B88F71D9C6217004FE2E7 /* es */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -296,6 +311,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				944B4DC01BFFC0C000B9BF87 /* Base */,
+				170B88F81D9C6217004FE2E7 /* es */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -307,6 +323,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -353,6 +370,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
