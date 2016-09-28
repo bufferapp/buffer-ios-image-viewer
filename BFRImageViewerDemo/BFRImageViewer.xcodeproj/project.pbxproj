@@ -18,28 +18,9 @@
 		944B4DBC1BFFC0C000B9BF87 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 944B4DBA1BFFC0C000B9BF87 /* Main.storyboard */; };
 		944B4DBE1BFFC0C000B9BF87 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 944B4DBD1BFFC0C000B9BF87 /* Assets.xcassets */; };
 		944B4DC11BFFC0C000B9BF87 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 944B4DBF1BFFC0C000B9BF87 /* LaunchScreen.storyboard */; };
-		944B4DCC1BFFC0C000B9BF87 /* BFRImageViewerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DCB1BFFC0C000B9BF87 /* BFRImageViewerTests.m */; };
-		944B4DD71BFFC0C000B9BF87 /* BFRImageViewerUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DD61BFFC0C000B9BF87 /* BFRImageViewerUITests.m */; };
 		944B4DE91BFFC0E300B9BF87 /* BFRImageContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DE61BFFC0E300B9BF87 /* BFRImageContainerViewController.m */; };
 		944B4DEA1BFFC0E300B9BF87 /* BFRImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DE81BFFC0E300B9BF87 /* BFRImageViewController.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		944B4DC81BFFC0C000B9BF87 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 944B4DA31BFFC0C000B9BF87 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 944B4DAA1BFFC0C000B9BF87;
-			remoteInfo = BFRImageViewer;
-		};
-		944B4DD31BFFC0C000B9BF87 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 944B4DA31BFFC0C000B9BF87 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 944B4DAA1BFFC0C000B9BF87;
-			remoteInfo = BFRImageViewer;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		113CF836F9192623D62E0FD9 /* Pods-BFRImageViewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BFRImageViewer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BFRImageViewer/Pods-BFRImageViewer.debug.xcconfig"; sourceTree = "<group>"; };
@@ -59,10 +40,8 @@
 		944B4DBD1BFFC0C000B9BF87 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		944B4DC01BFFC0C000B9BF87 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		944B4DC21BFFC0C000B9BF87 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		944B4DC71BFFC0C000B9BF87 /* BFRImageViewerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BFRImageViewerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		944B4DCB1BFFC0C000B9BF87 /* BFRImageViewerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BFRImageViewerTests.m; sourceTree = "<group>"; };
 		944B4DCD1BFFC0C000B9BF87 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		944B4DD21BFFC0C000B9BF87 /* BFRImageViewerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BFRImageViewerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		944B4DD61BFFC0C000B9BF87 /* BFRImageViewerUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BFRImageViewerUITests.m; sourceTree = "<group>"; };
 		944B4DD81BFFC0C000B9BF87 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		944B4DE51BFFC0E300B9BF87 /* BFRImageContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BFRImageContainerViewController.h; sourceTree = "<group>"; };
@@ -78,20 +57,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1183E425AC8B8175AB61D812 /* libPods-BFRImageViewer.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		944B4DC41BFFC0C000B9BF87 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		944B4DCF1BFFC0C000B9BF87 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -132,8 +97,6 @@
 			isa = PBXGroup;
 			children = (
 				944B4DAB1BFFC0C000B9BF87 /* BFRImageViewer.app */,
-				944B4DC71BFFC0C000B9BF87 /* BFRImageViewerTests.xctest */,
-				944B4DD21BFFC0C000B9BF87 /* BFRImageViewerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -228,42 +191,6 @@
 			productReference = 944B4DAB1BFFC0C000B9BF87 /* BFRImageViewer.app */;
 			productType = "com.apple.product-type.application";
 		};
-		944B4DC61BFFC0C000B9BF87 /* BFRImageViewerTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 944B4DDE1BFFC0C000B9BF87 /* Build configuration list for PBXNativeTarget "BFRImageViewerTests" */;
-			buildPhases = (
-				944B4DC31BFFC0C000B9BF87 /* Sources */,
-				944B4DC41BFFC0C000B9BF87 /* Frameworks */,
-				944B4DC51BFFC0C000B9BF87 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				944B4DC91BFFC0C000B9BF87 /* PBXTargetDependency */,
-			);
-			name = BFRImageViewerTests;
-			productName = BFRImageViewerTests;
-			productReference = 944B4DC71BFFC0C000B9BF87 /* BFRImageViewerTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		944B4DD11BFFC0C000B9BF87 /* BFRImageViewerUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 944B4DE11BFFC0C000B9BF87 /* Build configuration list for PBXNativeTarget "BFRImageViewerUITests" */;
-			buildPhases = (
-				944B4DCE1BFFC0C000B9BF87 /* Sources */,
-				944B4DCF1BFFC0C000B9BF87 /* Frameworks */,
-				944B4DD01BFFC0C000B9BF87 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				944B4DD41BFFC0C000B9BF87 /* PBXTargetDependency */,
-			);
-			name = BFRImageViewerUITests;
-			productName = BFRImageViewerUITests;
-			productReference = 944B4DD21BFFC0C000B9BF87 /* BFRImageViewerUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -275,14 +202,6 @@
 				TargetAttributes = {
 					944B4DAA1BFFC0C000B9BF87 = {
 						CreatedOnToolsVersion = 7.1.1;
-					};
-					944B4DC61BFFC0C000B9BF87 = {
-						CreatedOnToolsVersion = 7.1.1;
-						TestTargetID = 944B4DAA1BFFC0C000B9BF87;
-					};
-					944B4DD11BFFC0C000B9BF87 = {
-						CreatedOnToolsVersion = 7.1.1;
-						TestTargetID = 944B4DAA1BFFC0C000B9BF87;
 					};
 				};
 			};
@@ -300,8 +219,6 @@
 			projectRoot = "";
 			targets = (
 				944B4DAA1BFFC0C000B9BF87 /* BFRImageViewer */,
-				944B4DC61BFFC0C000B9BF87 /* BFRImageViewerTests */,
-				944B4DD11BFFC0C000B9BF87 /* BFRImageViewerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -317,20 +234,6 @@
 				944B4DBE1BFFC0C000B9BF87 /* Assets.xcassets in Resources */,
 				578DFD5B1CB6F17B00BFBD00 /* cross.png in Resources */,
 				944B4DBC1BFFC0C000B9BF87 /* Main.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		944B4DC51BFFC0C000B9BF87 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		944B4DD01BFFC0C000B9BF87 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -398,36 +301,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		944B4DC31BFFC0C000B9BF87 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				944B4DCC1BFFC0C000B9BF87 /* BFRImageViewerTests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		944B4DCE1BFFC0C000B9BF87 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				944B4DD71BFFC0C000B9BF87 /* BFRImageViewerUITests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		944B4DC91BFFC0C000B9BF87 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 944B4DAA1BFFC0C000B9BF87 /* BFRImageViewer */;
-			targetProxy = 944B4DC81BFFC0C000B9BF87 /* PBXContainerItemProxy */;
-		};
-		944B4DD41BFFC0C000B9BF87 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 944B4DAA1BFFC0C000B9BF87 /* BFRImageViewer */;
-			targetProxy = 944B4DD31BFFC0C000B9BF87 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		944B4DBA1BFFC0C000B9BF87 /* Main.storyboard */ = {
@@ -559,54 +433,6 @@
 			};
 			name = Release;
 		};
-		944B4DDF1BFFC0C000B9BF87 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				INFOPLIST_FILE = BFRImageViewerTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.buffer.BFRImageViewerTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BFRImageViewer.app/BFRImageViewer";
-			};
-			name = Debug;
-		};
-		944B4DE01BFFC0C000B9BF87 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				INFOPLIST_FILE = BFRImageViewerTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.buffer.BFRImageViewerTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BFRImageViewer.app/BFRImageViewer";
-			};
-			name = Release;
-		};
-		944B4DE21BFFC0C000B9BF87 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				INFOPLIST_FILE = BFRImageViewerUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.buffer.BFRImageViewerUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_TARGET_NAME = BFRImageViewer;
-				USES_XCTRUNNER = YES;
-			};
-			name = Debug;
-		};
-		944B4DE31BFFC0C000B9BF87 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				INFOPLIST_FILE = BFRImageViewerUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.buffer.BFRImageViewerUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_TARGET_NAME = BFRImageViewer;
-				USES_XCTRUNNER = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -624,24 +450,6 @@
 			buildConfigurations = (
 				944B4DDC1BFFC0C000B9BF87 /* Debug */,
 				944B4DDD1BFFC0C000B9BF87 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		944B4DDE1BFFC0C000B9BF87 /* Build configuration list for PBXNativeTarget "BFRImageViewerTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				944B4DDF1BFFC0C000B9BF87 /* Debug */,
-				944B4DE01BFFC0C000B9BF87 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		944B4DE11BFFC0C000B9BF87 /* Build configuration list for PBXNativeTarget "BFRImageViewerUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				944B4DE21BFFC0C000B9BF87 /* Debug */,
-				944B4DE31BFFC0C000B9BF87 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
