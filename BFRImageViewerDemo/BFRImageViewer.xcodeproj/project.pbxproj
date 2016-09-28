@@ -40,10 +40,6 @@
 		944B4DBD1BFFC0C000B9BF87 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		944B4DC01BFFC0C000B9BF87 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		944B4DC21BFFC0C000B9BF87 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		944B4DCB1BFFC0C000B9BF87 /* BFRImageViewerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BFRImageViewerTests.m; sourceTree = "<group>"; };
-		944B4DCD1BFFC0C000B9BF87 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		944B4DD61BFFC0C000B9BF87 /* BFRImageViewerUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BFRImageViewerUITests.m; sourceTree = "<group>"; };
-		944B4DD81BFFC0C000B9BF87 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		944B4DE51BFFC0E300B9BF87 /* BFRImageContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BFRImageContainerViewController.h; sourceTree = "<group>"; };
 		944B4DE61BFFC0E300B9BF87 /* BFRImageContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BFRImageContainerViewController.m; sourceTree = "<group>"; };
 		944B4DE71BFFC0E300B9BF87 /* BFRImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BFRImageViewController.h; sourceTree = "<group>"; };
@@ -85,8 +81,6 @@
 			isa = PBXGroup;
 			children = (
 				944B4DAD1BFFC0C000B9BF87 /* BFRImageViewer */,
-				944B4DCA1BFFC0C000B9BF87 /* BFRImageViewerTests */,
-				944B4DD51BFFC0C000B9BF87 /* BFRImageViewerUITests */,
 				944B4DAC1BFFC0C000B9BF87 /* Products */,
 				E15757359D8CE34EFB566423 /* Pods */,
 				91E179B05F74058BF21E15EB /* Frameworks */,
@@ -126,24 +120,6 @@
 				944B4DAF1BFFC0C000B9BF87 /* main.m */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		944B4DCA1BFFC0C000B9BF87 /* BFRImageViewerTests */ = {
-			isa = PBXGroup;
-			children = (
-				944B4DCB1BFFC0C000B9BF87 /* BFRImageViewerTests.m */,
-				944B4DCD1BFFC0C000B9BF87 /* Info.plist */,
-			);
-			path = BFRImageViewerTests;
-			sourceTree = "<group>";
-		};
-		944B4DD51BFFC0C000B9BF87 /* BFRImageViewerUITests */ = {
-			isa = PBXGroup;
-			children = (
-				944B4DD61BFFC0C000B9BF87 /* BFRImageViewerUITests.m */,
-				944B4DD81BFFC0C000B9BF87 /* Info.plist */,
-			);
-			path = BFRImageViewerUITests;
 			sourceTree = "<group>";
 		};
 		944B4DE41BFFC0E300B9BF87 /* BFRImageViewController */ = {
