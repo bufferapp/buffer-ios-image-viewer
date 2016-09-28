@@ -125,7 +125,7 @@
         UIImage *crossImage = [[UIImage alloc] initWithContentsOfFile:imagePath];
         
         self.doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [self.doneButton setAccessibilityLabel:@"Close"];
+        [self.doneButton setAccessibilityLabel:NSLocalizedString(@"imageViewController.closeButton.text", @"Close")];
         [self.doneButton setImage:crossImage forState:UIControlStateNormal];
         [self.doneButton addTarget:self action:@selector(handleDoneAction) forControlEvents:UIControlEventTouchUpInside];
         
