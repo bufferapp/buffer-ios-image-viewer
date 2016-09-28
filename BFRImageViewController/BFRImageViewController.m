@@ -69,9 +69,7 @@
     
     //View setup
     self.view.backgroundColor = self.isUsingTransparentBackground ? [UIColor clearColor] : [UIColor blackColor];
-    if (self.shouldHideStatusBar) {
-        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
-    }
+    [self setNeedsStatusBarAppearanceUpdate];
     
     //Setup image view controllers
     self.imageViewControllers = [NSMutableArray new];
@@ -114,6 +112,11 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark - Status bar
+-(BOOL)prefersStatusBarHidden{
+    return YES;
+}
+
 #pragma mark - Chrome
 - (void)addChromeToUI {
     if (self.enableDoneButton) {
@@ -122,6 +125,7 @@
         UIImage *crossImage = [[UIImage alloc] initWithContentsOfFile:imagePath];
         
         self.doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [self.doneButton setAccessibilityLabel:@"Close"];
         [self.doneButton setImage:crossImage forState:UIControlStateNormal];
         [self.doneButton addTarget:self action:@selector(handleDoneAction) forControlEvents:UIControlEventTouchUpInside];
         
@@ -174,13 +178,11 @@
 - (void)dismiss {
     self.pagerVC.dataSource = nil;
     self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)handlePop {
     self.view.backgroundColor = [UIColor blackColor];
-    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
     [self addChromeToUI];
 }
 
