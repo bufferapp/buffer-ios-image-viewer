@@ -8,6 +8,7 @@
 
 #import "BFRImageViewController.h"
 #import "BFRImageContainerViewController.h"
+#import "BFRImageViewerLocalizations.h"
 
 @interface BFRImageViewController () <UIPageViewControllerDataSource>
 
@@ -123,9 +124,9 @@
         NSBundle *bundle = [NSBundle bundleForClass:[self class]];
         NSString *imagePath = [bundle pathForResource:@"cross" ofType:@"png"];
         UIImage *crossImage = [[UIImage alloc] initWithContentsOfFile:imagePath];
-        
+
         self.doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [self.doneButton setAccessibilityLabel:NSLocalizedString(@"imageViewController.closeButton.text", @"Close")];
+        [self.doneButton setAccessibilityLabel:BFRImageViewerLocalizedStrings(@"imageViewController.closeButton.text", @"Close")];
         [self.doneButton setImage:crossImage forState:UIControlStateNormal];
         [self.doneButton addTarget:self action:@selector(handleDoneAction) forControlEvents:UIControlEventTouchUpInside];
         

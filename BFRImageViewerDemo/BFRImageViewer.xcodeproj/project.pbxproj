@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1183E425AC8B8175AB61D812 /* libPods-BFRImageViewer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CA726C313DD042C27168921 /* libPods-BFRImageViewer.a */; };
+		17C1AAB61D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 17C1AAB51D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle */; };
 		578DFD5B1CB6F17B00BFBD00 /* cross.png in Resources */ = {isa = PBXBuildFile; fileRef = 578DFD581CB6F17B00BFBD00 /* cross.png */; };
 		578DFD5C1CB6F17B00BFBD00 /* cross@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 578DFD591CB6F17B00BFBD00 /* cross@2x.png */; };
 		578DFD5D1CB6F17B00BFBD00 /* cross@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 578DFD5A1CB6F17B00BFBD00 /* cross@3x.png */; };
@@ -24,6 +25,8 @@
 
 /* Begin PBXFileReference section */
 		113CF836F9192623D62E0FD9 /* Pods-BFRImageViewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BFRImageViewer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BFRImageViewer/Pods-BFRImageViewer.debug.xcconfig"; sourceTree = "<group>"; };
+		17C1AAB51D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = BFRImageViewerLocalizations.bundle; sourceTree = "<group>"; };
+		17C1AAB91D9D702E00FF1B67 /* BFRImageViewerLocalizations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BFRImageViewerLocalizations.h; sourceTree = "<group>"; };
 		1CA726C313DD042C27168921 /* libPods-BFRImageViewer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BFRImageViewer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		578DFD581CB6F17B00BFBD00 /* cross.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cross.png; sourceTree = "<group>"; };
 		578DFD591CB6F17B00BFBD00 /* cross@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cross@2x.png"; sourceTree = "<group>"; };
@@ -65,6 +68,7 @@
 				578DFD581CB6F17B00BFBD00 /* cross.png */,
 				578DFD591CB6F17B00BFBD00 /* cross@2x.png */,
 				578DFD5A1CB6F17B00BFBD00 /* cross@3x.png */,
+				17C1AAB51D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -130,6 +134,7 @@
 				944B4DE61BFFC0E300B9BF87 /* BFRImageContainerViewController.m */,
 				944B4DE71BFFC0E300B9BF87 /* BFRImageViewController.h */,
 				944B4DE81BFFC0E300B9BF87 /* BFRImageViewController.m */,
+				17C1AAB91D9D702E00FF1B67 /* BFRImageViewerLocalizations.h */,
 			);
 			name = BFRImageViewController;
 			path = ../../BFRImageViewController;
@@ -209,6 +214,7 @@
 				578DFD5D1CB6F17B00BFBD00 /* cross@3x.png in Resources */,
 				944B4DBE1BFFC0C000B9BF87 /* Assets.xcassets in Resources */,
 				578DFD5B1CB6F17B00BFBD00 /* cross.png in Resources */,
+				17C1AAB61D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle in Resources */,
 				944B4DBC1BFFC0C000B9BF87 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
