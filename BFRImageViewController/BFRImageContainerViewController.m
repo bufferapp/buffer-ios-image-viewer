@@ -9,7 +9,6 @@
 #import "BFRImageContainerViewController.h"
 
 #import <Photos/Photos.h>
-#import <DACircularProgress/DACircularProgressView.h>
 #import "SDWebImageManager.h"
 #import "SDWebImageDownloader.h"
 
@@ -25,7 +24,7 @@
 @property (strong, nonatomic) UIImage *imgLoaded;
 
 /*! If the imgSrc property requires a network call, this displays inside the view to denote the loading progress. */
-@property (strong, nonatomic) DACircularProgressView *progressView;
+@property (strong, nonatomic) UIActivityIndicatorView *progressView;
 
 /*! The animator which attaches the behaviors needed to drag the image. */
 @property (strong, nonatomic) UIDynamicAnimator *animator;
@@ -121,17 +120,15 @@
     return sv;
 }
 
-- (DACircularProgressView *)createProgressView {
+- (UIActivityIndicatorView *)createProgressView {
     CGFloat screenWidth = self.view.bounds.size.width;
     CGFloat screenHeight = self.view.bounds.size.height;
-    
-    DACircularProgressView *progressView = [[DACircularProgressView alloc] initWithFrame:CGRectMake((screenWidth-35.)/2., (screenHeight-35.)/2, 35.0f, 35.0f)];
-    [progressView setProgress:0.0f];
-    progressView.thicknessRatio = 0.1;
-    progressView.roundedCorners = NO;
-    progressView.trackTintColor = [UIColor colorWithWhite:0.2 alpha:1];
-    progressView.progressTintColor = [UIColor colorWithWhite:1.0 alpha:1];
-    
+
+    UIActivityIndicatorView *progressView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    progressView.frame = CGRectMake((screenWidth-35.)/2., (screenHeight-35.)/2, 25.0f, 25.0f);
+    progressView.hidesWhenStopped = YES;
+    [progressView startAnimating];
+
     return progressView;
 }
 
@@ -343,10 +340,7 @@
     
     SDWebImageManager *manager = [SDWebImageManager sharedManager];
     [manager downloadImageWithURL:url options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-        float fractionCompleted = (float)receivedSize/(float)expectedSize;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.progressView setProgress:fractionCompleted];
-        });
+
     } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (error) {
