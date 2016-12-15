@@ -68,39 +68,40 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //View setup
+    // View setup
     self.view.backgroundColor = self.isUsingTransparentBackground ? [UIColor clearColor] : [UIColor blackColor];
     [self setNeedsStatusBarAppearanceUpdate];
     
-    //Setup image view controllers
+    // Setup image view controllers
     self.imageViewControllers = [NSMutableArray new];
     for (id imgSrc in self.images) {
         BFRImageContainerViewController *imgVC = [BFRImageContainerViewController new];
         imgVC.imgSrc = imgSrc;
+        imgVC.pageIndex += self.startingIndex;
         imgVC.usedFor3DTouch = self.isBeingUsedFor3DTouch;
         imgVC.useTransparentBackground = self.isUsingTransparentBackground;
         imgVC.disableHorizontalDrag = (self.images.count > 1);
         [self.imageViewControllers addObject:imgVC];
     }
     
-    //Set up pager
+    // Set up pager
     self.pagerVC = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
     if (self.imageViewControllers.count > 1) {
         self.pagerVC.dataSource = self;
     }
-    [self.pagerVC setViewControllers:@[self.imageViewControllers.firstObject] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+    [self.pagerVC setViewControllers:@[self.imageViewControllers[self.startingIndex]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
-    //Add pager to view hierarchy
+    // Add pager to view hierarchy
     [self addChildViewController:self.pagerVC];
     [[self view] addSubview:[self.pagerVC view]];
     [self.pagerVC didMoveToParentViewController:self];
     
-    //Add chrome to UI now if we aren't waiting to be peeked into
+    // Add chrome to UI now if we aren't waiting to be peeked into
     if (!self.isBeingUsedFor3DTouch) {
         [self addChromeToUI];
     }
     
-    //Register for touch events on the images/scrollviews to hide UI chrome
+    // Register for touch events on the images/scrollviews to hide UI chrome
     [self registerNotifcations];
 }
 
@@ -152,7 +153,7 @@
         return nil;
     }
     
-    //Update index
+    // Update index
     index--;
     BFRImageContainerViewController *vc = self.imageViewControllers[index];
     vc.pageIndex = index;

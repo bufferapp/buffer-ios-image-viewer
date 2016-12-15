@@ -25,4 +25,7 @@
 /*! Flag property that sets the doneButton position (left or right side). Defaults to YES */
 @property (nonatomic) BOOL showDoneButtonOnLeft;
 
+/*! Allows you to assign an index which to show first when opening multiple images. */
+@property (nonatomic, assign) NSInteger startingIndex;
+
 @end
