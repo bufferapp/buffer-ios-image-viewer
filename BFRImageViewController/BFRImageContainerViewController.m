@@ -352,30 +352,28 @@
 - (void)retrieveImageFromURL {
     NSURL *url = (NSURL *)self.imgSrc;
     
-    NSLog(@"url %@", url);
-    
     [[PINRemoteImageManager sharedImageManager] downloadImageWithURL:url options:0 progressDownload:^(int64_t completedBytes, int64_t totalBytes) {
         float fractionCompleted = (float)completedBytes/(float)totalBytes;
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.progressView setProgress:fractionCompleted];
         });
     } completion:^(PINRemoteImageManagerResult * _Nonnull result) {
+        
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSLog(@"result.anim %@", result.animatedImage);
-            
-            if (!result.image && !result.animatedImage) {
+            if (!result.image && !result.alternativeRepresentation) {
                 [self.progressView removeFromSuperview];
-                NSLog(@"error %@", result.error);
                 [self showError];
                 return;
             }
             
-            if(result.animatedImage){
-                self.animatedImgLoaded = result.animatedImage;
-                self.imgLoaded = result.animatedImage.posterImage;
+            if(result.alternativeRepresentation){
+                FLAnimatedImage *image = (FLAnimatedImage *)result.alternativeRepresentation;
+                self.imgLoaded = image.posterImage;
+                self.animatedImgLoaded = image;
             } else {
                 self.imgLoaded = result.image;
             }
+            
             [self addImageToScrollView];
             [self.progressView removeFromSuperview];
         });

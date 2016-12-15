@@ -36,7 +36,7 @@ typedef NS_ENUM(NSUInteger, PINRemoteImageResultType) {
 @interface PINRemoteImageManagerResult : NSObject
 
 @property (nonatomic, readonly, strong, nullable) PINImage *image;
-@property (nonatomic, readonly, strong, nullable) FLAnimatedImage *animatedImage;
+@property (nonatomic, readonly, strong, nullable) id alternativeRepresentation;
 @property (nonatomic, readonly, assign) NSTimeInterval requestDuration;
 @property (nonatomic, readonly, strong, nullable) NSError *error;
 @property (nonatomic, readonly, assign) PINRemoteImageResultType resultType;
@@ -44,14 +44,14 @@ typedef NS_ENUM(NSUInteger, PINRemoteImageResultType) {
 @property (nonatomic, readonly, assign) CGFloat renderedImageQuality;
 
 + (nonnull instancetype)imageResultWithImage:(nullable PINImage *)image
-                               animatedImage:(nullable FLAnimatedImage *)animatedImage
-                               requestLength:(NSTimeInterval)requestLength
-                                       error:(nullable NSError *)error
-                                  resultType:(PINRemoteImageResultType)resultType
-                                        UUID:(nullable NSUUID *)uuid;
+           alternativeRepresentation:(nullable id)alternativeRepresentation
+                       requestLength:(NSTimeInterval)requestLength
+                               error:(nullable NSError *)error
+                          resultType:(PINRemoteImageResultType)resultType
+                                UUID:(nullable NSUUID *)uuid;
 
 + (nonnull instancetype)imageResultWithImage:(nullable PINImage *)image
-                               animatedImage:(nullable FLAnimatedImage *)animatedImage
+                   alternativeRepresentation:(nullable id)alternativeRepresentation
                                requestLength:(NSTimeInterval)requestLength
                                        error:(nullable NSError *)error
                                   resultType:(PINRemoteImageResultType)resultType

@@ -11,14 +11,14 @@
 @implementation PINRemoteImageManagerResult
 
 + (instancetype)imageResultWithImage:(PINImage *)image
-                       animatedImage:(FLAnimatedImage *)animatedImage
+           alternativeRepresentation:(id)alternativeRepresentation
                        requestLength:(NSTimeInterval)requestLength
                                error:(NSError *)error
                           resultType:(PINRemoteImageResultType)resultType
                                 UUID:(NSUUID *)uuid
 {
     return [self imageResultWithImage:image
-                        animatedImage:animatedImage
+            alternativeRepresentation:alternativeRepresentation
                         requestLength:requestLength
                                 error:error
                            resultType:resultType
@@ -27,7 +27,7 @@
 }
 
 + (instancetype)imageResultWithImage:(PINImage *)image
-                       animatedImage:(nullable FLAnimatedImage *)animatedImage
+           alternativeRepresentation:(id)alternativeRepresentation
                        requestLength:(NSTimeInterval)requestLength
                                error:(NSError *)error
                           resultType:(PINRemoteImageResultType)resultType
@@ -35,7 +35,7 @@
                 renderedImageQuality:(CGFloat)renderedImageQuality
 {
     return [[self alloc] initWithImage:image
-                         animatedImage:animatedImage
+             alternativeRepresentation:alternativeRepresentation
                          requestLength:requestLength
                                  error:error
                             resultType:resultType
@@ -44,7 +44,7 @@
 }
 
 - (instancetype)initWithImage:(PINImage *)image
-                animatedImage:(FLAnimatedImage *)animatedImage
+    alternativeRepresentation:(id)alternativeRepresentation
                 requestLength:(NSTimeInterval)requestLength
                         error:(NSError *)error
                    resultType:(PINRemoteImageResultType)resultType
@@ -53,7 +53,7 @@
 {
     if (self = [super init]) {
         _image = image;
-        _animatedImage = animatedImage;
+        _alternativeRepresentation = alternativeRepresentation;
         _requestDuration = requestLength;
         _error = error;
         _resultType = resultType;
@@ -68,7 +68,7 @@
     NSString *description = [super description];
     description = [description stringByAppendingString:[NSString stringWithFormat:@"image: %@", self.image]];
     description = [description stringByAppendingString:@"\n"];
-    description = [description stringByAppendingString:[NSString stringWithFormat:@"animatedImage: %@", self.animatedImage]];
+    description = [description stringByAppendingString:[NSString stringWithFormat:@"alternativeRepresentation: %@", self.alternativeRepresentation]];
     description = [description stringByAppendingString:@"\n"];
     description = [description stringByAppendingString:[NSString stringWithFormat:@"requestDuration: %f", self.requestDuration]];
     description = [description stringByAppendingString:@"\n"];

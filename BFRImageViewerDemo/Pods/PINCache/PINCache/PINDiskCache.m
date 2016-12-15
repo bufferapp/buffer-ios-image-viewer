@@ -10,20 +10,14 @@
 
 #import <pthread.h>
 
+#import "PINOperationQueue.h"
+
 #define PINDiskCacheError(error) if (error) { NSLog(@"%@ (%d) ERROR: %@", \
 [[NSString stringWithUTF8String:__FILE__] lastPathComponent], \
 __LINE__, [error localizedDescription]); }
 
 static NSString * const PINDiskCachePrefix = @"com.pinterest.PINDiskCache";
 static NSString * const PINDiskCacheSharedName = @"PINDiskCacheShared";
-
-@interface PINBackgroundTask : NSObject
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_4_0 && !TARGET_OS_WATCH
-@property (atomic, assign) UIBackgroundTaskIdentifier taskID;
-#endif
-+ (instancetype)start;
-- (void)end;
-@end
 
 typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
     PINDiskCacheConditionNotReady = 0,
@@ -32,15 +26,14 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 
 @interface PINDiskCache () {
     NSConditionLock *_instanceLock;
+    
+    PINDiskCacheSerializerBlock _serializer;
+    PINDiskCacheDeserializerBlock _deserializer;
 }
 
 @property (assign) NSUInteger byteCount;
 @property (strong, nonatomic) NSURL *cacheURL;
-#if OS_OBJECT_USE_OBJC
-@property (strong, nonatomic) dispatch_queue_t asyncQueue;
-#else
-@property (assign, nonatomic) dispatch_queue_t asyncQueue;
-#endif
+@property (strong, nonatomic) PINOperationQueue *operationQueue;
 @property (strong, nonatomic) NSMutableDictionary *dates;
 @property (strong, nonatomic) NSMutableDictionary *sizes;
 @end
@@ -63,14 +56,6 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 
 #pragma mark - Initialization -
 
-- (void)dealloc
-{
-#if !OS_OBJECT_USE_OBJC
-    dispatch_release(_asyncQueue);
-    _asyncQueue = nil;
-#endif
-}
-
 - (instancetype)init
 {
     @throw [NSException exceptionWithName:@"Must initialize with a name" reason:@"PINDiskCache must be initialized with a name. Call initWithName: instead." userInfo:nil];
@@ -79,17 +64,39 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 
 - (instancetype)initWithName:(NSString *)name
 {
-    return [self initWithName:name rootPath:[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0]];
+    return [self initWithName:name fileExtension:nil];
 }
 
-- (instancetype)initWithName:(NSString *)name rootPath:(NSString *)rootPath
+- (instancetype)initWithName:(NSString *)name fileExtension:(NSString *)fileExtension
+{
+    return [self initWithName:name rootPath:[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0] fileExtension:fileExtension];
+}
+
+- (instancetype)initWithName:(NSString *)name rootPath:(NSString *)rootPath fileExtension:(NSString *)fileExtension
+{
+    return [self initWithName:name rootPath:rootPath serializer:nil deserializer:nil fileExtension:fileExtension];
+}
+
+- (instancetype)initWithName:(NSString *)name rootPath:(NSString *)rootPath serializer:(PINDiskCacheSerializerBlock)serializer deserializer:(PINDiskCacheDeserializerBlock)deserializer fileExtension:(NSString *)fileExtension
+{
+    return [self initWithName:name rootPath:rootPath serializer:serializer deserializer:deserializer fileExtension:fileExtension operationQueue:[PINOperationQueue sharedOperationQueue]];
+}
+
+- (instancetype)initWithName:(NSString *)name rootPath:(NSString *)rootPath serializer:(PINDiskCacheSerializerBlock)serializer deserializer:(PINDiskCacheDeserializerBlock)deserializer fileExtension:(NSString *)fileExtension operationQueue:(PINOperationQueue *)operationQueue
 {
     if (!name)
         return nil;
     
+    if ((serializer && !deserializer) ||
+        (!serializer && deserializer)){
+        @throw [NSException exceptionWithName:@"Must initialize with a both serializer and deserializer" reason:@"PINDiskCache must be initialized with a serializer and deserializer." userInfo:nil];
+        return nil;
+    }
+    
     if (self = [super init]) {
         _name = [name copy];
-        _asyncQueue = dispatch_queue_create([[NSString stringWithFormat:@"%@ Asynchronous Queue", PINDiskCachePrefix] UTF8String], DISPATCH_QUEUE_CONCURRENT);
+        _fileExtension = [fileExtension copy];
+        _operationQueue = operationQueue;
         _instanceLock = [[NSConditionLock alloc] initWithCondition:PINDiskCacheConditionNotReady];
         _willAddObjectBlock = nil;
         _willRemoveObjectBlock = nil;
@@ -101,23 +108,36 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
         _byteCount = 0;
         _byteLimit = 0;
         _ageLimit = 0.0;
-      
-        #if TARGET_OS_IPHONE
-          _writingProtectionOption = NSDataWritingFileProtectionNone;
-        #endif
-      
+        
+#if TARGET_OS_IPHONE
+        _writingProtectionOption = NSDataWritingFileProtectionNone;
+#endif
+        
         _dates = [[NSMutableDictionary alloc] init];
         _sizes = [[NSMutableDictionary alloc] init];
         
         NSString *pathComponent = [[NSString alloc] initWithFormat:@"%@.%@", PINDiskCachePrefix, _name];
         _cacheURL = [NSURL fileURLWithPathComponents:@[ rootPath, pathComponent ]];
         
-        //we don't want to do anything without setting up the disk cache, but we also don't want to block init, it can take a while to initialize
-        dispatch_async(_asyncQueue, ^{
+        //setup serializers
+        if(serializer) {
+            _serializer = [serializer copy];
+        } else {
+            _serializer = self.defaultSerializer;
+        }
+
+        if(deserializer) {
+            _deserializer = [deserializer copy];
+        } else {
+            _deserializer = self.defaultDeserializer;
+        }
+
+        //we don't want to do anything without setting up the disk cache, but we also don't want to block init, it can take a while to initialize. This must *not* be done on _operationQueue because other operations added may hold the lock and fill up the queue.
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             //should always be able to aquire the lock unless the below code is running.
             [_instanceLock lockWhenCondition:PINDiskCacheConditionNotReady];
-                [self createCacheDirectory];
-                [self initializeDiskProperties];
+                [self _locked_createCacheDirectory];
+                [self _locked_initializeDiskProperties];
             [_instanceLock unlockWithCondition:PINDiskCacheConditionReady];
         });
     }
@@ -148,7 +168,9 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
     if (![key length])
         return nil;
     
-    return [_cacheURL URLByAppendingPathComponent:[self encodedString:key]];
+    //Significantly improve performance by indicating that the URL will *not* result in a directory.
+    //Also note that accessing _cacheURL is safe without the lock because it is only set on init.
+    return [_cacheURL URLByAppendingPathComponent:[self encodedString:key] isDirectory:NO];
 }
 
 - (NSString *)keyForEncodedFileURL:(NSURL *)url
@@ -167,7 +189,13 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
     }
     
     if ([string respondsToSelector:@selector(stringByAddingPercentEncodingWithAllowedCharacters:)]) {
-        return [string stringByAddingPercentEncodingWithAllowedCharacters:[[NSCharacterSet characterSetWithCharactersInString:@".:/%"] invertedSet]];
+        NSString *encodedString = [string stringByAddingPercentEncodingWithAllowedCharacters:[[NSCharacterSet characterSetWithCharactersInString:@".:/%"] invertedSet]];
+        if (self.fileExtension.length > 0) {
+            return [encodedString stringByAppendingPathExtension:self.fileExtension];
+        }
+        else {
+            return encodedString;
+        }
     }
     else {
         CFStringRef static const charsToEscape = CFSTR(".:/%");
@@ -179,7 +207,13 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
                                                                             charsToEscape,
                                                                             kCFStringEncodingUTF8);
 #pragma clang diagnostic pop
-        return (__bridge_transfer NSString *)escapedString;
+        
+        if (self.fileExtension.length > 0) {
+            return [(__bridge_transfer NSString *)escapedString stringByAppendingPathExtension:self.fileExtension];
+        }
+        else {
+            return (__bridge_transfer NSString *)escapedString;
+        }
     }
 }
 
@@ -202,6 +236,20 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 #pragma clang diagnostic pop
         return (__bridge_transfer NSString *)unescapedString;
     }
+}
+
+-(PINDiskCacheSerializerBlock) defaultSerializer
+{
+    return ^NSData*(id<NSCoding> object, NSString *key){
+        return [NSKeyedArchiver archivedDataWithRootObject:object];
+    };
+}
+
+-(PINDiskCacheDeserializerBlock) defaultDeserializer
+{
+    return ^id(NSData * data, NSString *key){
+        return [NSKeyedUnarchiver unarchiveObjectWithData:data];
+    };
 }
 
 #pragma mark - Private Trash Methods -
@@ -241,14 +289,14 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
     return sharedTrashURL;
 }
 
-+(BOOL)moveItemAtURLToTrash:(NSURL *)itemURL
++ (BOOL)moveItemAtURLToTrash:(NSURL *)itemURL
 {
     if (![[NSFileManager defaultManager] fileExistsAtPath:[itemURL path]])
         return NO;
     
     NSError *error = nil;
     NSString *uniqueString = [[NSProcessInfo processInfo] globallyUniqueString];
-    NSURL *uniqueTrashURL = [[PINDiskCache sharedTrashURL] URLByAppendingPathComponent:uniqueString];
+    NSURL *uniqueTrashURL = [[PINDiskCache sharedTrashURL] URLByAppendingPathComponent:uniqueString isDirectory:NO];
     BOOL moved = [[NSFileManager defaultManager] moveItemAtURL:itemURL toURL:uniqueTrashURL error:&error];
     PINDiskCacheError(error);
     return moved;
@@ -257,8 +305,6 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 + (void)emptyTrash
 {
     dispatch_async([self sharedTrashQueue], ^{
-        PINBackgroundTask *task = [PINBackgroundTask start];
-        
         NSError *searchTrashedItemsError = nil;
         NSArray *trashedItems = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:[self sharedTrashURL]
                                                               includingPropertiesForKeys:nil
@@ -271,14 +317,12 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
             [[NSFileManager defaultManager] removeItemAtURL:trashedItemURL error:&removeTrashedItemError];
             PINDiskCacheError(removeTrashedItemError);
         }
-        
-        [task end];
     });
 }
 
 #pragma mark - Private Queue Methods -
 
-- (BOOL)createCacheDirectory
+- (BOOL)_locked_createCacheDirectory
 {
     if ([[NSFileManager defaultManager] fileExistsAtPath:[_cacheURL path]])
         return NO;
@@ -293,7 +337,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
     return success;
 }
 
-- (void)initializeDiskProperties
+- (void)_locked_initializeDiskProperties
 {
     NSUInteger byteCount = 0;
     NSArray *keys = @[ NSURLContentModificationDateKey, NSURLTotalFileAllocatedSizeKey ];
@@ -327,7 +371,20 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
         self.byteCount = byteCount; // atomic
 }
 
-- (BOOL)setFileModificationDate:(NSDate *)date forURL:(NSURL *)fileURL
+- (void)asynchronouslySetFileModificationDate:(NSDate *)date forURL:(NSURL *)fileURL
+{
+    __weak PINDiskCache *weakSelf = self;
+    [self.operationQueue addOperation:^{
+        PINDiskCache *strongSelf = weakSelf;
+        if (strongSelf) {
+            [strongSelf lock];
+                [strongSelf _locked_setFileModificationDate:date forURL:fileURL];
+            [strongSelf unlock];
+        }
+    } withPriority:PINOperationQueuePriorityLow];
+}
+
+- (BOOL)_locked_setFileModificationDate:(NSDate *)date forURL:(NSURL *)fileURL
 {
     if (!date || !fileURL) {
         return NO;
@@ -352,76 +409,111 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 - (BOOL)removeFileAndExecuteBlocksForKey:(NSString *)key
 {
     NSURL *fileURL = [self encodedFileURLForKey:key];
-    if (!fileURL || ![[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]])
-        return NO;
     
-    if (_willRemoveObjectBlock)
-        _willRemoveObjectBlock(self, key, nil, fileURL);
+    [self lock];
+        if (!fileURL || ![[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]]) {
+            [self unlock];
+            return NO;
+        }
     
-    BOOL trashed = [PINDiskCache moveItemAtURLToTrash:fileURL];
-    if (!trashed)
-        return NO;
+        PINDiskCacheObjectBlock willRemoveObjectBlock = _willRemoveObjectBlock;
+        if (willRemoveObjectBlock) {
+            [self unlock];
+            willRemoveObjectBlock(self, key, nil);
+            [self lock];
+        }
+        
+        BOOL trashed = [PINDiskCache moveItemAtURLToTrash:fileURL];
+        if (!trashed) {
+            [self unlock];
+            return NO;
+        }
     
-    [PINDiskCache emptyTrash];
+        [PINDiskCache emptyTrash];
+        
+        NSNumber *byteSize = [_sizes objectForKey:key];
+        if (byteSize)
+            self.byteCount = _byteCount - [byteSize unsignedIntegerValue]; // atomic
+        
+        [_sizes removeObjectForKey:key];
+        [_dates removeObjectForKey:key];
     
-    NSNumber *byteSize = [_sizes objectForKey:key];
-    if (byteSize)
-        self.byteCount = _byteCount - [byteSize unsignedIntegerValue]; // atomic
+        PINDiskCacheObjectBlock didRemoveObjectBlock = _didRemoveObjectBlock;
+        if (didRemoveObjectBlock) {
+            [self unlock];
+            _didRemoveObjectBlock(self, key, nil);
+            [self lock];
+        }
     
-    [_sizes removeObjectForKey:key];
-    [_dates removeObjectForKey:key];
-    
-    if (_didRemoveObjectBlock)
-        _didRemoveObjectBlock(self, key, nil, fileURL);
+    [self unlock];
     
     return YES;
 }
 
 - (void)trimDiskToSize:(NSUInteger)trimByteCount
 {
-    if (_byteCount <= trimByteCount)
-        return;
-    
-    NSArray *keysSortedBySize = [_sizes keysSortedByValueUsingSelector:@selector(compare:)];
-    
-    for (NSString *key in [keysSortedBySize reverseObjectEnumerator]) { // largest objects first
-        [self removeFileAndExecuteBlocksForKey:key];
-        
-        if (_byteCount <= trimByteCount)
-            break;
-    }
+    [self lock];
+        if (_byteCount > trimByteCount) {
+            NSArray *keysSortedBySize = [_sizes keysSortedByValueUsingSelector:@selector(compare:)];
+            
+            for (NSString *key in [keysSortedBySize reverseObjectEnumerator]) { // largest objects first
+                [self unlock];
+                
+                //unlock, removeFileAndExecuteBlocksForKey handles locking itself
+                [self removeFileAndExecuteBlocksForKey:key];
+                
+                [self lock];
+                
+                if (_byteCount <= trimByteCount)
+                    break;
+            }
+        }
+    [self unlock];
 }
 
 - (void)trimDiskToSizeByDate:(NSUInteger)trimByteCount
 {
-    if (_byteCount <= trimByteCount)
-        return;
-    
-    NSArray *keysSortedByDate = [_dates keysSortedByValueUsingSelector:@selector(compare:)];
-    
-    for (NSString *key in keysSortedByDate) { // oldest objects first
-        [self removeFileAndExecuteBlocksForKey:key];
-        
-        if (_byteCount <= trimByteCount)
-            break;
-    }
+    [self lock];
+        if (_byteCount > trimByteCount) {
+            NSArray *keysSortedByDate = [_dates keysSortedByValueUsingSelector:@selector(compare:)];
+            
+            for (NSString *key in keysSortedByDate) { // oldest objects first
+                [self unlock];
+                
+                //unlock, removeFileAndExecuteBlocksForKey handles locking itself
+                [self removeFileAndExecuteBlocksForKey:key];
+                
+                [self lock];
+                
+                if (_byteCount <= trimByteCount)
+                    break;
+            }
+        }
+    [self unlock];
 }
 
 - (void)trimDiskToDate:(NSDate *)trimDate
 {
-    NSArray *keysSortedByDate = [_dates keysSortedByValueUsingSelector:@selector(compare:)];
-    
-    for (NSString *key in keysSortedByDate) { // oldest files first
-        NSDate *accessDate = [_dates objectForKey:key];
-        if (!accessDate)
-            continue;
+    [self lock];
+        NSArray *keysSortedByDate = [_dates keysSortedByValueUsingSelector:@selector(compare:)];
         
-        if ([accessDate compare:trimDate] == NSOrderedAscending) { // older than trim date
-            [self removeFileAndExecuteBlocksForKey:key];
-        } else {
-            break;
+        for (NSString *key in keysSortedByDate) { // oldest files first
+            NSDate *accessDate = [_dates objectForKey:key];
+            if (!accessDate)
+                continue;
+            
+            if ([accessDate compare:trimDate] == NSOrderedAscending) { // older than trim date
+                [self unlock];
+                
+                //unlock, removeFileAndExecuteBlocksForKey handles locking itself
+                [self removeFileAndExecuteBlocksForKey:key];
+                
+                [self lock];
+            } else {
+                break;
+            }
         }
-    }
+    [self unlock];
 }
 
 - (void)trimToAgeLimitRecursively
@@ -432,17 +524,18 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
     if (ageLimit == 0.0)
         return;
     
-    [self lock];
-        NSDate *date = [[NSDate alloc] initWithTimeIntervalSinceNow:-ageLimit];
-        [self trimDiskToDate:date];
-    [self unlock];
+    NSDate *date = [[NSDate alloc] initWithTimeIntervalSinceNow:-ageLimit];
+    [self trimDiskToDate:date];
     
     __weak PINDiskCache *weakSelf = self;
     
     dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_ageLimit * NSEC_PER_SEC));
-    dispatch_after(time, _asyncQueue, ^(void) {
+    dispatch_after(time, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         PINDiskCache *strongSelf = weakSelf;
-        [strongSelf trimToAgeLimitRecursively];
+        [strongSelf.operationQueue addOperation:^{
+            PINDiskCache *strongSelf = weakSelf;
+            [strongSelf trimToAgeLimitRecursively];
+        } withPriority:PINOperationQueuePriorityLow];
     });
 }
 
@@ -452,14 +545,14 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         if (block) {
             [strongSelf lock];
                 block(strongSelf);
             [strongSelf unlock];
         }
-    });
+    } withPriority:PINOperationQueuePriorityLow];
 }
 
 - (void)containsObjectForKey:(NSString *)key block:(PINDiskCacheContainsBlock)block
@@ -469,157 +562,141 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
     
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         block([strongSelf containsObjectForKey:key]);
-    });
+    } withPriority:PINOperationQueuePriorityLow];
 }
 
 - (void)objectForKey:(NSString *)key block:(PINDiskCacheObjectBlock)block
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         NSURL *fileURL = nil;
         id <NSCoding> object = [strongSelf objectForKey:key fileURL:&fileURL];
         
         if (block) {
-            [strongSelf lock];
-                block(strongSelf, key, object, fileURL);
-            [strongSelf unlock];
+            block(strongSelf, key, object);
         }
-    });
+    } withPriority:PINOperationQueuePriorityLow];
 }
 
-- (void)fileURLForKey:(NSString *)key block:(PINDiskCacheObjectBlock)block
+- (void)fileURLForKey:(NSString *)key block:(PINDiskCacheFileURLBlock)block
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         NSURL *fileURL = [strongSelf fileURLForKey:key];
         
         if (block) {
             [strongSelf lock];
-                block(strongSelf, key, nil, fileURL);
+                block(key, fileURL);
             [strongSelf unlock];
         }
-    });
+    } withPriority:PINOperationQueuePriorityLow];
 }
 
 - (void)setObject:(id <NSCoding>)object forKey:(NSString *)key block:(PINDiskCacheObjectBlock)block
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         NSURL *fileURL = nil;
         [strongSelf setObject:object forKey:key fileURL:&fileURL];
         
         if (block) {
-            [strongSelf lock];
-                block(strongSelf, key, object, fileURL);
-            [strongSelf unlock];
+            block(strongSelf, key, object);
         }
-    });
+    } withPriority:PINOperationQueuePriorityLow];
 }
 
 - (void)removeObjectForKey:(NSString *)key block:(PINDiskCacheObjectBlock)block
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         NSURL *fileURL = nil;
         [strongSelf removeObjectForKey:key fileURL:&fileURL];
         
         if (block) {
-            [strongSelf lock];
-                block(strongSelf, key, nil, fileURL);
-            [strongSelf unlock];
+            block(strongSelf, key, nil);
         }
-    });
+    } withPriority:PINOperationQueuePriorityLow];
 }
 
 - (void)trimToSize:(NSUInteger)trimByteCount block:(PINDiskCacheBlock)block
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         [strongSelf trimToSize:trimByteCount];
         
         if (block) {
-            [strongSelf lock];
-                block(strongSelf);
-            [strongSelf unlock];
+            block(strongSelf);
         }
-    });
+    } withPriority:PINOperationQueuePriorityLow];
 }
 
 - (void)trimToDate:(NSDate *)trimDate block:(PINDiskCacheBlock)block
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         [strongSelf trimToDate:trimDate];
         
         if (block) {
-            [strongSelf lock];
-                block(strongSelf);
-            [strongSelf unlock];
+            block(strongSelf);
         }
-    });
+    } withPriority:PINOperationQueuePriorityLow];
 }
 
 - (void)trimToSizeByDate:(NSUInteger)trimByteCount block:(PINDiskCacheBlock)block
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         [strongSelf trimToSizeByDate:trimByteCount];
         
         if (block) {
-            [strongSelf lock];
-                block(strongSelf);
-            [strongSelf unlock];
+            block(strongSelf);
         }
-    });
+    } withPriority:PINOperationQueuePriorityLow];
 }
 
 - (void)removeAllObjects:(PINDiskCacheBlock)block
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         [strongSelf removeAllObjects];
         
         if (block) {
-            [strongSelf lock];
-                block(strongSelf);
-            [strongSelf unlock];
+            block(strongSelf);
         }
-    });
+    } withPriority:PINOperationQueuePriorityLow];
 }
 
-- (void)enumerateObjectsWithBlock:(PINDiskCacheObjectBlock)block completionBlock:(PINDiskCacheBlock)completionBlock
+- (void)enumerateObjectsWithBlock:(PINDiskCacheFileURLBlock)block completionBlock:(PINDiskCacheBlock)completionBlock
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         [strongSelf enumerateObjectsWithBlock:block];
         
         if (completionBlock) {
-            [self lock];
-                completionBlock(strongSelf);
-            [self unlock];
+            completionBlock(strongSelf);
         }
-    });
+    } withPriority:PINOperationQueuePriorityLow];
 }
 
 #pragma mark - Public Synchronous Methods -
@@ -628,7 +705,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 {
     if (block) {
         [self lock];
-        block(self);
+            block(self);
         [self unlock];
     }
 }
@@ -656,26 +733,31 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
         return nil;
     
     id <NSCoding> object = nil;
-    NSURL *fileURL = nil;
+    NSURL *fileURL = [self encodedFileURLForKey:key];
     
     [self lock];
-        fileURL = [self encodedFileURLForKey:key];
-        object = nil;
-        
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]] &&
+        if (!self->_ttlCache || self->_ageLimit <= 0 || fabs([[_dates objectForKey:key] timeIntervalSinceDate:now]) < self->_ageLimit) {
             // If the cache should behave like a TTL cache, then only fetch the object if there's a valid ageLimit and  the object is still alive
-            (!self->_ttlCache || self->_ageLimit <= 0 || fabs([[_dates objectForKey:key] timeIntervalSinceDate:now]) < self->_ageLimit)) {
-            @try {
-                object = [NSKeyedUnarchiver unarchiveObjectWithFile:[fileURL path]];
+            NSData *objectData = [[NSData alloc] initWithContentsOfFile:[fileURL path]];
+          
+            if (objectData) {
+              //Be careful with locking below. We unlock here so that we're not locked while deserializing, we re-lock after.
+              [self unlock];
+              @try {
+                  object = _deserializer(objectData, key);
+              }
+              @catch (NSException *exception) {
+                  NSError *error = nil;
+                  [self lock];
+                      [[NSFileManager defaultManager] removeItemAtPath:[fileURL path] error:&error];
+                  [self unlock];
+                  PINDiskCacheError(error);
+              }
+              [self lock];
             }
-            @catch (NSException *exception) {
-                NSError *error = nil;
-                [[NSFileManager defaultManager] removeItemAtPath:[fileURL path] error:&error];
-                PINDiskCacheError(error);
+            if (object && !self->_ttlCache) {
+                [self asynchronouslySetFileModificationDate:now forURL:fileURL];
             }
-          if (!self->_ttlCache) {
-            [self setFileModificationDate:now forURL:fileURL];
-          }
         }
     [self unlock];
     
@@ -700,14 +782,12 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
     }
     
     NSDate *now = [[NSDate alloc] init];
-    NSURL *fileURL = nil;
+    NSURL *fileURL = [self encodedFileURLForKey:key];
     
     [self lock];
-        fileURL = [self encodedFileURLForKey:key];
-        
         if ([[NSFileManager defaultManager] fileExistsAtPath:[fileURL path]]) {
             if (updateFileModificationDate) {
-                [self setFileModificationDate:now forURL:fileURL];
+                [self asynchronouslySetFileModificationDate:now forURL:fileURL];
             }
         } else {
             fileURL = nil;
@@ -728,12 +808,8 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 
 - (void)setObject:(id <NSCoding>)object forKey:(NSString *)key fileURL:(NSURL **)outFileURL
 {
-    NSDate *now = [[NSDate alloc] init];
-    
     if (!key || !object)
         return;
-    
-    PINBackgroundTask *task = [PINBackgroundTask start];
     
     #if TARGET_OS_IPHONE
       NSDataWritingOptions writeOptions = NSDataWritingAtomic | self.writingProtectionOption;
@@ -741,25 +817,29 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
       NSDataWritingOptions writeOptions = NSDataWritingAtomic;
     #endif
   
-    NSURL *fileURL = nil;
+    NSURL *fileURL = [self encodedFileURLForKey:key];
     
     [self lock];
-        fileURL = [self encodedFileURLForKey:key];
-        
-        if (self->_willAddObjectBlock)
-            self->_willAddObjectBlock(self, key, object, fileURL);
-  
-        NSData *data = [NSKeyedArchiver archivedDataWithRootObject:object];
+        PINDiskCacheObjectBlock willAddObjectBlock = self->_willAddObjectBlock;
+        if (willAddObjectBlock) {
+            [self unlock];
+                willAddObjectBlock(self, key, object);
+            [self lock];
+        }
+    
+        //We unlock here so that we're not locked while serializing.
+        [self unlock];
+            NSData *data = _serializer(object, key);
+        [self lock];
+    
         NSError *writeError = nil;
   
         BOOL written = [data writeToURL:fileURL options:writeOptions error:&writeError];
         PINDiskCacheError(writeError);
         
         if (written) {
-            [self setFileModificationDate:now forURL:fileURL];
-            
             NSError *error = nil;
-            NSDictionary *values = [fileURL resourceValuesForKeys:@[ NSURLTotalFileAllocatedSizeKey ] error:&error];
+            NSDictionary *values = [fileURL resourceValuesForKeys:@[ NSURLContentModificationDateKey, NSURLTotalFileAllocatedSizeKey ] error:&error];
             PINDiskCacheError(error);
             
             NSNumber *diskFileSize = [values objectForKey:NSURLTotalFileAllocatedSizeKey];
@@ -771,22 +851,28 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
                 [self->_sizes setObject:diskFileSize forKey:key];
                 self.byteCount = self->_byteCount + [diskFileSize unsignedIntegerValue]; // atomic
             }
+            NSDate *date = [values objectForKey:NSURLContentModificationDateKey];
+            if (date) {
+                [self->_dates setObject:date forKey:key];
+            }
             
             if (self->_byteLimit > 0 && self->_byteCount > self->_byteLimit)
                 [self trimToSizeByDate:self->_byteLimit block:nil];
         } else {
             fileURL = nil;
         }
-        
-        if (self->_didAddObjectBlock)
-            self->_didAddObjectBlock(self, key, object, written ? fileURL : nil);
+    
+        PINDiskCacheObjectBlock didAddObjectBlock = self->_didAddObjectBlock;
+        if (didAddObjectBlock) {
+            [self unlock];
+                didAddObjectBlock(self, key, object);
+            [self lock];
+        }
     [self unlock];
     
     if (outFileURL) {
         *outFileURL = fileURL;
     }
-    
-    [task end];
 }
 
 - (void)removeObjectForKey:(NSString *)key
@@ -799,16 +885,11 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
     if (!key)
         return;
     
-    PINBackgroundTask *task = [PINBackgroundTask start];
-    
     NSURL *fileURL = nil;
     
-    [self lock];
-        fileURL = [self encodedFileURLForKey:key];
-        [self removeFileAndExecuteBlocksForKey:key];
-    [self unlock];
+    fileURL = [self encodedFileURLForKey:key];
     
-    [task end];
+    [self removeFileAndExecuteBlocksForKey:key];
     
     if (outFileURL) {
         *outFileURL = fileURL;
@@ -822,13 +903,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
         return;
     }
     
-    PINBackgroundTask *task = [PINBackgroundTask start];
-    
-    [self lock];
-        [self trimDiskToSize:trimByteCount];
-    [self unlock];
-    
-    [task end];
+    [self trimDiskToSize:trimByteCount];
 }
 
 - (void)trimToDate:(NSDate *)trimDate
@@ -841,13 +916,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
         return;
     }
     
-    PINBackgroundTask *task = [PINBackgroundTask start];
-    
-    [self lock];
-        [self trimDiskToDate:trimDate];
-    [self unlock];
-    
-    [task end];
+    [self trimDiskToDate:trimDate];
 }
 
 - (void)trimToSizeByDate:(NSUInteger)trimByteCount
@@ -857,45 +926,42 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
         return;
     }
     
-    PINBackgroundTask *task = [PINBackgroundTask start];
-    
-    [self lock];
-        [self trimDiskToSizeByDate:trimByteCount];
-    [self unlock];
-    
-    [task end];
+    [self trimDiskToSizeByDate:trimByteCount];
 }
 
 - (void)removeAllObjects
 {
-    PINBackgroundTask *task = [PINBackgroundTask start];
-    
     [self lock];
-        if (self->_willRemoveAllObjectsBlock)
-            self->_willRemoveAllObjectsBlock(self);
-        
+        PINDiskCacheBlock willRemoveAllObjectsBlock = self->_willRemoveAllObjectsBlock;
+        if (willRemoveAllObjectsBlock) {
+            [self unlock];
+            willRemoveAllObjectsBlock(self);
+            [self lock];
+        }
+    
         [PINDiskCache moveItemAtURLToTrash:self->_cacheURL];
         [PINDiskCache emptyTrash];
         
-        [self createCacheDirectory];
+        [self _locked_createCacheDirectory];
         
         [self->_dates removeAllObjects];
         [self->_sizes removeAllObjects];
         self.byteCount = 0; // atomic
-        
-        if (self->_didRemoveAllObjectsBlock)
-            self->_didRemoveAllObjectsBlock(self);
-    [self unlock];
     
-    [task end];
+        PINDiskCacheBlock didRemoveAllObjectsBlock = self->_didRemoveAllObjectsBlock;
+        if (didRemoveAllObjectsBlock) {
+            [self unlock];
+            didRemoveAllObjectsBlock(self);
+            [self lock];
+        }
+    
+    [self unlock];
 }
 
-- (void)enumerateObjectsWithBlock:(PINDiskCacheObjectBlock)block
+- (void)enumerateObjectsWithBlock:(PINDiskCacheFileURLBlock)block
 {
     if (!block)
         return;
-    
-    PINBackgroundTask *task = [PINBackgroundTask start];
     
     [self lock];
         NSDate *now = [NSDate date];
@@ -905,12 +971,10 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
             NSURL *fileURL = [self encodedFileURLForKey:key];
             // If the cache should behave like a TTL cache, then only fetch the object if there's a valid ageLimit and  the object is still alive
             if (!self->_ttlCache || self->_ageLimit <= 0 || fabs([[_dates objectForKey:key] timeIntervalSinceDate:now]) < self->_ageLimit) {
-                block(self, key, nil, fileURL);
+                block(key, fileURL);
             }
         }
     [self unlock];
-    
-    [task end];
 }
 
 #pragma mark - Public Thread Safe Accessors -
@@ -930,14 +994,14 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         if (!strongSelf)
             return;
         [strongSelf lock];
             strongSelf->_willAddObjectBlock = [block copy];
         [strongSelf unlock];
-    });
+    } withPriority:PINOperationQueuePriorityHigh];
 }
 
 - (PINDiskCacheObjectBlock)willRemoveObjectBlock
@@ -955,7 +1019,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         if (!strongSelf)
             return;
@@ -963,7 +1027,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
         [strongSelf lock];
             strongSelf->_willRemoveObjectBlock = [block copy];
         [strongSelf unlock];
-    });
+    } withPriority:PINOperationQueuePriorityHigh];
 }
 
 - (PINDiskCacheBlock)willRemoveAllObjectsBlock
@@ -981,7 +1045,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         if (!strongSelf)
             return;
@@ -989,7 +1053,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
         [strongSelf lock];
             strongSelf->_willRemoveAllObjectsBlock = [block copy];
         [strongSelf unlock];
-    });
+    } withPriority:PINOperationQueuePriorityHigh];
 }
 
 - (PINDiskCacheObjectBlock)didAddObjectBlock
@@ -1007,7 +1071,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         if (!strongSelf)
             return;
@@ -1015,7 +1079,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
         [strongSelf lock];
             strongSelf->_didAddObjectBlock = [block copy];
         [strongSelf unlock];
-    });
+    } withPriority:PINOperationQueuePriorityHigh];
 }
 
 - (PINDiskCacheObjectBlock)didRemoveObjectBlock
@@ -1033,7 +1097,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         if (!strongSelf)
             return;
@@ -1041,7 +1105,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
         [strongSelf lock];
             strongSelf->_didRemoveObjectBlock = [block copy];
         [strongSelf unlock];
-    });
+    } withPriority:PINOperationQueuePriorityHigh];
 }
 
 - (PINDiskCacheBlock)didRemoveAllObjectsBlock
@@ -1059,7 +1123,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         if (!strongSelf)
             return;
@@ -1067,7 +1131,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
         [strongSelf lock];
             strongSelf->_didRemoveAllObjectsBlock = [block copy];
         [strongSelf unlock];
-    });
+    } withPriority:PINOperationQueuePriorityHigh];
 }
 
 - (NSUInteger)byteLimit
@@ -1085,18 +1149,18 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         if (!strongSelf)
             return;
         
         [strongSelf lock];
-        strongSelf->_byteLimit = byteLimit;
+            strongSelf->_byteLimit = byteLimit;
+        [strongSelf unlock];
         
         if (byteLimit > 0)
             [strongSelf trimDiskToSizeByDate:byteLimit];
-        [strongSelf unlock];
-    });
+    } withPriority:PINOperationQueuePriorityHigh];
 }
 
 - (NSTimeInterval)ageLimit
@@ -1114,7 +1178,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 {
     __weak PINDiskCache *weakSelf = self;
     
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         if (!strongSelf)
             return;
@@ -1124,7 +1188,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
         [strongSelf unlock];
         
         [strongSelf trimToAgeLimitRecursively];
-    });
+    } withPriority:PINOperationQueuePriorityHigh];
 }
 
 - (BOOL)isTTLCache {
@@ -1140,7 +1204,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 - (void)setTtlCache:(BOOL)ttlCache {
     __weak PINDiskCache *weakSelf = self;
 
-    dispatch_async(_asyncQueue, ^{
+    [self.operationQueue addOperation:^{
         PINDiskCache *strongSelf = weakSelf;
         if (!strongSelf)
             return;
@@ -1148,7 +1212,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
         [strongSelf lock];
             strongSelf->_ttlCache = ttlCache;
         [strongSelf unlock];
-    });
+    } withPriority:PINOperationQueuePriorityHigh];
 }
 
 #if TARGET_OS_IPHONE
@@ -1165,7 +1229,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 - (void)setWritingProtectionOption:(NSDataWritingOptions)writingProtectionOption {
   __weak PINDiskCache *weakSelf = self;
   
-  dispatch_async(_asyncQueue, ^{
+  [self.operationQueue addOperation:^{
     PINDiskCache *strongSelf = weakSelf;
     if (!strongSelf)
       return;
@@ -1175,7 +1239,7 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
     [strongSelf lock];
     strongSelf->_writingProtectionOption = option;
     [strongSelf unlock];
-  });
+  } withPriority:PINOperationQueuePriorityHigh];
 }
 #endif
 
@@ -1187,70 +1251,6 @@ typedef NS_ENUM(NSUInteger, PINDiskCacheCondition) {
 - (void)unlock
 {
     [_instanceLock unlockWithCondition:PINDiskCacheConditionReady];
-}
-
-@end
-
-@implementation PINBackgroundTask
-
-+ (BOOL)isAppExtension {
-
-    static BOOL isExtension;
-    static dispatch_once_t onceToken;
-
-    dispatch_once(&onceToken, ^{
-        NSDictionary *extensionDictionary = [[NSBundle mainBundle] infoDictionary][@"NSExtension"];
-        isExtension = [extensionDictionary isKindOfClass:[NSDictionary class]];
-    });
-
-    return isExtension;
-}
-
-- (instancetype)init
-{
-    if (self = [super init]) {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_4_0 && !TARGET_OS_WATCH
-        _taskID = UIBackgroundTaskInvalid;
-#endif
-    }
-    return self;
-}
-
-+ (instancetype)start
-{
-    PINBackgroundTask *task = nil;
-    
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_4_0 && !TARGET_OS_WATCH
-    if ([self.class isAppExtension]) {
-        return task;
-    }
-    
-    task = [[self alloc] init];
-    
-    UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
-    task.taskID = [sharedApplication beginBackgroundTaskWithExpirationHandler:^{
-        UIBackgroundTaskIdentifier taskID = task.taskID;
-        task.taskID = UIBackgroundTaskInvalid;
-        [sharedApplication endBackgroundTask:taskID];
-    }];
-#endif
-    
-    return task;
-}
-
-- (void)end
-{
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_4_0 && !TARGET_OS_WATCH
-    if ([self.class isAppExtension]) {
-        return;
-    }
-    
-    UIBackgroundTaskIdentifier taskID = self.taskID;
-    self.taskID = UIBackgroundTaskInvalid;
-    
-    UIApplication *sharedApplication = [UIApplication performSelector:@selector(sharedApplication)];
-    [sharedApplication endBackgroundTask:taskID];
-#endif
 }
 
 @end

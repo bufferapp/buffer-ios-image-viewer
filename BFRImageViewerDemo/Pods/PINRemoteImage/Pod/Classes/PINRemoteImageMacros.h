@@ -25,14 +25,24 @@
 #define FLAnimatedImage NSObject
 #endif
 
+#if __has_include(<PINCache/PINCache.h>)
+#define USE_PINCACHE    1
+#else
+#define USE_PINCACHE    0
+#endif
+
 #if PIN_TARGET_IOS
 #define PINImage     UIImage
 #define PINImageView UIImageView
 #define PINButton    UIButton
+#define PINNSOperationSupportsQOS (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_8_0)
+#define PINNSURLSessionTaskSupportsPriority (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_8_0)
 #elif PIN_TARGET_MAC
 #define PINImage     NSImage
 #define PINImageView NSImageView
 #define PINButton    NSButton
+#define PINNSOperationSupportsQOS (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber10_10)
+#define PINNSURLSessionTaskSupportsPriority (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber10_10)
 #endif
 
 #define BlockAssert(condition, desc, ...)	\

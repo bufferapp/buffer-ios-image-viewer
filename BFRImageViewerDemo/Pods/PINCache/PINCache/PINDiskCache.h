@@ -10,6 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class PINDiskCache;
+@class PINOperationQueue;
 
 /**
  A callback block which provides only the cache as an argument
@@ -19,12 +20,37 @@ typedef void (^PINDiskCacheBlock)(PINDiskCache *cache);
 /**
  A callback block which provides the cache, key and object as arguments
  */
-typedef void (^PINDiskCacheObjectBlock)(PINDiskCache *cache, NSString *key, id <NSCoding>  __nullable object, NSURL * __nullable fileURL);
+typedef void (^PINDiskCacheObjectBlock)(PINDiskCache *cache, NSString *key, id <NSCoding>  __nullable object);
+
+/**
+ A callback block which provides the key and fileURL of the object
+ */
+typedef void (^PINDiskCacheFileURLBlock)(NSString *key, NSURL * __nullable fileURL);
 
 /**
  A callback block which provides a BOOL value as argument
  */
 typedef void (^PINDiskCacheContainsBlock)(BOOL containsObject);
+
+/**
+ *  A block used to serialize object before writing to disk
+ *
+ *  @param object Object to serialize
+ *  @param key The key associated with the object
+ *
+ *  @return Serialized object representation
+ */
+typedef NSData* __nonnull(^PINDiskCacheSerializerBlock)(id<NSCoding> object, NSString *key);
+
+/**
+ *  A block used to deserialize objects
+ *
+ *  @param data Serialized object data
+ *  @param key The key associated with the object
+ *
+ *  @return Deserialized object
+ */
+typedef id<NSCoding> __nonnull(^PINDiskCacheDeserializerBlock)(NSData* data, NSString *key);
 
 
 /**
@@ -103,6 +129,10 @@ typedef void (^PINDiskCacheContainsBlock)(BOOL containsObject);
  */
 @property (assign) NSTimeInterval ageLimit;
 
+/**
+ Extension for all cache files on disk. Defaults to no extension. 
+ */
+@property (readonly) NSString * __nullable fileExtension;
 
 /**
  The writing protection option used when writing a file on disk. This value is used every time an object is set.
@@ -188,18 +218,55 @@ typedef void (^PINDiskCacheContainsBlock)(BOOL containsObject);
  @param name The name of the cache.
  @result A new cache with the specified name.
  */
-- (instancetype)initWithName:(NSString *)name;
+- (instancetype)initWithName:(nonnull NSString *)name;
 
 /**
- The designated initializer. Multiple instances with the same name are allowed and can safely access
+ Multiple instances with the same name are allowed and can safely access
+ the same data on disk thanks to the magic of seriality.
+ 
+ @see name
+ @param name The name of the cache.
+ @param fileExtension The file extension for files on disk.
+ @result A new cache with the specified name.
+ */
+- (instancetype)initWithName:(nonnull NSString *)name fileExtension:(nullable NSString *)fileExtension;
+
+/**
+ Multiple instances with the same name are allowed and can safely access
  the same data on disk thanks to the magic of seriality.
  
  @see name
  @param name The name of the cache.
  @param rootPath The path of the cache.
+ @param fileExtension The file extension for files on disk.
  @result A new cache with the specified name.
  */
-- (instancetype)initWithName:(NSString *)name rootPath:(NSString *)rootPath NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithName:(nonnull NSString *)name rootPath:(nonnull NSString *)rootPath fileExtension:(nullable NSString *)fileExtension;
+
+/**
+ @see name
+ @param name The name of the cache.
+ @param rootPath The path of the cache.
+ @param serializer   A block used to serialize object. If nil provided, default NSKeyedArchiver serialized will be used.
+ @param deserializer A block used to deserialize object. If nil provided, default NSKeyedUnarchiver serialized will be used.
+ @param fileExtension The file extension for files on disk.
+ @result A new cache with the specified name.
+ */
+- (instancetype)initWithName:(nonnull NSString *)name rootPath:(nonnull NSString *)rootPath serializer:(nullable PINDiskCacheSerializerBlock)serializer deserializer:(nullable PINDiskCacheDeserializerBlock)deserializer fileExtension:(nullable NSString *)fileExtension;
+
+/**
+ The designated initializer allowing you to override default NSKeyedArchiver/NSKeyedUnarchiver serialization.
+ 
+ @see name
+ @param name The name of the cache.
+ @param rootPath The path of the cache.
+ @param serializer   A block used to serialize object. If nil provided, default NSKeyedArchiver serialized will be used.
+ @param deserializer A block used to deserialize object. If nil provided, default NSKeyedUnarchiver serialized will be used.
+ @param fileExtension The file extension for files on disk.
+ @param operationQueue A PINOperationQueue to run asynchronous operations
+ @result A new cache with the specified name.
+ */
+- (instancetype)initWithName:(nonnull NSString *)name rootPath:(nonnull NSString *)rootPath serializer:(nullable PINDiskCacheSerializerBlock)serializer deserializer:(nullable PINDiskCacheDeserializerBlock)deserializer fileExtension:(nullable NSString *)fileExtension operationQueue:(nonnull PINOperationQueue *)operationQueue NS_DESIGNATED_INITIALIZER;
 
 #pragma mark -
 /// @name Asynchronous Methods
@@ -227,8 +294,6 @@ typedef void (^PINDiskCacheContainsBlock)(BOOL containsObject);
  Retrieves the object for the specified key. This method returns immediately and executes the passed
  block as soon as the object is available.
  
- @warning The fileURL is only valid for the duration of this block, do not use it after the block ends.
- 
  @param key The key associated with the requested object.
  @param block A block to be executed serially when the object is available.
  */
@@ -241,10 +306,15 @@ typedef void (^PINDiskCacheContainsBlock)(BOOL containsObject);
  @warning Access is protected for the duration of the block, but to maintain safe disk access do not
  access this fileURL after the block has ended.
  
+ @warning The PINDiskCache lock is held while block is executed. Any synchronous calls to the diskcache
+ or a cache which owns the instance of the disk cache are likely to cause a deadlock. This is why the block is
+ *not* passed the instance of the disk cache. You should also avoid doing extensive work while this
+ lock is held.
+ 
  @param key The key associated with the requested object.
  @param block A block to be executed serially when the file URL is available.
  */
-- (void)fileURLForKey:(nullable NSString *)key block:(nullable PINDiskCacheObjectBlock)block;
+- (void)fileURLForKey:(NSString *)key block:(nullable PINDiskCacheFileURLBlock)block;
 
 /**
  Stores an object in the cache for the specified key. This method returns immediately and executes the
@@ -308,8 +378,14 @@ typedef void (^PINDiskCacheContainsBlock)(BOOL containsObject);
 
  @param block A block to be executed for every object in the cache.
  @param completionBlock An optional block to be executed after the enumeration is complete.
+ 
+ @warning The PINDiskCache lock is held while block is executed. Any synchronous calls to the diskcache
+ or a cache which owns the instance of the disk cache are likely to cause a deadlock. This is why the block is
+ *not* passed the instance of the disk cache. You should also avoid doing extensive work while this
+ lock is held.
+ 
  */
-- (void)enumerateObjectsWithBlock:(PINDiskCacheObjectBlock)block completionBlock:(nullable PINDiskCacheBlock)completionBlock;
+- (void)enumerateObjectsWithBlock:(PINDiskCacheFileURLBlock)block completionBlock:(nullable PINDiskCacheBlock)completionBlock;
 
 #pragma mark -
 /// @name Synchronous Methods
@@ -404,10 +480,17 @@ typedef void (^PINDiskCacheContainsBlock)(BOOL containsObject);
  read from disk, the `object` parameter of the block will be `nil` but the `fileURL` will be available.
  This method blocks the calling thread until all objects have been enumerated.
  @param block A block to be executed for every object in the cache.
+ 
  @warning Do not call this method within the event blocks (<didRemoveObjectBlock>, etc.)
  Instead use the asynchronous version, <enumerateObjectsWithBlock:completionBlock:>.
+ 
+ @warning The PINDiskCache lock is held while block is executed. Any synchronous calls to the diskcache
+ or a cache which owns the instance of the disk cache are likely to cause a deadlock. This is why the block is
+ *not* passed the instance of the disk cache. You should also avoid doing extensive work while this
+ lock is held.
+ 
  */
-- (void)enumerateObjectsWithBlock:(nullable PINDiskCacheObjectBlock)block;
+- (void)enumerateObjectsWithBlock:(nullable PINDiskCacheFileURLBlock)block;
 
 @end
 
