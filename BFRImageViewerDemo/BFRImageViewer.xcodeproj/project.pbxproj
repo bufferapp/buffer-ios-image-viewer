@@ -183,6 +183,7 @@
 				TargetAttributes = {
 					944B4DAA1BFFC0C000B9BF87 = {
 						CreatedOnToolsVersion = 7.1.1;
+						DevelopmentTeam = UYDA63C4EC;
 					};
 				};
 			};
@@ -398,6 +399,7 @@
 			baseConfigurationReference = 3C46F30D2C78F64E6BC23C87 /* Pods-BFRImageViewer.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = UYDA63C4EC;
 				INFOPLIST_FILE = BFRImageViewer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.buffer.BFRImageViewer;
@@ -410,6 +412,7 @@
 			baseConfigurationReference = 1264A436520DEA8753316972 /* Pods-BFRImageViewer.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = UYDA63C4EC;
 				INFOPLIST_FILE = BFRImageViewer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.buffer.BFRImageViewer;

@@ -72,12 +72,17 @@
     self.view.backgroundColor = self.isUsingTransparentBackground ? [UIColor clearColor] : [UIColor blackColor];
     [self setNeedsStatusBarAppearanceUpdate];
     
+    // Ensure starting index won't trap
+    if (self.startingIndex >= self.images.count || self.startingIndex < 0) {
+        self.startingIndex = 0;
+    }
+    
     // Setup image view controllers
     self.imageViewControllers = [NSMutableArray new];
     for (id imgSrc in self.images) {
         BFRImageContainerViewController *imgVC = [BFRImageContainerViewController new];
         imgVC.imgSrc = imgSrc;
-        imgVC.pageIndex += self.startingIndex;
+        imgVC.pageIndex = self.startingIndex;
         imgVC.usedFor3DTouch = self.isBeingUsedFor3DTouch;
         imgVC.useTransparentBackground = self.isUsingTransparentBackground;
         imgVC.disableHorizontalDrag = (self.images.count > 1);
