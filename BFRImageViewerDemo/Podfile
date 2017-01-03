@@ -5,14 +5,6 @@ inhibit_all_warnings!
 target 'BFRImageViewer' do
 
 pod 'DACircularProgress'
-pod 'SDWebImage', '~> 3.7'
-
-end
-
-target 'BFRImageViewerTests' do
-
-end
-
-target 'BFRImageViewerUITests' do
+pod 'PINRemoteImage', :git => 'https://github.com/pinterest/PINRemoteImage.git'
 
 end

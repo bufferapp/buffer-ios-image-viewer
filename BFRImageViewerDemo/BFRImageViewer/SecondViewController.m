@@ -42,6 +42,7 @@
 
 - (void)openImage {
     BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:self.imgURLs];
+    imageVC.startingIndex = 1;
     [self presentViewController:imageVC animated:YES completion:nil];
 }
 
