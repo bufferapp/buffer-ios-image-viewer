@@ -74,7 +74,7 @@
         [self.view addSubview:self.progressView];
         [self retrieveImageFromURL];
     } else {
-        //TODO: Handle unrecognized image source
+        [self showError];
     }
     
     // Animator - used to snap the image back to the center when done dragging
