@@ -203,4 +203,12 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismiss) name:@"ImageLoadingError" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePop) name:@"ViewControllerPopped" object:nil];
 }
+
+#pragma mark - Memory Considerations
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    NSLog(@"BFRImageViewer: Dismissing due to memory warning.");
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 @end
