@@ -63,6 +63,9 @@
         [self addImageToScrollView];
     } else if ([self.imgSrc isKindOfClass:[PHAsset class]]) {
         [self retrieveImageFromAsset];
+    } else if ([self.imgSrc isKindOfClass:[FLAnimatedImage class]]) {
+        self.imgLoaded = ((FLAnimatedImage *)self.imgSrc).posterImage;
+        [self retrieveImageFromFLAnimatedImage];
     } else if ([self.imgSrc isKindOfClass:[NSString class]]) {
         // Loading view
         NSURL *url = [NSURL URLWithString:self.imgSrc];
@@ -70,6 +73,8 @@
         self.progressView = [self createProgressView];
         [self.view addSubview:self.progressView];
         [self retrieveImageFromURL];
+    } else {
+        [self showError];
     }
     
     // Animator - used to snap the image back to the center when done dragging
@@ -349,6 +354,18 @@
     }];
 }
 
+- (void)retrieveImageFromFLAnimatedImage {
+    if (![self.imgSrc isKindOfClass:[FLAnimatedImage class]]) {
+        return;
+    }
+    
+    FLAnimatedImage *image = (FLAnimatedImage *)self.imgSrc;
+    self.imgLoaded = image.posterImage;
+    self.animatedImgLoaded = image;
+    
+    [self addImageToScrollView];
+}
+
 - (void)retrieveImageFromURL {
     NSURL *url = (NSURL *)self.imgSrc;
     
@@ -367,9 +384,8 @@
             }
             
             if(result.alternativeRepresentation){
-                FLAnimatedImage *image = (FLAnimatedImage *)result.alternativeRepresentation;
-                self.imgLoaded = image.posterImage;
-                self.animatedImgLoaded = image;
+                self.imgSrc = result.alternativeRepresentation;
+                [self retrieveImageFromFLAnimatedImage];
             } else {
                 self.imgLoaded = result.image;
             }
