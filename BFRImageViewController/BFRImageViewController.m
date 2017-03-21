@@ -16,7 +16,7 @@
 @property (strong, nonatomic) UIPageViewController *pagerVC;
 
 /*! Each image displayed is shown in its own instance of a BFRImageViewController. This array holds all of those view controllers, one per image. */
-@property (strong, nonatomic) NSMutableArray *imageViewControllers;
+@property (strong, nonatomic) NSMutableArray <BFRImageContainerViewController *> *imageViewControllers;
 
 /*! Each image is represented via a @c NSURL or an actual @c UIImage. */
 @property (strong, nonatomic) NSArray *images;
