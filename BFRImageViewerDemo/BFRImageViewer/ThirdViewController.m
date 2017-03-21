@@ -7,8 +7,13 @@
 //
 
 #import "ThirdViewController.h"
+#import "BFRImageTransitionAnimator.h"
+#import "BFRImageViewController.h"
 
-@interface ThirdViewController ()
+@interface ThirdViewController () <UIViewControllerTransitioningDelegate>
+
+@property (strong, nonatomic) BFRImageTransitionAnimator *imageViewAnimator;
+@property (strong, nonatomic) UIImageView *imageView;
 
 @end
 
@@ -16,22 +21,47 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
+    // Object to create all the animations
+    self.imageViewAnimator = [BFRImageTransitionAnimator new];
+    
+    self.imageView = [UIImageView new];
+    self.imageView.contentMode = UIViewContentModeScaleAspectFit;
+    self.imageView.userInteractionEnabled = YES;
+    [self.view addSubview:self.imageView];
+    
+    [[[NSURLSession sharedSession] dataTaskWithURL:[NSURL URLWithString:@"https://open.buffer.com/wp-content/uploads/2017/03/Moo.jpg"] completionHandler:^ (NSData *data, NSURLResponse *response, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            if (data) {
+                self.imageView.image = [UIImage imageWithData:data];
+                
+                UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openImageViewerWithTransition)];
+                [self.imageView addGestureRecognizer:gestureRecognizer];
+            }
+        });
+    }] resume];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    self.imageView.frame = CGRectMake(0, 100, self.view.frame.size.width, 300);
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+- (void)openImageViewerWithTransition {
+    BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:@[self.imageView.image]];
+    
+    //This triggers the custom animation, if you forget this, no custom transition occurs
+    imageVC.transitioningDelegate = self;
+    
+    [self presentViewController:imageVC animated:YES completion:nil];
 }
-*/
+
+- (id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    return self.imageViewAnimator;
+}
+
+- (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    return self.imageViewAnimator;
+}
 
 @end
