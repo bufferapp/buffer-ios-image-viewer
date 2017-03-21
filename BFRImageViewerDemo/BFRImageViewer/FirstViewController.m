@@ -15,9 +15,18 @@
 
 @implementation FirstViewController
 
+- (instancetype) init {
+    if (self = [super init]) {
+        self.title = @"Single Image";
+    }
+    
+    return self;
+}
+
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     [self addImageButtonToView];
     [self check3DTouch];
     

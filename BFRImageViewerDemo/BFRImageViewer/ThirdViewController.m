@@ -19,9 +19,17 @@
 
 @implementation ThirdViewController
 
+- (instancetype) init {
+    if (self = [super init]) {
+        self.title = @"Custom Transition";
+    }
+    
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     // Object to create all the animations
     self.imageViewAnimator = [BFRImageTransitionAnimator new];
     
