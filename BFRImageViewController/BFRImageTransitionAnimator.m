@@ -12,7 +12,6 @@ static const CGFloat ANIMATION_DURATION = 0.25f;
 
 @interface BFRImageTransitionAnimator()
 
-@property (nonatomic) CGRect imageOriginFrame;
 @property (nonatomic, getter=isPresenting) BOOL presenting;
 
 @end
@@ -25,6 +24,7 @@ static const CGFloat ANIMATION_DURATION = 0.25f;
     
     if (self) {
         self.presenting = YES;
+        self.desiredContentMode = UIViewContentModeScaleAspectFill;
     }
     
     return self;
@@ -32,13 +32,14 @@ static const CGFloat ANIMATION_DURATION = 0.25f;
 
 #pragma mark - Utils
 - (UIImageView *)temporaryImageView {
-    if (self.animatedImageView == nil) return nil;
+    if (self.animatedImage == nil) return nil;
     
     // Animating a view of the presenting controller isn't a great idea, so we make a temporary image view instead
     // And leave the originial one alone.
-    UIImageView *temporaryAnimatedImageView = [[UIImageView alloc] initWithImage:self.animatedImageView.image];
+    UIImageView *temporaryAnimatedImageView = [[UIImageView alloc] initWithImage:self.animatedImage];
     temporaryAnimatedImageView.frame = self.isPresenting ? self.imageOriginFrame : CGRectZero;
-    temporaryAnimatedImageView.contentMode = UIViewContentModeScaleAspectFit;
+    temporaryAnimatedImageView.contentMode = self.desiredContentMode;
+    temporaryAnimatedImageView.layer.masksToBounds = YES;
     
     return temporaryAnimatedImageView;
 }
@@ -83,8 +84,6 @@ static const CGFloat ANIMATION_DURATION = 0.25f;
     UIView *destinationView = [transitionContext viewForKey:UITransitionContextToViewKey];
     destinationView.alpha = 0.0f;
     
-    // Used later to animate the image back
-    self.imageOriginFrame = self.animatedImageView.frame;
     UIImageView *temporaryAnimatedImageView = [self temporaryImageView];
     
     [animationContainerView addSubview:destinationView];

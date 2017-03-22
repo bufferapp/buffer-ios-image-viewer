@@ -74,12 +74,13 @@
 
 // If you want the custom transition, implement these two delegate methods
 - (id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
-    self.imageViewAnimator.animatedImageView = self.imageView;
+    self.imageViewAnimator.animatedImage = self.imageView.image;
+    self.imageViewAnimator.imageOriginFrame = self.imageView.frame;
+    self.imageViewAnimator.desiredContentMode = UIViewContentModeScaleAspectFit;
     return self.imageViewAnimator;
 }
 
 - (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
-    self.imageViewAnimator.animatedImageView = self.imageView;
     return self.imageViewAnimator;
 }
 
