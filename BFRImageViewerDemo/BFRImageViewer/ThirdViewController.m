@@ -69,14 +69,19 @@
     // This ensures we hide the first image and then show it when the transition is done
     imageVC.customTransitionEnabled = YES;
     
+    //TODO: Handle orientation change
+    
     [self presentViewController:imageVC animated:YES completion:nil];
 }
 
 // If you want the custom transition, implement these two delegate methods
 - (id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    
     self.imageViewAnimator.animatedImage = self.imageView.image;
     self.imageViewAnimator.imageOriginFrame = self.imageView.frame;
-    self.imageViewAnimator.desiredContentMode = UIViewContentModeScaleAspectFit;
+    
+    // Optional - but if presenting an image housed in an imageView, you'll want to match its contentMode
+    self.imageViewAnimator.desiredContentMode = self.imageView.contentMode;
     return self.imageViewAnimator;
 }
 
