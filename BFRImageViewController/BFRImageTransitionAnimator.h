@@ -11,4 +11,7 @@
 
 @interface BFRImageTransitionAnimator : NSObject <UIViewControllerAnimatedTransitioning>
 
+/*! This is the image that will animate during the transition. A copy of it will be made, and this is just used for reference. This must be set before the animation begins. */
+@property (weak, nonatomic) UIImageView *animatedImageView;
+
 @end

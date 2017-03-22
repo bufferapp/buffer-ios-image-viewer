@@ -30,6 +30,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    // To use the custom transition animation with BFRImageViewer
+    // 1) Conform to <UIViewControllerTransitioningDelegate> on the presenting controller
+    // 2) Implement the two delegate methods, as seen below
+    // 3) Return an instance of BFRImageTransitionAnimator from both delegate methods
+    // 4) When you present the controller, set its transitioningDelegate = presentingController (i.e. self)
+    
     // Object to create all the animations
     self.imageViewAnimator = [BFRImageTransitionAnimator new];
     
@@ -58,17 +64,22 @@
 - (void)openImageViewerWithTransition {
     BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:@[self.imageView.image]];
     
-    //This triggers the custom animation, if you forget this, no custom transition occurs
+    // This triggers the custom animation, if you forget this, no custom transition occurs
     imageVC.transitioningDelegate = self;
+    // This ensures we hide the first image and then show it when the transition is done
+    imageVC.customTransitionEnabled = YES;
     
     [self presentViewController:imageVC animated:YES completion:nil];
 }
 
+// If you want the custom transition, implement these two delegate methods
 - (id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    self.imageViewAnimator.animatedImageView = self.imageView;
     return self.imageViewAnimator;
 }
 
 - (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    self.imageViewAnimator.animatedImageView = self.imageView;
     return self.imageViewAnimator;
 }
 

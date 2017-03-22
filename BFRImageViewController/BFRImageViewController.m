@@ -108,6 +108,13 @@
     
     // Register for touch events on the images/scrollviews to hide UI chrome
     [self registerNotifcations];
+    
+    if (self.customTransitionIsEnabled) {
+        self.pagerVC.view.hidden = YES;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            self.pagerVC.view.hidden = NO;
+        });
+    }
 }
 
 - (void)viewWillLayoutSubviews {
