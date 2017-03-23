@@ -106,6 +106,7 @@ static const CGFloat DEFAULT_ANIMATION_DURATION = 0.25f;
     UIView *animationContainerView = transitionContext.containerView;
     UIView *destinationView = [transitionContext viewForKey:UITransitionContextToViewKey];
     destinationView.alpha = 0.0f;
+    destinationView.frame = animationContainerView.frame;
     
     UIImageView *temporaryAnimatedImageView = [self temporaryImageView];
     
