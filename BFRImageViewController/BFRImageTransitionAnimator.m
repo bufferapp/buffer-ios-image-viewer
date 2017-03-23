@@ -125,8 +125,11 @@ static const CGFloat DEFAULT_ANIMATION_DURATION = 0.25f;
 }
 
 - (void)performDismissingAnimation:(id<UIViewControllerContextTransitioning>)transitionContext {
-    // If we rotated, or the image was drug away - we'll forgo the custom dismissal transition animation
-    self.dismissWithoutCustomTransition = (self.presentedDeviceOrientation != [UIDevice currentDevice].orientation);
+    if (self.shouldDismissWithoutCustomTransition == NO) {
+        // If we rotated - we'll forgo the custom dismissal transition animation
+        // If the image was drug away - this will already be NO, so there is no need to possibly overwrite it
+        self.dismissWithoutCustomTransition = (self.presentedDeviceOrientation != [UIDevice currentDevice].orientation);
+    }
     
     UIView *animationContainerView = transitionContext.containerView;
     UIView *destinationView = [transitionContext viewForKey:UITransitionContextToViewKey];
