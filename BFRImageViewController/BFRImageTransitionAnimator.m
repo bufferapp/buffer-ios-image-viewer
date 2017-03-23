@@ -8,7 +8,7 @@
 
 #import "BFRImageTransitionAnimator.h"
 
-static const CGFloat ANIMATION_DURATION = 0.25f;
+static const CGFloat DEFAULT_ANIMATION_DURATION = 0.25f;
 
 @interface BFRImageTransitionAnimator()
 
@@ -25,6 +25,7 @@ static const CGFloat ANIMATION_DURATION = 0.25f;
     if (self) {
         self.presenting = YES;
         self.desiredContentMode = UIViewContentModeScaleAspectFill;
+        self.animationDuration = DEFAULT_ANIMATION_DURATION;
     }
     
     return self;
@@ -68,7 +69,7 @@ static const CGFloat ANIMATION_DURATION = 0.25f;
 
 #pragma mark - Animator delegate
 - (NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext {
-    return ANIMATION_DURATION;
+    return self.animationDuration;
 }
 
 - (void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext {
@@ -91,7 +92,7 @@ static const CGFloat ANIMATION_DURATION = 0.25f;
     
     CGRect animatedImageViewDestination = [self imageFinalFrameDestinationForImageView:temporaryAnimatedImageView inView:animationContainerView];
     
-    [UIView animateWithDuration:ANIMATION_DURATION delay:0.0f options:UIViewAnimationOptionCurveEaseOut animations:^ {
+    [UIView animateWithDuration:self.animationDuration delay:0.0f options:UIViewAnimationOptionCurveEaseOut animations:^ {
         temporaryAnimatedImageView.frame = animatedImageViewDestination;
         destinationView.alpha = 1.0f;
     } completion:^ (BOOL done) {
@@ -113,7 +114,7 @@ static const CGFloat ANIMATION_DURATION = 0.25f;
     
     temporaryAnimatedImageView.frame = [self imageFinalFrameDestinationForImageView:temporaryAnimatedImageView inView:animationContainerView];
     
-    [UIView animateWithDuration:ANIMATION_DURATION delay:0.0f options:UIViewAnimationOptionCurveEaseIn animations:^ {
+    [UIView animateWithDuration:self.animationDuration delay:0.0f options:UIViewAnimationOptionCurveEaseIn animations:^ {
         temporaryAnimatedImageView.frame = self.imageOriginFrame;
         destinationView.alpha = 1.0f;
     } completion:^ (BOOL done) {

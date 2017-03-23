@@ -20,4 +20,7 @@
 /*! Set this to the content mode of the containing view that's holding the image you're animating, otherwise, the frames will look off. */
 @property (nonatomic) UIViewContentMode desiredContentMode;
 
+/*! The duration of the animation for the custom transition. By default, this is set to 0.25. */
+@property (nonatomic) CGFloat animationDuration;
+
 @end

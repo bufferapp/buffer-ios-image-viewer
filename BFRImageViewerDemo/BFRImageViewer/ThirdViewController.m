@@ -69,8 +69,6 @@
     // This ensures we hide the first image and then show it when the transition is done
     imageVC.customTransitionEnabled = YES;
     
-    //TODO: Handle orientation change
-    
     [self presentViewController:imageVC animated:YES completion:nil];
 }
 
