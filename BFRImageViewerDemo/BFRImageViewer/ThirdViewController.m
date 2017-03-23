@@ -84,15 +84,7 @@
 }
 
 - (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
-    // If there was an orientation change, be sure to update where the fake image view's rect should animate to.
-    // You should base this off the size rect in viewWillTransitionToSize: withTransitionCoordinator:
-    self.imageViewAnimator.imageOriginFrame = self.imageView.frame;
     return self.imageViewAnimator;
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-    self.imageView.frame = CGRectMake(0, 100, size.width, 300);
 }
 
 @end

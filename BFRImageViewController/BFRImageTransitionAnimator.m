@@ -18,6 +18,9 @@ static const CGFloat DEFAULT_ANIMATION_DURATION = 0.25f;
 /*! If the user drags the image away to close the image viewer, then this forces the "basic" view controller dismissal animation to run, which is a cross dissolve. Of note, since this instance may not be deallocated between presentations, this flag is effectively reset at the start of performPresentationAnimation:, and will be mutated accordingly there after. */
 @property (nonatomic, getter=shouldDismissWithoutCustomTransition) BOOL dismissWithoutCustomTransition;
 
+/*! Represents the device orientation state when the controller is presented. If that changes when dismissal occurs, the custom transition animation isn't used. This is because it can be quite difficult for consumers to get the correct frame that the image should animate back to upon rotation. This may be supported in the future. */
+@property (nonatomic) UIDeviceOrientation presentedDeviceOrientation;
+
 @end
 
 @implementation BFRImageTransitionAnimator
@@ -98,6 +101,7 @@ static const CGFloat DEFAULT_ANIMATION_DURATION = 0.25f;
 
 - (void)performPresentationAnimation:(id<UIViewControllerContextTransitioning>)transitionContext {
     self.dismissWithoutCustomTransition = NO;
+    self.presentedDeviceOrientation = [[UIDevice currentDevice] orientation];
     
     UIView *animationContainerView = transitionContext.containerView;
     UIView *destinationView = [transitionContext viewForKey:UITransitionContextToViewKey];
@@ -121,6 +125,9 @@ static const CGFloat DEFAULT_ANIMATION_DURATION = 0.25f;
 }
 
 - (void)performDismissingAnimation:(id<UIViewControllerContextTransitioning>)transitionContext {
+    // If we rotated, or the image was drug away - we'll forgo the custom dismissal transition animation
+    self.dismissWithoutCustomTransition = (self.presentedDeviceOrientation != [UIDevice currentDevice].orientation);
+    
     UIView *animationContainerView = transitionContext.containerView;
     UIView *destinationView = [transitionContext viewForKey:UITransitionContextToViewKey];
     destinationView.alpha = 0.0f;
