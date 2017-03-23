@@ -12,7 +12,11 @@ static const CGFloat DEFAULT_ANIMATION_DURATION = 0.25f;
 
 @interface BFRImageTransitionAnimator()
 
+/*! Tracks whether the class should stage the animation for presentation or dismissal. */
 @property (nonatomic, getter=isPresenting) BOOL presenting;
+
+/*! If the user drags the image away to close the image viewer, then this forces the "basic" view controller dismissal animation to run, which is a cross dissolve. Of note, since this instance may not be deallocated between presentations, this flag is effectively reset at the start of performPresentationAnimation:, and will be mutated accordingly there after. */
+@property (nonatomic, getter=shouldDismissWithoutCustomTransition) BOOL dismissWithoutCustomTransition;
 
 @end
 
@@ -26,9 +30,21 @@ static const CGFloat DEFAULT_ANIMATION_DURATION = 0.25f;
         self.presenting = YES;
         self.desiredContentMode = UIViewContentModeScaleAspectFill;
         self.animationDuration = DEFAULT_ANIMATION_DURATION;
+        self.dismissWithoutCustomTransition = NO;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleCancelCustomTransitionNotification:) name:@"CancelCustomDismissalTransition" object:nil];
     }
     
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)handleCancelCustomTransitionNotification:(NSNotification *)notification {
+    if ([notification.object isKindOfClass:[NSNumber class]]) {
+        self.dismissWithoutCustomTransition = ((NSNumber *)notification.object).boolValue;
+    }
 }
 
 #pragma mark - Utils
@@ -81,6 +97,8 @@ static const CGFloat DEFAULT_ANIMATION_DURATION = 0.25f;
 }
 
 - (void)performPresentationAnimation:(id<UIViewControllerContextTransitioning>)transitionContext {
+    self.dismissWithoutCustomTransition = NO;
+    
     UIView *animationContainerView = transitionContext.containerView;
     UIView *destinationView = [transitionContext viewForKey:UITransitionContextToViewKey];
     destinationView.alpha = 0.0f;
@@ -111,12 +129,17 @@ static const CGFloat DEFAULT_ANIMATION_DURATION = 0.25f;
     UIImageView *temporaryAnimatedImageView = [self temporaryImageView];
     
     [animationContainerView addSubview:destinationView];
-    [animationContainerView addSubview:temporaryAnimatedImageView];
+    
+    if (self.shouldDismissWithoutCustomTransition == NO) {
+         [animationContainerView addSubview:temporaryAnimatedImageView];
+    }
     
     temporaryAnimatedImageView.frame = [self imageFinalFrameDestinationForImageView:temporaryAnimatedImageView inView:animationContainerView];
     
     [UIView animateWithDuration:self.animationDuration delay:0.0f options:UIViewAnimationOptionCurveEaseIn animations:^ {
-        temporaryAnimatedImageView.frame = self.imageOriginFrame;
+        if (self.shouldDismissWithoutCustomTransition == NO) {
+            temporaryAnimatedImageView.frame = self.imageOriginFrame;
+        }
         destinationView.alpha = 1.0f;
     } completion:^ (BOOL done) {
         [transitionContext completeTransition:YES];

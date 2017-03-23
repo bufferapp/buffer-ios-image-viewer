@@ -196,6 +196,13 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (void)dimissUIFromDraggingGesture {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"CancelCustomDismissalTransition" object:@(1)];
+    self.pagerVC.dataSource = nil;
+    self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (void)handlePop {
     self.view.backgroundColor = [UIColor blackColor];
     [self addChromeToUI];
@@ -210,6 +217,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismiss) name:@"DismissUI" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismiss) name:@"ImageLoadingError" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePop) name:@"ViewControllerPopped" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dimissUIFromDraggingGesture) name:@"DimissUIFromDraggingGesture" object:nil];
 }
 
 #pragma mark - Memory Considerations
