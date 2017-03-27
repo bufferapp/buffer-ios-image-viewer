@@ -191,12 +191,18 @@
 
 #pragma mark - Utility methods
 - (void)dismiss {
+    // If we dismiss from a different image than what was animated in - don't do the custom dismiss transition animation
+    if (self.startingIndex != ((BFRImageContainerViewController *)self.pagerVC.viewControllers.firstObject).pageIndex) {
+        [self dismissWithoutCustomAnimation];
+        return;
+    }
+    
     self.pagerVC.dataSource = nil;
     self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)dimissUIFromDraggingGesture {
+- (void)dismissWithoutCustomAnimation {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"CancelCustomDismissalTransition" object:@(1)];
     self.pagerVC.dataSource = nil;
     self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
@@ -217,7 +223,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismiss) name:@"DismissUI" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismiss) name:@"ImageLoadingError" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePop) name:@"ViewControllerPopped" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dimissUIFromDraggingGesture) name:@"DimissUIFromDraggingGesture" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissWithoutCustomAnimation) name:@"DimissUIFromDraggingGesture" object:nil];
 }
 
 #pragma mark - Memory Considerations
