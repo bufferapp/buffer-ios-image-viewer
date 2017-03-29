@@ -30,6 +30,9 @@
 /*! This will determine whether to change certain behaviors for 3D touch considerations based on its value. */
 @property (nonatomic, getter=isBeingUsedFor3DTouch) BOOL usedFor3DTouch;
 
+/*! This is used for nothing more than to defer the hiding of the status bar until the view appears, to avoid any awkward jumps in the presenting view. */
+@property (nonatomic, getter=shouldHideStatusBar) BOOL hideStatusBar;
+
 @end
 
 @implementation BFRImageViewController
@@ -70,8 +73,7 @@
     
     // View setup
     self.view.backgroundColor = self.isUsingTransparentBackground ? [UIColor clearColor] : [UIColor blackColor];
-    [self setNeedsStatusBarAppearanceUpdate];
-    
+
     // Ensure starting index won't trap
     if (self.startingIndex >= self.images.count || self.startingIndex < 0) {
         self.startingIndex = 0;
@@ -118,6 +120,12 @@
     }
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    self.hideStatusBar = YES;
+    [self setNeedsStatusBarAppearanceUpdate];
+}
+
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     [self updateChromeFrames];
@@ -129,7 +137,7 @@
 
 #pragma mark - Status bar
 -(BOOL)prefersStatusBarHidden{
-    return YES;
+    return self.shouldHideStatusBar;
 }
 
 #pragma mark - Chrome
