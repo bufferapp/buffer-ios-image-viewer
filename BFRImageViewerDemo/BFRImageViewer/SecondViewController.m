@@ -15,9 +15,17 @@
 
 @implementation SecondViewController
 
+- (instancetype) init {
+    if (self = [super init]) {
+        self.title = @"Multiple Images";
+    }
+    
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
+    
     UIButton *openImageFromURL = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     openImageFromURL.translatesAutoresizingMaskIntoConstraints = NO;
     [openImageFromURL setTitle:@"Open Images" forState:UIControlStateNormal];

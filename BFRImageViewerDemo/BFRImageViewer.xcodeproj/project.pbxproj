@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1797CB8E1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 1797CB8D1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m */; };
+		1797CB911E81BBB200D9F729 /* ThirdViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1797CB901E81BBB200D9F729 /* ThirdViewController.m */; };
 		17C1AAB61D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 17C1AAB51D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle */; };
 		3D65F036BBCC181E7FD291F7 /* libPods-BFRImageViewer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76763DB871F085556628E1C6 /* libPods-BFRImageViewer.a */; };
 		578DFD5B1CB6F17B00BFBD00 /* cross.png in Resources */ = {isa = PBXBuildFile; fileRef = 578DFD581CB6F17B00BFBD00 /* cross.png */; };
@@ -16,8 +18,6 @@
 		944B4DB31BFFC0C000B9BF87 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DB21BFFC0C000B9BF87 /* AppDelegate.m */; };
 		944B4DB61BFFC0C000B9BF87 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DB51BFFC0C000B9BF87 /* FirstViewController.m */; };
 		944B4DB91BFFC0C000B9BF87 /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DB81BFFC0C000B9BF87 /* SecondViewController.m */; };
-		944B4DBC1BFFC0C000B9BF87 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 944B4DBA1BFFC0C000B9BF87 /* Main.storyboard */; };
-		944B4DBE1BFFC0C000B9BF87 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 944B4DBD1BFFC0C000B9BF87 /* Assets.xcassets */; };
 		944B4DC11BFFC0C000B9BF87 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 944B4DBF1BFFC0C000B9BF87 /* LaunchScreen.storyboard */; };
 		944B4DE91BFFC0E300B9BF87 /* BFRImageContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DE61BFFC0E300B9BF87 /* BFRImageContainerViewController.m */; };
 		944B4DEA1BFFC0E300B9BF87 /* BFRImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DE81BFFC0E300B9BF87 /* BFRImageViewController.m */; };
@@ -25,6 +25,10 @@
 
 /* Begin PBXFileReference section */
 		1264A436520DEA8753316972 /* Pods-BFRImageViewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BFRImageViewer.release.xcconfig"; path = "Pods/Target Support Files/Pods-BFRImageViewer/Pods-BFRImageViewer.release.xcconfig"; sourceTree = "<group>"; };
+		1797CB8C1E81BB4F00D9F729 /* BFRImageTransitionAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BFRImageTransitionAnimator.h; sourceTree = "<group>"; };
+		1797CB8D1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BFRImageTransitionAnimator.m; sourceTree = "<group>"; };
+		1797CB8F1E81BBB200D9F729 /* ThirdViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThirdViewController.h; sourceTree = "<group>"; };
+		1797CB901E81BBB200D9F729 /* ThirdViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThirdViewController.m; sourceTree = "<group>"; };
 		17C1AAB51D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = BFRImageViewerLocalizations.bundle; sourceTree = "<group>"; };
 		17C1AAB91D9D702E00FF1B67 /* BFRImageViewerLocalizations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BFRImageViewerLocalizations.h; sourceTree = "<group>"; };
 		3C46F30D2C78F64E6BC23C87 /* Pods-BFRImageViewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BFRImageViewer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BFRImageViewer/Pods-BFRImageViewer.debug.xcconfig"; sourceTree = "<group>"; };
@@ -40,8 +44,6 @@
 		944B4DB51BFFC0C000B9BF87 /* FirstViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FirstViewController.m; sourceTree = "<group>"; };
 		944B4DB71BFFC0C000B9BF87 /* SecondViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
 		944B4DB81BFFC0C000B9BF87 /* SecondViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
-		944B4DBB1BFFC0C000B9BF87 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		944B4DBD1BFFC0C000B9BF87 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		944B4DC01BFFC0C000B9BF87 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		944B4DC21BFFC0C000B9BF87 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		944B4DE51BFFC0E300B9BF87 /* BFRImageContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BFRImageContainerViewController.h; sourceTree = "<group>"; };
@@ -108,9 +110,9 @@
 				944B4DB51BFFC0C000B9BF87 /* FirstViewController.m */,
 				944B4DB71BFFC0C000B9BF87 /* SecondViewController.h */,
 				944B4DB81BFFC0C000B9BF87 /* SecondViewController.m */,
+				1797CB8F1E81BBB200D9F729 /* ThirdViewController.h */,
+				1797CB901E81BBB200D9F729 /* ThirdViewController.m */,
 				944B4DE41BFFC0E300B9BF87 /* BFRImageViewController */,
-				944B4DBA1BFFC0C000B9BF87 /* Main.storyboard */,
-				944B4DBD1BFFC0C000B9BF87 /* Assets.xcassets */,
 				944B4DBF1BFFC0C000B9BF87 /* LaunchScreen.storyboard */,
 				944B4DC21BFFC0C000B9BF87 /* Info.plist */,
 				944B4DAE1BFFC0C000B9BF87 /* Supporting Files */,
@@ -135,6 +137,8 @@
 				944B4DE71BFFC0E300B9BF87 /* BFRImageViewController.h */,
 				944B4DE81BFFC0E300B9BF87 /* BFRImageViewController.m */,
 				17C1AAB91D9D702E00FF1B67 /* BFRImageViewerLocalizations.h */,
+				1797CB8C1E81BB4F00D9F729 /* BFRImageTransitionAnimator.h */,
+				1797CB8D1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m */,
 			);
 			name = BFRImageViewController;
 			path = ../../BFRImageViewController;
@@ -213,10 +217,8 @@
 				578DFD5C1CB6F17B00BFBD00 /* cross@2x.png in Resources */,
 				944B4DC11BFFC0C000B9BF87 /* LaunchScreen.storyboard in Resources */,
 				578DFD5D1CB6F17B00BFBD00 /* cross@3x.png in Resources */,
-				944B4DBE1BFFC0C000B9BF87 /* Assets.xcassets in Resources */,
 				578DFD5B1CB6F17B00BFBD00 /* cross.png in Resources */,
 				17C1AAB61D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle in Resources */,
-				944B4DBC1BFFC0C000B9BF87 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -276,6 +278,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				944B4DB91BFFC0C000B9BF87 /* SecondViewController.m in Sources */,
+				1797CB8E1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m in Sources */,
+				1797CB911E81BBB200D9F729 /* ThirdViewController.m in Sources */,
 				944B4DEA1BFFC0E300B9BF87 /* BFRImageViewController.m in Sources */,
 				944B4DB31BFFC0C000B9BF87 /* AppDelegate.m in Sources */,
 				944B4DE91BFFC0E300B9BF87 /* BFRImageContainerViewController.m in Sources */,
@@ -287,14 +291,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		944B4DBA1BFFC0C000B9BF87 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				944B4DBB1BFFC0C000B9BF87 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		944B4DBF1BFFC0C000B9BF87 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

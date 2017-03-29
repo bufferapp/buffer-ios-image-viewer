@@ -9,6 +9,7 @@
 #import "BFRImageViewController.h"
 #import "BFRImageContainerViewController.h"
 #import "BFRImageViewerLocalizations.h"
+#import "BFRImageTransitionAnimator.h"
 
 @interface BFRImageViewController () <UIPageViewControllerDataSource>
 
@@ -16,7 +17,7 @@
 @property (strong, nonatomic) UIPageViewController *pagerVC;
 
 /*! Each image displayed is shown in its own instance of a BFRImageViewController. This array holds all of those view controllers, one per image. */
-@property (strong, nonatomic) NSMutableArray *imageViewControllers;
+@property (strong, nonatomic) NSMutableArray <BFRImageContainerViewController *> *imageViewControllers;
 
 /*! Each image is represented via a @c NSURL or an actual @c UIImage. */
 @property (strong, nonatomic) NSArray *images;
@@ -29,6 +30,9 @@
 
 /*! This will determine whether to change certain behaviors for 3D touch considerations based on its value. */
 @property (nonatomic, getter=isBeingUsedFor3DTouch) BOOL usedFor3DTouch;
+
+/*! This is used for nothing more than to defer the hiding of the status bar until the view appears to avoid any awkward jumps in the presenting view. */
+@property (nonatomic, getter=shouldHideStatusBar) BOOL hideStatusBar;
 
 @end
 
@@ -70,8 +74,7 @@
     
     // View setup
     self.view.backgroundColor = self.isUsingTransparentBackground ? [UIColor clearColor] : [UIColor blackColor];
-    [self setNeedsStatusBarAppearanceUpdate];
-    
+
     // Ensure starting index won't trap
     if (self.startingIndex >= self.images.count || self.startingIndex < 0) {
         self.startingIndex = 0;
@@ -108,6 +111,20 @@
     
     // Register for touch events on the images/scrollviews to hide UI chrome
     [self registerNotifcations];
+    
+    // If using a custom transition, delay showing the image until the transition is complete.
+    if (self.customTransitionIsEnabled) {
+        self.pagerVC.view.hidden = YES;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (CGFloat)((DEFAULT_ANIMATION_DURATION - 0.01f) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            self.pagerVC.view.hidden = NO;
+        });
+    }
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    self.hideStatusBar = YES;
+    [self setNeedsStatusBarAppearanceUpdate];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -121,7 +138,7 @@
 
 #pragma mark - Status bar
 -(BOOL)prefersStatusBarHidden{
-    return YES;
+    return self.shouldHideStatusBar;
 }
 
 #pragma mark - Chrome
@@ -183,6 +200,19 @@
 
 #pragma mark - Utility methods
 - (void)dismiss {
+    // If we dismiss from a different image than what was animated in - don't do the custom dismiss transition animation
+    if (self.startingIndex != ((BFRImageContainerViewController *)self.pagerVC.viewControllers.firstObject).pageIndex) {
+        [self dismissWithoutCustomAnimation];
+        return;
+    }
+    
+    self.pagerVC.dataSource = nil;
+    self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)dismissWithoutCustomAnimation {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"CancelCustomDismissalTransition" object:@(1)];
     self.pagerVC.dataSource = nil;
     self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -202,6 +232,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismiss) name:@"DismissUI" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismiss) name:@"ImageLoadingError" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePop) name:@"ViewControllerPopped" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissWithoutCustomAnimation) name:@"DimissUIFromDraggingGesture" object:nil];
 }
 
 #pragma mark - Memory Considerations

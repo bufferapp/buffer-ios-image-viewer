@@ -309,8 +309,8 @@
             exitGravity.magnitude = 15.0f;
             [self.animator addBehavior:exitGravity];
             
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.35f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self dismissUI];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self dimissUIFromDraggingGesture];
             });
         } else {
             [self.scrollView setZoomScale:self.scrollView.minimumZoomScale animated:YES];
@@ -399,6 +399,11 @@
 #pragma mark - Misc. Methods
 - (void)dismissUI {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"DismissUI" object:nil];
+}
+
+- (void)dimissUIFromDraggingGesture {
+    // If we drag the image away to close things, don't do the custom dismissal transition
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"DimissUIFromDraggingGesture" object:nil];
 }
 
 - (void)showError {
