@@ -108,7 +108,7 @@
     
     // Hide the first image from showing during the animation
     destinationView.subviews.firstObject.hidden = YES;
-    self.animatedImageContainer.hidden = YES;
+    self.animatedImageContainer.alpha = 0.0f;
     
     UIImageView *temporaryAnimatedImageView = [self temporaryImageView];
     
@@ -150,7 +150,7 @@
     if (self.shouldDismissWithoutCustomTransition == NO) {
          [animationContainerView addSubview:temporaryAnimatedImageView];
     } else {
-        self.animatedImageContainer.hidden = NO;
+        self.animatedImageContainer.alpha = 1.0f;
     }
     
     temporaryAnimatedImageView.frame = [self imageFinalFrameDestinationForImageView:temporaryAnimatedImageView inView:animationContainerView];
@@ -163,7 +163,7 @@
     } completion:^ (BOOL done) {
         [transitionContext completeTransition:YES];
         self.presenting = !self.isPresenting;
-        self.animatedImageContainer.hidden = NO;
+        self.animatedImageContainer.alpha = 1.0f;
         [temporaryAnimatedImageView removeFromSuperview];
     }];
 }
