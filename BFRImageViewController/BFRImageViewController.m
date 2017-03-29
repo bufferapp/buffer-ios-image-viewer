@@ -31,7 +31,7 @@
 /*! This will determine whether to change certain behaviors for 3D touch considerations based on its value. */
 @property (nonatomic, getter=isBeingUsedFor3DTouch) BOOL usedFor3DTouch;
 
-/*! This is used for nothing more than to defer the hiding of the status bar until the view appears, to avoid any awkward jumps in the presenting view. */
+/*! This is used for nothing more than to defer the hiding of the status bar until the view appears to avoid any awkward jumps in the presenting view. */
 @property (nonatomic, getter=shouldHideStatusBar) BOOL hideStatusBar;
 
 @end

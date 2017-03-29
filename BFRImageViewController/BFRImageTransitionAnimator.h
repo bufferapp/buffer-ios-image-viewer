@@ -19,10 +19,10 @@ static const CGFloat DEFAULT_ANIMATION_DURATION = 0.15f;
 /*! The frame where the animated image began at, housed in the presenting view controller. When dismissed, the image will animate back to this @t CGRect. */
 @property (nonatomic) CGRect imageOriginFrame;
 
-/*! Set this to the content mode of the containing view that's holding the image you're animating, otherwise, the frames will look off. */
+/*! Set this to the content mode of the containing view that's holding the image you're animating, otherwise, the frames might look off. */
 @property (nonatomic) UIViewContentMode desiredContentMode;
 
-/*! The duration of the animation for the custom transition. By default, this is set to 0.25. */
+/*! The duration of the animation for the custom transition. By default, this is set to DEFAULT_ANIMATION_DURATION. */
 @property (nonatomic) CGFloat animationDuration;
 
 @end
