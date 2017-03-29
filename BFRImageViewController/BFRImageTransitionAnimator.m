@@ -8,8 +8,6 @@
 
 #import "BFRImageTransitionAnimator.h"
 
-static const CGFloat DEFAULT_ANIMATION_DURATION = 0.25f;
-
 @interface BFRImageTransitionAnimator()
 
 /*! Tracks whether the class should stage the animation for presentation or dismissal. */

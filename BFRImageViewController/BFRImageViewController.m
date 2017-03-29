@@ -9,6 +9,7 @@
 #import "BFRImageViewController.h"
 #import "BFRImageContainerViewController.h"
 #import "BFRImageViewerLocalizations.h"
+#import "BFRImageTransitionAnimator.h"
 
 @interface BFRImageViewController () <UIPageViewControllerDataSource>
 
@@ -114,7 +115,7 @@
     // If using a custom transition, delay showing the image until the transition is complete.
     if (self.customTransitionIsEnabled) {
         self.pagerVC.view.hidden = YES;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (CGFloat)(0.24f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (CGFloat)((DEFAULT_ANIMATION_DURATION - 0.01f) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             self.pagerVC.view.hidden = NO;
         });
     }
