@@ -13,9 +13,6 @@
 
 @interface BFRImageViewController () <UIPageViewControllerDataSource>
 
-/*! This view controller just acts as a container to hold a page view controller, which pages between the view controllers that hold an image. */
-@property (strong, nonatomic) UIPageViewController *pagerVC;
-
 /*! Each image displayed is shown in its own instance of a BFRImageViewController. This array holds all of those view controllers, one per image. */
 @property (strong, nonatomic) NSMutableArray <BFRImageContainerViewController *> *imageViewControllers;
 
@@ -111,14 +108,6 @@
     
     // Register for touch events on the images/scrollviews to hide UI chrome
     [self registerNotifcations];
-    
-    // If using a custom transition, delay showing the image until the transition is complete.
-    if (self.customTransitionIsEnabled) {
-        self.pagerVC.view.hidden = YES;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (CGFloat)((DEFAULT_ANIMATION_DURATION - 0.01f) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            self.pagerVC.view.hidden = NO;
-        });
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -206,14 +195,13 @@
         return;
     }
     
-    self.pagerVC.dataSource = nil;
     self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)dismissWithoutCustomAnimation {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"CancelCustomDismissalTransition" object:@(1)];
-    self.pagerVC.dataSource = nil;
+
     self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self dismissViewControllerAnimated:YES completion:nil];
 }

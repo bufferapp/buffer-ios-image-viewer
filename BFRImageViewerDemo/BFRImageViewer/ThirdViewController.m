@@ -10,7 +10,7 @@
 #import "BFRImageTransitionAnimator.h"
 #import "BFRImageViewController.h"
 
-@interface ThirdViewController () <UIViewControllerTransitioningDelegate>
+@interface ThirdViewController ()
 
 @property (strong, nonatomic) BFRImageTransitionAnimator *imageViewAnimator;
 @property (strong, nonatomic) UIImageView *imageView;
@@ -31,10 +31,10 @@
     [super viewDidLoad];
 
     // To use the custom transition animation with BFRImageViewer
-    // 1) Conform to <UIViewControllerTransitioningDelegate> on the presenting controller
-    // 2) Implement the two delegate methods, as seen below
-    // 3) Return an instance of BFRImageTransitionAnimator from both delegate methods
-    // 4) When you present the controller, set its transitioningDelegate = presentingController (i.e. self)
+    // 1) Have an instance of BFRImageTransitionAnimator around
+    // 2) Set it's aniamtedImage and imageOriginFrame. Optionally, set the desiredContentMode
+    // 3) When you present the BFRImageViewController, set it's transitioningDelegate to your BFRImageTransitionAnimator instance.
+    // You can see all of this in action in openImageViewerWithTransition below
     
     // Object to create all the animations
     self.imageViewAnimator = [BFRImageTransitionAnimator new];
@@ -64,27 +64,19 @@
 - (void)openImageViewerWithTransition {
     BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:@[self.imageView.image]];
     
+    // This houses the image being animated, and will be hidden during the animations.
+    self.imageViewAnimator.animatedImageContainer = self.imageView;
+    // The image that will be animated
+    self.imageViewAnimator.animatedImage = self.imageView.image;
+    // The rect the image will aniamte to and from
+    self.imageViewAnimator.imageOriginFrame = self.imageView.frame;
+    // Optional - but you'll want this to match the view's content mode that the image is housed in
+    self.imageViewAnimator.desiredContentMode = self.imageView.contentMode;
+
     // This triggers the custom animation, if you forget this, no custom transition occurs
-    imageVC.transitioningDelegate = self;
-    // This ensures we hide the first image and then show it when the transition is done
-    imageVC.customTransitionEnabled = YES;
+    imageVC.transitioningDelegate = self.imageViewAnimator;
     
     [self presentViewController:imageVC animated:YES completion:nil];
-}
-
-// If you want the custom transition, implement these two delegate methods
-- (id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
-    
-    self.imageViewAnimator.animatedImage = self.imageView.image;
-    self.imageViewAnimator.imageOriginFrame = self.imageView.frame;
-    
-    // Optional - but if presenting an image housed in an imageView, you'll want to match its contentMode
-    self.imageViewAnimator.desiredContentMode = self.imageView.contentMode;
-    return self.imageViewAnimator;
-}
-
-- (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
-    return self.imageViewAnimator;
 }
 
 @end
