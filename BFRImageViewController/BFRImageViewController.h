@@ -19,9 +19,6 @@
 /*! Assigning YES to this property will make the background transparent. */
 @property (nonatomic, getter=isUsingTransparentBackground) BOOL useTransparentBackground;
 
-/*! Assigning YES to this property will make ensure the first image doesn't load for 0.15f, so the custom view controller animation can finish putting the image in its final frame. */
-@property (nonatomic, getter=customTransitionIsEnabled) BOOL customTransitionEnabled;
-
 /*! Flag property that toggles the doneButton. Defaults to YES */
 @property (nonatomic) BOOL enableDoneButton;
 

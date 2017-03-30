@@ -9,9 +9,12 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-static const CGFloat DEFAULT_ANIMATION_DURATION = 0.15f;
+static const CGFloat DEFAULT_ANIMATION_DURATION = 0.23f;
 
-@interface BFRImageTransitionAnimator : NSObject <UIViewControllerAnimatedTransitioning>
+@interface BFRImageTransitionAnimator : NSObject <UIViewControllerAnimatedTransitioning, UIViewControllerTransitioningDelegate>
+
+/*! The view that houses the @c UIImage being aniamted. Typically will be a @c UIImageView. If set, this will be hidden during the animation which looks nicer. */
+@property (strong, nonatomic) UIView *animatedImageContainer;
 
 /*! This is the image that will animate during the transition. A copy of it will be made, and this is just used for reference. This must be set before the animation begins. */
 @property (strong, nonatomic) UIImage *animatedImage;

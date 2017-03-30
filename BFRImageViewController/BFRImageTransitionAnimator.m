@@ -103,7 +103,12 @@
     
     UIView *animationContainerView = transitionContext.containerView;
     UIView *destinationView = [transitionContext viewForKey:UITransitionContextToViewKey];
+    
     destinationView.alpha = 0.0f;
+    
+    // Hide the first image from showing during the animation
+    destinationView.subviews.firstObject.hidden = YES;
+    self.animatedImageContainer.alpha = 0.0f;
     
     UIImageView *temporaryAnimatedImageView = [self temporaryImageView];
     
@@ -118,6 +123,7 @@
     } completion:^ (BOOL done) {
         [transitionContext completeTransition:YES];
         self.presenting = !self.isPresenting;
+        destinationView.subviews.firstObject.hidden = NO;
         [temporaryAnimatedImageView removeFromSuperview];
     }];
 }
@@ -130,16 +136,21 @@
     }
     
     UIView *animationContainerView = transitionContext.containerView;
+    UIView *fromView = [transitionContext viewForKey:UITransitionContextFromViewKey];
     UIView *destinationView = [transitionContext viewForKey:UITransitionContextToViewKey];
     destinationView.alpha = 0.0f;
     destinationView.frame = animationContainerView.frame;
     
+    // Hide the first image from showing during the animation, and the original image
+    fromView.subviews.firstObject.hidden = YES;
     UIImageView *temporaryAnimatedImageView = [self temporaryImageView];
     
     [animationContainerView addSubview:destinationView];
     
     if (self.shouldDismissWithoutCustomTransition == NO) {
          [animationContainerView addSubview:temporaryAnimatedImageView];
+    } else {
+        self.animatedImageContainer.alpha = 1.0f;
     }
     
     temporaryAnimatedImageView.frame = [self imageFinalFrameDestinationForImageView:temporaryAnimatedImageView inView:animationContainerView];
@@ -152,8 +163,18 @@
     } completion:^ (BOOL done) {
         [transitionContext completeTransition:YES];
         self.presenting = !self.isPresenting;
+        self.animatedImageContainer.alpha = 1.0f;
         [temporaryAnimatedImageView removeFromSuperview];
     }];
+}
+
+#pragma mark - Transitioning Delegate
+- (id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    return self;
+}
+
+- (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    return self;
 }
 
 @end
