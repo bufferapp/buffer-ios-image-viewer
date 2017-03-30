@@ -16,9 +16,6 @@
 /*! Initializes an instance of @C BFRImageViewController from the image source provided. The array can contain a mix of @c NSURL, @c UIImage, @c PHAsset, or @c NSStrings of URLS. This can be a mix of all these types, or just one. Additionally, this customizes the user interface to defer showing some of its user interface elements, such as the close button, until it's been fully popped.*/
 - (instancetype)initForPeekWithImageSource:(NSArray *)images;
 
-/*! This view controller just acts as a container to hold a page view controller, which pages between the view controllers that hold an image. */
-@property (strong, nonatomic) UIPageViewController *pagerVC;
-
 /*! Assigning YES to this property will make the background transparent. */
 @property (nonatomic, getter=isUsingTransparentBackground) BOOL useTransparentBackground;
 

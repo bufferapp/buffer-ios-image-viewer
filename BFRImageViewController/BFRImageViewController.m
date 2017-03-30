@@ -13,6 +13,9 @@
 
 @interface BFRImageViewController () <UIPageViewControllerDataSource>
 
+/*! This view controller just acts as a container to hold a page view controller, which pages between the view controllers that hold an image. */
+@property (strong, nonatomic) UIPageViewController *pagerVC;
+
 /*! Each image displayed is shown in its own instance of a BFRImageViewController. This array holds all of those view controllers, one per image. */
 @property (strong, nonatomic) NSMutableArray <BFRImageContainerViewController *> *imageViewControllers;
 
