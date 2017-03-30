@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-static const CGFloat DEFAULT_ANIMATION_DURATION = 0.20f;
+static const CGFloat DEFAULT_ANIMATION_DURATION = 0.23f;
 
 @interface BFRImageTransitionAnimator : NSObject <UIViewControllerAnimatedTransitioning, UIViewControllerTransitioningDelegate>
 
