@@ -113,8 +113,8 @@
     [self registerNotifcations];
 }
 
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     self.hideStatusBar = YES;
     [self setNeedsStatusBarAppearanceUpdate];
 }
@@ -124,12 +124,8 @@
     [self updateChromeFrames];
 }
 
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 #pragma mark - Status bar
--(BOOL)prefersStatusBarHidden{
+- (BOOL)prefersStatusBarHidden{
     return self.shouldHideStatusBar;
 }
 
@@ -231,6 +227,10 @@
     [super didReceiveMemoryWarning];
     NSLog(@"BFRImageViewer: Dismissing due to memory warning.");
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end
