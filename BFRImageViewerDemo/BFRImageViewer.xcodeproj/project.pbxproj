@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		171F4AD01E96BE0500F4AF01 /* BFRBackLoadedImageSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 171F4ACF1E96BE0500F4AF01 /* BFRBackLoadedImageSource.m */; };
 		1797CB8E1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 1797CB8D1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m */; };
 		1797CB911E81BBB200D9F729 /* ThirdViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1797CB901E81BBB200D9F729 /* ThirdViewController.m */; };
 		17C1AAB61D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 17C1AAB51D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle */; };
@@ -25,6 +26,8 @@
 
 /* Begin PBXFileReference section */
 		1264A436520DEA8753316972 /* Pods-BFRImageViewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BFRImageViewer.release.xcconfig"; path = "Pods/Target Support Files/Pods-BFRImageViewer/Pods-BFRImageViewer.release.xcconfig"; sourceTree = "<group>"; };
+		171F4ACE1E96BE0500F4AF01 /* BFRBackLoadedImageSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BFRBackLoadedImageSource.h; sourceTree = "<group>"; };
+		171F4ACF1E96BE0500F4AF01 /* BFRBackLoadedImageSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BFRBackLoadedImageSource.m; sourceTree = "<group>"; };
 		1797CB8C1E81BB4F00D9F729 /* BFRImageTransitionAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BFRImageTransitionAnimator.h; sourceTree = "<group>"; };
 		1797CB8D1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BFRImageTransitionAnimator.m; sourceTree = "<group>"; };
 		1797CB8F1E81BBB200D9F729 /* ThirdViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThirdViewController.h; sourceTree = "<group>"; };
@@ -139,6 +142,8 @@
 				17C1AAB91D9D702E00FF1B67 /* BFRImageViewerLocalizations.h */,
 				1797CB8C1E81BB4F00D9F729 /* BFRImageTransitionAnimator.h */,
 				1797CB8D1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m */,
+				171F4ACE1E96BE0500F4AF01 /* BFRBackLoadedImageSource.h */,
+				171F4ACF1E96BE0500F4AF01 /* BFRBackLoadedImageSource.m */,
 			);
 			name = BFRImageViewController;
 			path = ../../BFRImageViewController;
@@ -282,6 +287,7 @@
 				1797CB911E81BBB200D9F729 /* ThirdViewController.m in Sources */,
 				944B4DEA1BFFC0E300B9BF87 /* BFRImageViewController.m in Sources */,
 				944B4DB31BFFC0C000B9BF87 /* AppDelegate.m in Sources */,
+				171F4AD01E96BE0500F4AF01 /* BFRBackLoadedImageSource.m in Sources */,
 				944B4DE91BFFC0E300B9BF87 /* BFRImageContainerViewController.m in Sources */,
 				944B4DB61BFFC0C000B9BF87 /* FirstViewController.m in Sources */,
 				944B4DB01BFFC0C000B9BF87 /* main.m in Sources */,
