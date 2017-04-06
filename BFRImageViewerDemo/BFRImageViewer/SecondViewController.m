@@ -44,10 +44,6 @@
     self.imgURLs = @[url1, url2, url3];
 }
 
-- (void)didReceiveMemoryWarning {
-    // Dispose of any resources that can be recreated.
-}
-
 - (void)openImage {
     BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:self.imgURLs];
     imageVC.startingIndex = 1;

@@ -7,7 +7,7 @@
 //
 
 #import "BFRImageContainerViewController.h"
-
+#import "BFRBackLoadedImageSource.h"
 #import <Photos/Photos.h>
 #import <DACircularProgress/DACircularProgressView.h>
 #import <PINRemoteImage/PINRemoteImage.h>
@@ -73,6 +73,18 @@
         self.progressView = [self createProgressView];
         [self.view addSubview:self.progressView];
         [self retrieveImageFromURL];
+    } else if ([self.imgSrc isKindOfClass:[BFRBackLoadedImageSource class]]) {
+        self.imgLoaded = ((BFRBackLoadedImageSource *)self.imgSrc).image;
+        [self addImageToScrollView];
+        
+        __weak BFRImageContainerViewController *weakSelf = self;
+        ((BFRBackLoadedImageSource *)self.imgSrc).onHighResImageLoaded = ^ (UIImage *highResImage) {
+            weakSelf.imgLoaded = highResImage;
+            weakSelf.imgView.image = weakSelf.imgLoaded;
+            [weakSelf setMaxMinZoomScalesForCurrentBounds];
+            [weakSelf.view setNeedsLayout];
+            [weakSelf.view layoutIfNeeded];
+        };
     } else {
         [self showError];
     }
@@ -101,7 +113,7 @@
     
     // Reposition image view
     CGRect newRect = CGRectMake(leftOffset, topOffset, newWidth, newHeight);
-    
+
     // Check for any NaNs, which should get corrected in the next drawing cycle
     BOOL isInvalidRect = (isnan(leftOffset) || isnan(topOffset) || isnan(newWidth) || isnan(newHeight));
     self.imgView.frame = isInvalidRect ? CGRectZero : newRect;
@@ -219,7 +231,7 @@
     // Sizes
     CGSize boundsSize = self.scrollView.bounds.size;
     CGSize imageSize = self.imgView.frame.size;
-    
+
     // Calculate Min
     CGFloat xScale = boundsSize.width / imageSize.width;
     CGFloat yScale = boundsSize.height / imageSize.height;

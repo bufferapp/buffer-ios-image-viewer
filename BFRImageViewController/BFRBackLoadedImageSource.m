@@ -17,7 +17,7 @@
 @property (strong, nonatomic) NSURL *url;
 
 /*! The image that will show initially. */
-@property (strong, nonatomic) UIImage *image;
+@property (strong, nonatomic, readwrite) UIImage *image;
 
 @end
 
@@ -42,9 +42,13 @@
     [[PINRemoteImageManager sharedImageManager] downloadImageWithURL:self.url options:PINRemoteImageManagerDisallowAlternateRepresentations progressDownload:nil completion:^(PINRemoteImageManagerResult * _Nonnull result) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (result.image) {
-                self.image = result.image;
+                if (self.onHighResImageLoaded != nil) {
+                    dispatch_async(dispatch_get_main_queue(), ^ {
+                        self.onHighResImageLoaded(result.image);
+                    });
+                }
             } else {
-                NSLog(@"BFRImageViewer: Failed to retrieve high fidelity image.");
+                NSLog(@"BFRImageViewer: Unable to load high resolution photo via backloading.");
             }
         });
     }];

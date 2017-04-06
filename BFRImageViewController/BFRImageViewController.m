@@ -19,7 +19,7 @@
 /*! Each image displayed is shown in its own instance of a BFRImageViewController. This array holds all of those view controllers, one per image. */
 @property (strong, nonatomic) NSMutableArray <BFRImageContainerViewController *> *imageViewControllers;
 
-/*! Each image is represented via a @c NSURL or an actual @c UIImage. */
+/*! This can contain a mix of @c NSURL, @c UIImage, @c PHAsset, @c BFRBackLoadedImageSource or @c NSStrings of URLS. This can be a mix of all these types, or just one. */
 @property (strong, nonatomic) NSArray *images;
 
 /*! This will automatically hide the "Done" button after five seconds. */
