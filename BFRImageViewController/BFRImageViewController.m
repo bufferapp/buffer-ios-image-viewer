@@ -116,7 +116,9 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.hideStatusBar = YES;
-    [self setNeedsStatusBarAppearanceUpdate];
+    [UIView animateWithDuration:0.1 animations:^{
+        [self setNeedsStatusBarAppearanceUpdate];
+    }];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -127,6 +129,10 @@
 #pragma mark - Status bar
 - (BOOL)prefersStatusBarHidden{
     return self.shouldHideStatusBar;
+}
+
+- (UIStatusBarAnimation)preferredStatusBarUpdateAnimation {
+    return UIStatusBarAnimationSlide;
 }
 
 #pragma mark - Chrome
