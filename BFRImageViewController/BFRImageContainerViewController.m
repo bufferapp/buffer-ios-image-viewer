@@ -81,9 +81,6 @@
         ((BFRBackLoadedImageSource *)self.imgSrc).onHighResImageLoaded = ^ (UIImage *highResImage) {
             weakSelf.imgLoaded = highResImage;
             weakSelf.imgView.image = weakSelf.imgLoaded;
-            [weakSelf setMaxMinZoomScalesForCurrentBounds];
-            [weakSelf.view setNeedsLayout];
-            [weakSelf.view layoutIfNeeded];
         };
     } else {
         [self showError];
