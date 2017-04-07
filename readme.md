@@ -35,13 +35,12 @@ let imageVC = BFRImageViewController(imageSource: [image])
 From there, you'll have every photo automagically loaded up and be able to page between them. If you want some additional context, just fire up the demo project and take a peek 👌!
 
 ### Custom Transition
-If you'd like to use a custom view controller transition, which zooms the selected image into the image viewer, just set up some properties on the dedicated image viewer class:
+If you'd like to use a custom view controller transition, which zooms the selected image into the image viewer, just set up some properties on the dedicated image viewer animator class:
 ```objc
 // In viewDidLoad...
 self.imageViewAnimator = [BFRImageTransitionAnimator new];
 
 // Later on, when you want to show an image...
-
 self.imageViewAnimator.animatedImageContainer = self.imageView;
 self.imageViewAnimator.animatedImage = self.imageView.image;
 self.imageViewAnimator.imageOriginFrame = self.imageView.frame;
