@@ -2,7 +2,6 @@
 
 <p align="center">
   <img src="/demo.gif?raw=true" alt="Demo" />
-  <img sec="/transition.gif?raw=true" alt="AnimationDemo" />
 </p>
 <p align="center">
   <img src="https://img.shields.io/cocoapods/p/BFRImageViewer.svg" />
@@ -53,6 +52,10 @@ imageVC.transitioningDelegate = self.imageViewAnimator;
 
 [self presentViewController:imageVC animated:YES completion:nil];
 ```
+That will give you this effect (excuse the low quality gif 🙈):
+<p align="center">
+  <img src="/transition.gif?raw=true" alt="AnimationDemo" />
+</p>
 
 ### URL Backloading
 Say you've got a thumbnail of an image, but also a URL of the higher fidelity version too. Using URL backloading, you can quickly show the lower resolution image while loading the better version in the background. When it loads - we'll automatically swap it out for you. This allows you to have the best of worlds. You don't need to have users wait for the URL to load, or settle for always viewing the degraded image.
