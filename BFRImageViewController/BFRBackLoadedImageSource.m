@@ -14,10 +14,10 @@
 @interface BFRBackLoadedImageSource()
 
 /*! The high fidelity image that will be loaded in the background and then shown once it's downloaded. */
-@property (strong, nonatomic) NSURL *url;
+@property (strong, nonatomic, nonnull) NSURL *url;
 
 /*! The image that will show initially. */
-@property (strong, nonatomic, readwrite) UIImage *image;
+@property (strong, nonatomic, readwrite, nonnull) UIImage *image;
 
 @end
 

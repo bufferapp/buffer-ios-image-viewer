@@ -16,25 +16,25 @@
 @interface BFRImageContainerViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 
 /*! This is responsible for panning and zooming the images. */
-@property (strong, nonatomic) UIScrollView *scrollView;
+@property (strong, nonatomic, nonnull) UIScrollView *scrollView;
 
 /*! The actual view which will display the @c UIImage, this is housed inside of the scrollView property. */
-@property (strong, nonatomic) FLAnimatedImageView *imgView;
+@property (strong, nonatomic, nullable) FLAnimatedImageView *imgView;
 
 /*! The image created from the passed in imgSrc property. */
-@property (strong, nonatomic) UIImage *imgLoaded;
+@property (strong, nonatomic, nullable) UIImage *imgLoaded;
 
 /*! The image created from the passed in animatedImgLoaded property. */
-@property (strong, nonatomic) FLAnimatedImage *animatedImgLoaded;
+@property (strong, nonatomic, nullable) FLAnimatedImage *animatedImgLoaded;
 
 /*! If the imgSrc property requires a network call, this displays inside the view to denote the loading progress. */
-@property (strong, nonatomic) DACircularProgressView *progressView;
+@property (strong, nonatomic, nullable) DACircularProgressView *progressView;
 
 /*! The animator which attaches the behaviors needed to drag the image. */
-@property (strong, nonatomic) UIDynamicAnimator *animator;
+@property (strong, nonatomic, nonnull) UIDynamicAnimator *animator;
 
 /*! The behavior which allows for the image to "snap" back to the center if it's vertical offset isn't passed the closing points. */
-@property (strong, nonatomic) UIAttachmentBehavior *imgAttatchment;
+@property (strong, nonatomic, nonnull) UIAttachmentBehavior *imgAttatchment;
 
 @end
 
