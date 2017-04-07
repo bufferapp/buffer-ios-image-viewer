@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-/*! This class allows you to show an image that you already have available initially, while loading a higher fidelity version in the background which will replace the lower fidelity one. */
+/*! This class allows you to show an image that you already have available initially, while loading a higher fidelity version in the background which will replace the lower fidelity one. This class assumes that the new image will have the same aspect ratio as the old one. */
 @interface BFRBackLoadedImageSource : NSObject
 
 /*! The image that is available for use right away. */
