@@ -14,19 +14,19 @@
 @interface BFRImageViewController () <UIPageViewControllerDataSource>
 
 /*! This view controller just acts as a container to hold a page view controller, which pages between the view controllers that hold an image. */
-@property (strong, nonatomic) UIPageViewController *pagerVC;
+@property (strong, nonatomic, nonnull) UIPageViewController *pagerVC;
 
 /*! Each image displayed is shown in its own instance of a BFRImageViewController. This array holds all of those view controllers, one per image. */
-@property (strong, nonatomic) NSMutableArray <BFRImageContainerViewController *> *imageViewControllers;
+@property (strong, nonatomic, nonnull) NSMutableArray <BFRImageContainerViewController *> *imageViewControllers;
 
-/*! Each image is represented via a @c NSURL or an actual @c UIImage. */
-@property (strong, nonatomic) NSArray *images;
+/*! This can contain a mix of @c NSURL, @c UIImage, @c PHAsset, @c BFRBackLoadedImageSource or @c NSStrings of URLS. This can be a mix of all these types, or just one. */
+@property (strong, nonatomic, nonnull) NSArray *images;
 
 /*! This will automatically hide the "Done" button after five seconds. */
-@property (strong, nonatomic) NSTimer *timerHideUI;
+@property (strong, nonatomic, nullable) NSTimer *timerHideUI;
 
 /*! The button that sticks to the top left of the view that is responsible for dismissing this view controller. */
-@property (strong, nonatomic) UIButton *doneButton;
+@property (strong, nonatomic, nullable) UIButton *doneButton;
 
 /*! This will determine whether to change certain behaviors for 3D touch considerations based on its value. */
 @property (nonatomic, getter=isBeingUsedFor3DTouch) BOOL usedFor3DTouch;
@@ -116,7 +116,9 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.hideStatusBar = YES;
-    [self setNeedsStatusBarAppearanceUpdate];
+    [UIView animateWithDuration:0.1 animations:^{
+        [self setNeedsStatusBarAppearanceUpdate];
+    }];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -127,6 +129,10 @@
 #pragma mark - Status bar
 - (BOOL)prefersStatusBarHidden{
     return self.shouldHideStatusBar;
+}
+
+- (UIStatusBarAnimation)preferredStatusBarUpdateAnimation {
+    return UIStatusBarAnimationSlide;
 }
 
 #pragma mark - Chrome

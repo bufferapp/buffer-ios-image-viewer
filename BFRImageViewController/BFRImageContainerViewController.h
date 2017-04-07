@@ -12,7 +12,7 @@
 @interface BFRImageContainerViewController : UIViewController
 
 /*! Source of the image, which should either be @c NSURL or @c UIIimage. */
-@property (strong, nonatomic) id imgSrc;
+@property (strong, nonatomic, nonnull) id imgSrc;
 
 /*! This will determine whether to change certain behaviors for 3D touch considerations based on its value. */
 @property (nonatomic, getter=isBeingUsedFor3DTouch) BOOL usedFor3DTouch;
