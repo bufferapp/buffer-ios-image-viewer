@@ -17,6 +17,7 @@ Pod::Spec.new do |s|
     s.source       = { :git => "https://github.com/bufferapp/buffer-ios-image-viewer.git", :tag => '1.0.30'  }
     s.source_files = 'Classes', 'BFRImageViewController/**/*.{h,m}'
     s.resources    = ['BFRImageViewController/**/BFRImageViewerLocalizations.bundle','BFRImageViewController/**/*.{png}']
+    s.exclude_files = 'BFRImageViewController/**/lowResImage.png'
     s.platform     = :ios, '8.0'
     s.requires_arc = true
     s.frameworks = "UIKit", "Photos"
