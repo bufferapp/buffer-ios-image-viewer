@@ -318,9 +318,13 @@
             exitGravity.magnitude = 15.0f;
             [self.animator addBehavior:exitGravity];
             
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [UIView animateWithDuration:0.25f animations:^ {
+                self.imgView.alpha = 0.25f;
+            } completion:^ (BOOL done) {
+                self.imgView.alpha = 0.0f;
                 [self dimissUIFromDraggingGesture];
-            });
+            }];
+            
         } else {
             [self.scrollView setZoomScale:self.scrollView.minimumZoomScale animated:YES];
             UISnapBehavior *snapBack = [[UISnapBehavior alloc] initWithItem:self.imgView snapToPoint:self.scrollView.center];
