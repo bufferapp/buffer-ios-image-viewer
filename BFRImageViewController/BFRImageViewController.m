@@ -228,6 +228,10 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissWithoutCustomAnimation) name:@"DimissUIFromDraggingGesture" object:nil];
 }
 
+- (BOOL)prefersHomeIndicatorAutoHidden {
+    return YES;
+}
+
 #pragma mark - Memory Considerations
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

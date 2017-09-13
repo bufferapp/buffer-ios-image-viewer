@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
     s.source_files = 'Classes', 'BFRImageViewController/**/*.{h,m}'
     s.resources    = ['BFRImageViewController/**/BFRImageViewerLocalizations.bundle','BFRImageViewController/**/*.{png}']
     s.exclude_files = 'BFRImageViewController/**/lowResImage.png'
-    s.platform     = :ios, '8.0'
+    s.platform     = :ios, '10.0'
     s.requires_arc = true
     s.frameworks = "UIKit", "Photos"
     s.dependency 'DACircularProgress'
