@@ -157,7 +157,13 @@
 - (void)updateChromeFrames {
     if (self.enableDoneButton) {
         CGFloat buttonX = self.showDoneButtonOnLeft ? 20 : CGRectGetMaxX(self.view.bounds) - 37;
-        self.doneButton.frame = CGRectMake(buttonX, 20, 17, 17);
+        CGFloat closeButtonY = 20;
+        
+        if (@available(iOS 11.0, *)) {
+            closeButtonY = self.view.safeAreaInsets.top > 0 ? self.view.safeAreaInsets.top : 20;
+        }
+        
+        self.doneButton.frame = CGRectMake(buttonX, closeButtonY, 17, 17);
     }
 }
 
