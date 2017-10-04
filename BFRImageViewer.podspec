@@ -22,5 +22,5 @@ Pod::Spec.new do |s|
     s.requires_arc = true
     s.frameworks = "UIKit", "Photos"
     s.dependency 'DACircularProgress'
-    s.dependency 'PINRemoteImage', :git => 'https://github.com/pinterest/PINRemoteImage.git', :tag => '3.0.0-beta.12'
+    s.dependency 'PINRemoteImage', '~> 3.0.0-beta.12'
 end
