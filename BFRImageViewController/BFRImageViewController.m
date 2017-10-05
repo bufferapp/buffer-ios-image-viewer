@@ -10,6 +10,7 @@
 #import "BFRImageContainerViewController.h"
 #import "BFRImageViewerLocalizations.h"
 #import "BFRImageTransitionAnimator.h"
+#import "BFRImageViewerConstants.h"
 
 @interface BFRImageViewController () <UIPageViewControllerDataSource>
 
@@ -212,7 +213,7 @@
 }
 
 - (void)dismissWithoutCustomAnimation {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"CancelCustomDismissalTransition" object:@(1)];
+    [[NSNotificationCenter defaultCenter] postNotificationName:NOTE_VC_SHOULD_CANCEL_CUSTOM_TRANSITION object:@(1)];
 
     self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -229,10 +230,10 @@
 
 /*! The images and scrollview are not part of this view controller, so instances of @c BFRimageContainerViewController will post notifications when they are touched for things to happen. */
 - (void)registerNotifcations {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismiss) name:@"DismissUI" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismiss) name:@"ImageLoadingError" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePop) name:@"ViewControllerPopped" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissWithoutCustomAnimation) name:@"DimissUIFromDraggingGesture" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismiss) name:NOTE_VC_SHOULD_DISMISS object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismiss) name:NOTE_IMG_FAILED object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePop) name:NOTE_VC_POPPED object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissWithoutCustomAnimation) name:NOTE_VC_SHOULD_DISMISS_FROM_DRAGGING object:nil];
 }
 
 - (BOOL)prefersHomeIndicatorAutoHidden {
