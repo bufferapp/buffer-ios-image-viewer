@@ -20,8 +20,11 @@
 /*! A helper integer to simplify using this view controller inside a @c UIPagerViewController when swiping between views. */
 @property (nonatomic, assign) NSUInteger pageIndex;
 
-/*! Assigning YES to this property will make the background transparent. */
+/*! Assigning YES to this property will make the background transparent. You typically don't set this property yourself, instead, the value is derived from the containing @c BFRImageViewController instance. */
 @property (nonatomic, getter=isUsingTransparentBackground) BOOL useTransparentBackground;
+
+/*! Assigning YES to this property will disable long pressing media to present the activity view controller. You typically don't set this property yourself, instead, the value is derived from the containing @c BFRImageViewController instance. */
+@property (nonatomic, getter=shouldDisableSharingLongPress) BOOL disableSharingLongPress;
 
 /*! If there is more than one image in the containing @c BFRImageViewController - this property is set to YES to make swiping from image to image easier. */
 @property (nonatomic, getter=shouldDisableHorizontalDrag) BOOL disableHorizontalDrag;
