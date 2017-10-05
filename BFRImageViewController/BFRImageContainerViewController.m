@@ -180,12 +180,14 @@
     [resizableImageView addGestureRecognizer:doubleImgTap];
     
     // Share options
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showActivitySheet:)];
-    [resizableImageView addGestureRecognizer:longPress];
+    if (self.shouldDisableSharingLongPress == NO) {
+        UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showActivitySheet:)];
+        [resizableImageView addGestureRecognizer:longPress];
+        [singleImgTap requireGestureRecognizerToFail:longPress];
+    }
     
     // Ensure the single tap doesn't fire when a user attempts to double tap
     [singleImgTap requireGestureRecognizerToFail:doubleImgTap];
-    [singleImgTap requireGestureRecognizerToFail:longPress];
     
     // Dragging to dismiss
     UIPanGestureRecognizer *panImg = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleDrag:)];

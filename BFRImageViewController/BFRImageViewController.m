@@ -88,6 +88,7 @@
         imgVC.pageIndex = self.startingIndex;
         imgVC.usedFor3DTouch = self.isBeingUsedFor3DTouch;
         imgVC.useTransparentBackground = self.isUsingTransparentBackground;
+        imgVC.disableSharingLongPress = self.shouldDisableSharingLongPress;
         imgVC.disableHorizontalDrag = (self.images.count > 1);
         [self.imageViewControllers addObject:imgVC];
     }
