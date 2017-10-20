@@ -25,6 +25,7 @@
 		944B4DC11BFFC0C000B9BF87 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 944B4DBF1BFFC0C000B9BF87 /* LaunchScreen.storyboard */; };
 		944B4DE91BFFC0E300B9BF87 /* BFRImageContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DE61BFFC0E300B9BF87 /* BFRImageContainerViewController.m */; };
 		944B4DEA1BFFC0E300B9BF87 /* BFRImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DE81BFFC0E300B9BF87 /* BFRImageViewController.m */; };
+		95D4797D1F97C348001E54D4 /* FifthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 95D4797C1F97C348001E54D4 /* FifthViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -61,6 +62,8 @@
 		944B4DE61BFFC0E300B9BF87 /* BFRImageContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BFRImageContainerViewController.m; sourceTree = "<group>"; };
 		944B4DE71BFFC0E300B9BF87 /* BFRImageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BFRImageViewController.h; sourceTree = "<group>"; };
 		944B4DE81BFFC0E300B9BF87 /* BFRImageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BFRImageViewController.m; sourceTree = "<group>"; };
+		95D4797B1F97C348001E54D4 /* FifthViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FifthViewController.h; sourceTree = "<group>"; };
+		95D4797C1F97C348001E54D4 /* FifthViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FifthViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +133,8 @@
 				944B4DAE1BFFC0C000B9BF87 /* Supporting Files */,
 				171F4AD11E96C31400F4AF01 /* FourthViewController.h */,
 				171F4AD21E96C31400F4AF01 /* FourthViewController.m */,
+				95D4797B1F97C348001E54D4 /* FifthViewController.h */,
+				95D4797C1F97C348001E54D4 /* FifthViewController.m */,
 			);
 			path = BFRImageViewer;
 			sourceTree = "<group>";
@@ -299,6 +304,7 @@
 				944B4DB91BFFC0C000B9BF87 /* SecondViewController.m in Sources */,
 				1797CB8E1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m in Sources */,
 				1797CB911E81BBB200D9F729 /* ThirdViewController.m in Sources */,
+				95D4797D1F97C348001E54D4 /* FifthViewController.m in Sources */,
 				944B4DEA1BFFC0E300B9BF87 /* BFRImageViewController.m in Sources */,
 				944B4DB31BFFC0C000B9BF87 /* AppDelegate.m in Sources */,
 				171F4AD01E96BE0500F4AF01 /* BFRBackLoadedImageSource.m in Sources */,

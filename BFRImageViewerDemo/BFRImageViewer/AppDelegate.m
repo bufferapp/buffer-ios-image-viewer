@@ -11,6 +11,7 @@
 #import "SecondViewController.h"
 #import "ThirdViewController.h"
 #import "FourthViewController.h"
+#import "FifthViewController.h"
 
 @interface AppDelegate ()
 
@@ -24,7 +25,11 @@
     
     UITabBarController *tabVC = [UITabBarController new];
     tabVC.view.backgroundColor = [UIColor whiteColor];
-    tabVC.viewControllers = @[[FirstViewController new], [SecondViewController new], [ThirdViewController new], [FourthViewController new]];
+    tabVC.viewControllers = @[[FirstViewController new],
+                              [SecondViewController new],
+                              [ThirdViewController new],
+                              [FourthViewController new],
+                              [FifthViewController new]];
     
     self.window.rootViewController = tabVC;
     [self.window makeKeyAndVisible];
