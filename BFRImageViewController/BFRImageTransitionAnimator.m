@@ -7,6 +7,7 @@
 //
 
 #import "BFRImageTransitionAnimator.h"
+#import "BFRImageViewerConstants.h"
 
 @interface BFRImageTransitionAnimator()
 
@@ -32,7 +33,7 @@
         self.desiredContentMode = UIViewContentModeScaleAspectFill;
         self.animationDuration = DEFAULT_ANIMATION_DURATION;
         self.dismissWithoutCustomTransition = NO;
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleCancelCustomTransitionNotification:) name:@"CancelCustomDismissalTransition" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleCancelCustomTransitionNotification:) name:NOTE_VC_SHOULD_CANCEL_CUSTOM_TRANSITION object:nil];
     }
     
     return self;

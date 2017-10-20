@@ -8,6 +8,7 @@
 
 #import "BFRImageContainerViewController.h"
 #import "BFRBackLoadedImageSource.h"
+#import "BFRImageViewerConstants.h"
 #import <Photos/Photos.h>
 #import <DACircularProgress/DACircularProgressView.h>
 #import <PINRemoteImage/PINRemoteImage.h>
@@ -53,6 +54,10 @@
     self.scrollView = [self createScrollView];
     [self.view addSubview:self.scrollView];
     
+    // Animator - used to snap the image back to the center when done dragging
+    self.animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.scrollView];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePop) name:NOTE_VC_POPPED object:nil];
+    
     // Fetch image - or just display it
     if ([self.imgSrc isKindOfClass:[NSURL class]]) {
         self.progressView = [self createProgressView];
@@ -74,21 +79,12 @@
         [self.view addSubview:self.progressView];
         [self retrieveImageFromURL];
     } else if ([self.imgSrc isKindOfClass:[BFRBackLoadedImageSource class]]) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleHiResImageDownloaded:) name:NOTE_HI_RES_IMG_DOWNLOADED object:nil];
         self.imgLoaded = ((BFRBackLoadedImageSource *)self.imgSrc).image;
         [self addImageToScrollView];
-        
-        __weak BFRImageContainerViewController *weakSelf = self;
-        ((BFRBackLoadedImageSource *)self.imgSrc).onHighResImageLoaded = ^ (UIImage *highResImage) {
-            weakSelf.imgLoaded = highResImage;
-            weakSelf.imgView.image = weakSelf.imgLoaded;
-        };
     } else {
         [self showError];
     }
-    
-    // Animator - used to snap the image back to the center when done dragging
-    self.animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.scrollView];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePop) name:@"ViewControllerPopped" object:nil];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -180,12 +176,14 @@
     [resizableImageView addGestureRecognizer:doubleImgTap];
     
     // Share options
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showActivitySheet:)];
-    [resizableImageView addGestureRecognizer:longPress];
+    if (self.shouldDisableSharingLongPress == NO) {
+        UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showActivitySheet:)];
+        [resizableImageView addGestureRecognizer:longPress];
+        [singleImgTap requireGestureRecognizerToFail:longPress];
+    }
     
     // Ensure the single tap doesn't fire when a user attempts to double tap
     [singleImgTap requireGestureRecognizerToFail:doubleImgTap];
-    [singleImgTap requireGestureRecognizerToFail:longPress];
     
     // Dragging to dismiss
     UIPanGestureRecognizer *panImg = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleDrag:)];
@@ -202,6 +200,16 @@
         self.imgView = [self createImageView];
         [self.scrollView addSubview:self.imgView];
         [self setMaxMinZoomScalesForCurrentBounds];
+    }
+}
+
+#pragma mark - Backloaded Image Notification
+- (void)handleHiResImageDownloaded:(NSNotification *)note {
+    UIImage *hiResImg = note.object;
+    
+    if (hiResImg && [hiResImg isKindOfClass:[UIImage class]]) {
+        self.imgLoaded = hiResImg;
+        self.imgView.image = self.imgLoaded;
     }
 }
 
@@ -318,9 +326,13 @@
             exitGravity.magnitude = 15.0f;
             [self.animator addBehavior:exitGravity];
             
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [UIView animateWithDuration:0.25f animations:^ {
+                self.imgView.alpha = 0.25f;
+            } completion:^ (BOOL done) {
+                self.imgView.alpha = 0.0f;
                 [self dimissUIFromDraggingGesture];
-            });
+            }];
+            
         } else {
             [self.scrollView setZoomScale:self.scrollView.minimumZoomScale animated:YES];
             UISnapBehavior *snapBack = [[UISnapBehavior alloc] initWithItem:self.imgView snapToPoint:self.scrollView.center];
@@ -407,18 +419,18 @@
 
 #pragma mark - Misc. Methods
 - (void)dismissUI {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"DismissUI" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:NOTE_VC_SHOULD_DISMISS object:nil];
 }
 
 - (void)dimissUIFromDraggingGesture {
     // If we drag the image away to close things, don't do the custom dismissal transition
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"DimissUIFromDraggingGesture" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:NOTE_VC_SHOULD_DISMISS_FROM_DRAGGING object:nil];
 }
 
 - (void)showError {
-    UIAlertController *controller = [UIAlertController alertControllerWithTitle:@"Whoops" message:@"Looks like we ran into an issue loading the image, sorry about that!" preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *closeAction = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"ImageLoadingError" object:nil];
+    UIAlertController *controller = [UIAlertController alertControllerWithTitle:ERROR_TITLE message:ERROR_MESSAGE preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *closeAction = [UIAlertAction actionWithTitle:GENERAL_OK style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+        [[NSNotificationCenter defaultCenter] postNotificationName:NOTE_IMG_FAILED object:nil];
     }];
     [controller addAction:closeAction];
     [self presentViewController:controller animated:YES completion:nil];

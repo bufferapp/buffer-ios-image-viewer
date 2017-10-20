@@ -10,6 +10,7 @@
 #import "BFRImageContainerViewController.h"
 #import "BFRImageViewerLocalizations.h"
 #import "BFRImageTransitionAnimator.h"
+#import "BFRImageViewerConstants.h"
 
 @interface BFRImageViewController () <UIPageViewControllerDataSource>
 
@@ -88,6 +89,7 @@
         imgVC.pageIndex = self.startingIndex;
         imgVC.usedFor3DTouch = self.isBeingUsedFor3DTouch;
         imgVC.useTransparentBackground = self.isUsingTransparentBackground;
+        imgVC.disableSharingLongPress = self.shouldDisableSharingLongPress;
         imgVC.disableHorizontalDrag = (self.images.count > 1);
         [self.imageViewControllers addObject:imgVC];
     }
@@ -157,7 +159,13 @@
 - (void)updateChromeFrames {
     if (self.enableDoneButton) {
         CGFloat buttonX = self.showDoneButtonOnLeft ? 20 : CGRectGetMaxX(self.view.bounds) - 37;
-        self.doneButton.frame = CGRectMake(buttonX, 20, 17, 17);
+        CGFloat closeButtonY = 20;
+        
+        if (@available(iOS 11.0, *)) {
+            closeButtonY = self.view.safeAreaInsets.top > 0 ? self.view.safeAreaInsets.top : 20;
+        }
+        
+        self.doneButton.frame = CGRectMake(buttonX, closeButtonY, 17, 17);
     }
 }
 
@@ -205,7 +213,7 @@
 }
 
 - (void)dismissWithoutCustomAnimation {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"CancelCustomDismissalTransition" object:@(1)];
+    [[NSNotificationCenter defaultCenter] postNotificationName:NOTE_VC_SHOULD_CANCEL_CUSTOM_TRANSITION object:@(1)];
 
     self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -222,10 +230,14 @@
 
 /*! The images and scrollview are not part of this view controller, so instances of @c BFRimageContainerViewController will post notifications when they are touched for things to happen. */
 - (void)registerNotifcations {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismiss) name:@"DismissUI" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismiss) name:@"ImageLoadingError" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePop) name:@"ViewControllerPopped" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissWithoutCustomAnimation) name:@"DimissUIFromDraggingGesture" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismiss) name:NOTE_VC_SHOULD_DISMISS object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismiss) name:NOTE_IMG_FAILED object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePop) name:NOTE_VC_POPPED object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissWithoutCustomAnimation) name:NOTE_VC_SHOULD_DISMISS_FROM_DRAGGING object:nil];
+}
+
+- (BOOL)prefersHomeIndicatorAutoHidden {
+    return YES;
 }
 
 #pragma mark - Memory Considerations
