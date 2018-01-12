@@ -12,7 +12,7 @@
 #import "BFRImageTransitionAnimator.h"
 #import "BFRImageViewerConstants.h"
 
-@interface BFRImageViewController () <UIPageViewControllerDataSource>
+@interface BFRImageViewController () <UIPageViewControllerDataSource, UIScrollViewDelegate>
 
 /*! This view controller just acts as a container to hold a page view controller, which pages between the view controllers that hold an image. */
 @property (strong, nonatomic, nonnull) UIPageViewController *pagerVC;
@@ -106,6 +106,14 @@
     [[self view] addSubview:[self.pagerVC view]];
     [self.pagerVC didMoveToParentViewController:self];
     
+    // Attach to pager controller's scrollview for parallax effect when swiping between images
+    for (UIView *subview in self.pagerVC.view.subviews) {
+        if ([subview isKindOfClass:[UIScrollView class]]) {
+            ((UIScrollView *)subview).delegate = self;
+            break;
+        }
+    }
+    
     // Add chrome to UI now if we aren't waiting to be peeked into
     if (!self.isBeingUsedFor3DTouch) {
         [self addChromeToUI];
@@ -198,6 +206,14 @@
     vc.pageIndex = index;
     
     return vc;
+}
+
+#pragma mark - Scrollview Delegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    CGPoint point = scrollView.contentOffset;
+    CGFloat percentComplete = fabs(point.x - self.view.frame.size.width)/self.view.frame.size.width;
+    NSLog(@"Percent scrolled %f", percentComplete);
 }
 
 #pragma mark - Utility methods
