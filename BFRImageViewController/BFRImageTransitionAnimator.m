@@ -25,6 +25,7 @@
 @implementation BFRImageTransitionAnimator
 
 #pragma mark - Initialization
+
 - (instancetype)init {
     self = [super init];
     
@@ -50,6 +51,7 @@
 }
 
 #pragma mark - Utils
+
 - (UIImageView *)temporaryImageView {
     if (self.animatedImage == nil) return nil;
     
@@ -86,6 +88,7 @@
 }
 
 #pragma mark - Animator delegate
+
 - (NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext {
     return self.animationDuration;
 }
@@ -170,6 +173,7 @@
 }
 
 #pragma mark - Transitioning Delegate
+
 - (id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
     return self;
 }

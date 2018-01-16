@@ -25,4 +25,7 @@ extern NSString * const GENERAL_OK;
 extern NSString * const HI_RES_IMG_ERROR_DOMAIN;
 extern NSInteger const HI_RES_IMG_ERROR_CODE;
 
+// Misc
+extern NSInteger const PARALLAX_EFFECT_WIDTH;
+
 @end
