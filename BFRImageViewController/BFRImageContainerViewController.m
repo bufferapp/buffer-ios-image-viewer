@@ -42,6 +42,7 @@
 @implementation BFRImageContainerViewController
 
 #pragma mark - Lifecycle
+
 // With peeking and popping, setting up your subviews in loadView will throw an exception
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -117,6 +118,7 @@
 }
 
 #pragma mark - UI Methods
+
 - (UIScrollView *)createScrollView {
     UIScrollView *sv = [[UIScrollView alloc] initWithFrame:self.view.bounds];
     sv.delegate = self;
@@ -204,6 +206,7 @@
 }
 
 #pragma mark - Backloaded Image Notification
+
 - (void)handleHiResImageDownloaded:(NSNotification *)note {
     UIImage *hiResImg = note.object;
     
@@ -214,6 +217,7 @@
 }
 
 #pragma mark - Gesture Recognizer Delegate
+
 // If we have more than one image, this will cancel out dragging horizontally to make it easy to navigate between images
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     CGPoint velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.scrollView];
@@ -221,6 +225,7 @@
 }
 
 #pragma mark - Scrollview Delegate
+
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
     return self.scrollView.subviews.firstObject;
 }
@@ -231,6 +236,7 @@
 }
 
 #pragma mark - Scrollview Util Methods
+
 /*! This calculates the correct zoom scale for the scrollview once we have the image's size */
 - (void)setMaxMinZoomScalesForCurrentBounds {
     // Sizes
@@ -342,7 +348,6 @@
 }
 
 - (void)showActivitySheet:(UILongPressGestureRecognizer *)longPress {
-    
     UIActivityViewController *activityVC;
     if (longPress.state == UIGestureRecognizerStateBegan) {
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
@@ -362,6 +367,7 @@
 }
 
 #pragma mark - Image Asset Retrieval
+
 - (void)retrieveImageFromAsset {
     if (![self.imgSrc isKindOfClass:[PHAsset class]]) {
         return;
@@ -418,6 +424,7 @@
 }
 
 #pragma mark - Misc. Methods
+
 - (void)dismissUI {
     [[NSNotificationCenter defaultCenter] postNotificationName:NOTE_VC_SHOULD_DISMISS object:nil];
 }

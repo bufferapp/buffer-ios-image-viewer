@@ -35,11 +35,15 @@
 /*! This is used for nothing more than to defer the hiding of the status bar until the view appears to avoid any awkward jumps in the presenting view. */
 @property (nonatomic, getter=shouldHideStatusBar) BOOL hideStatusBar;
 
+/*! This creates the parallax scrolling effect by essentially clipping the scrolled images and moving with the touch point in scrollViewDidScroll. */
+@property (strong, nonatomic, nonnull) UIView *parallaxView;
+
 @end
 
 @implementation BFRImageViewController
 
 #pragma mark - Initializers
+
 - (instancetype)initWithImageSource:(NSArray *)images {
     self = [super init];
     
@@ -49,6 +53,7 @@
         self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         self.enableDoneButton = YES;
         self.showDoneButtonOnLeft = YES;
+        self.parallaxView = [UIView new];
     }
     
     return self;
@@ -64,12 +69,14 @@
         self.enableDoneButton = YES;
         self.showDoneButtonOnLeft = YES;
         self.usedFor3DTouch = YES;
+        self.parallaxView = [UIView new];
     }
     
     return self;
 }
 
 #pragma mark - View Lifecycle
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -137,6 +144,7 @@
 }
 
 #pragma mark - Status bar
+
 - (BOOL)prefersStatusBarHidden{
     return self.shouldHideStatusBar;
 }
@@ -146,6 +154,7 @@
 }
 
 #pragma mark - Chrome
+
 - (void)addChromeToUI {
     if (self.enableDoneButton) {
         NSBundle *bundle = [NSBundle bundleForClass:[self class]];
@@ -178,6 +187,7 @@
 }
 
 #pragma mark - Pager Datasource
+
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController {
     NSUInteger index = ((BFRImageContainerViewController *)viewController).pageIndex;
     
@@ -217,6 +227,7 @@
 }
 
 #pragma mark - Utility methods
+
 - (void)dismiss {
     // If we dismiss from a different image than what was animated in - don't do the custom dismiss transition animation
     if (self.startingIndex != ((BFRImageContainerViewController *)self.pagerVC.viewControllers.firstObject).pageIndex) {
@@ -257,6 +268,7 @@
 }
 
 #pragma mark - Memory Considerations
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     NSLog(@"BFRImageViewer: Dismissing due to memory warning.");
