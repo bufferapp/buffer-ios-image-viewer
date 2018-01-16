@@ -118,6 +118,7 @@
         if ([subview isKindOfClass:[UIScrollView class]]) {
             ((UIScrollView *)subview).delegate = self;
             self.parallaxView.backgroundColor = self.view.backgroundColor;
+            self.parallaxView.hidden = YES;
             [subview addSubview:self.parallaxView];
             
             CGRect parallaxSeparatorFrame = CGRectZero;
@@ -145,7 +146,7 @@
     }];
 }
 
-- (void)viewWillLayoutSubviews {
+- (void)viewDidLayoutSubviews {
     [super viewWillLayoutSubviews];
     [self updateChromeFrames];
 }
@@ -180,7 +181,6 @@
     }
 }
 
-//TODO: Update parallax effect view
 - (void)updateChromeFrames {
     if (self.enableDoneButton) {
         CGFloat buttonX = self.showDoneButtonOnLeft ? 20 : CGRectGetMaxX(self.view.bounds) - 37;
@@ -192,6 +192,8 @@
         
         self.doneButton.frame = CGRectMake(buttonX, closeButtonY, 17, 17);
     }
+    
+    self.parallaxView.hidden = YES;
 }
 
 #pragma mark - Pager Datasource
@@ -227,6 +229,10 @@
 }
 
 #pragma mark - Scrollview Delegate + Parallax Effect
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    self.parallaxView.hidden = NO;
+}
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     [self updateParallaxViewFrame:scrollView];
