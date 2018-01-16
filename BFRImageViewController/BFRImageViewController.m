@@ -117,6 +117,13 @@
     for (UIView *subview in self.pagerVC.view.subviews) {
         if ([subview isKindOfClass:[UIScrollView class]]) {
             ((UIScrollView *)subview).delegate = self;
+            self.parallaxView.backgroundColor = self.view.backgroundColor;
+            [subview addSubview:self.parallaxView];
+            
+            CGRect parallaxSeparatorFrame = CGRectZero;
+            parallaxSeparatorFrame.size = [self sizeForParallaxView];
+            self.parallaxView.frame = parallaxSeparatorFrame;
+            
             break;
         }
     }
@@ -173,6 +180,7 @@
     }
 }
 
+//TODO: Update parallax effect view
 - (void)updateChromeFrames {
     if (self.enableDoneButton) {
         CGFloat buttonX = self.showDoneButtonOnLeft ? 20 : CGRectGetMaxX(self.view.bounds) - 37;
@@ -218,12 +226,36 @@
     return vc;
 }
 
-#pragma mark - Scrollview Delegate
+#pragma mark - Scrollview Delegate + Parallax Effect
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    CGPoint point = scrollView.contentOffset;
-    CGFloat percentComplete = fabs(point.x - self.view.frame.size.width)/self.view.frame.size.width;
-    NSLog(@"Percent scrolled %f", percentComplete);
+    [self updateParallaxViewFrame:scrollView];
+}
+
+- (void)updateParallaxViewFrame:(UIScrollView *)scrollView {
+    CGRect bounds = scrollView.bounds;
+    CGRect parallaxSeparatorFrame = self.parallaxView.frame;
+
+    CGPoint offset = bounds.origin;
+    CGFloat pageWidth = bounds.size.width;
+
+    NSInteger firstPageIndex = floorf(CGRectGetMinX(bounds) / pageWidth);
+
+    CGFloat x = offset.x - pageWidth * firstPageIndex;
+    CGFloat percentage = x / pageWidth;
+
+    parallaxSeparatorFrame.origin.x = pageWidth * (firstPageIndex + 1) - parallaxSeparatorFrame.size.width * percentage;
+
+    self.parallaxView.frame = parallaxSeparatorFrame;
+}
+
+- (CGSize)sizeForParallaxView {
+    CGSize parallaxSeparatorSize = CGSizeZero;
+    
+    parallaxSeparatorSize.width = PARALLAX_EFFECT_WIDTH * 2;
+    parallaxSeparatorSize.height = self.view.bounds.size.height;
+    
+    return parallaxSeparatorSize;
 }
 
 #pragma mark - Utility methods
