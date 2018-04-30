@@ -143,7 +143,6 @@
     UIView *fromView = [transitionContext viewForKey:UITransitionContextFromViewKey];
     UIView *destinationView = [transitionContext viewForKey:UITransitionContextToViewKey];
     destinationView.alpha = 0.0f;
-    destinationView.frame = animationContainerView.frame;
     
     // Hide the first image from showing during the animation, and the original image
     fromView.subviews.firstObject.hidden = YES;
