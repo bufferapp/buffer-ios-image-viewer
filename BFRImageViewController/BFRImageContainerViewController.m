@@ -10,6 +10,7 @@
 #import "BFRBackLoadedImageSource.h"
 #import "BFRImageViewerConstants.h"
 #import <Photos/Photos.h>
+#import <PhotosUI/PhotosUI.h>
 #import <DACircularProgress/DACircularProgressView.h>
 #import <PINRemoteImage/PINRemoteImage.h>
 #import <PINRemoteImage/PINImageView+PINRemoteImage.h>
@@ -68,7 +69,17 @@
         self.imgLoaded = (UIImage *)self.imgSrc;
         [self addImageToScrollView];
     } else if ([self.imgSrc isKindOfClass:[PHAsset class]]) {
-        [self retrieveImageFromAsset];
+        PHAsset *assetSource = (PHAsset *)self.imgSrc;
+        
+        if (@available(iOS 9.1, *)) {
+            if (assetSource.mediaSubtypes & PHAssetMediaSubtypePhotoLive) {
+                [self retrieveLivePhotoFromAsset];
+            } else {
+                [self retrieveImageFromAsset];
+            }
+        } else {
+            [self retrieveImageFromAsset];
+        }
     } else if ([self.imgSrc isKindOfClass:[FLAnimatedImage class]]) {
         self.imgLoaded = ((FLAnimatedImage *)self.imgSrc).posterImage;
         [self retrieveImageFromFLAnimatedImage];
@@ -423,6 +434,38 @@
     }];
 }
 
+- (void)retrieveLivePhotoFromAsset {
+    if (![self.imgSrc isKindOfClass:[PHAsset class]]) {
+        return;
+    }
+    
+    PHAsset *assetSource = (PHAsset *)self.imgSrc;
+    
+    if (!(assetSource.mediaSubtypes & PHAssetMediaSubtypePhotoLive)) {
+        return;
+    }
+    
+    PHLivePhotoView *livePhotoView = [[PHLivePhotoView alloc]
+                                      initWithFrame:self.view.frame];
+    
+    if (self.shouldDisableAutoplayForLivePhoto == NO) {
+        [livePhotoView startPlaybackWithStyle:PHLivePhotoViewPlaybackStyleFull];
+    }
+    
+    [self.scrollView addSubview:livePhotoView];
+    
+    PHLivePhotoRequestOptions *liveOptions = [[PHLivePhotoRequestOptions alloc] init];
+    liveOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    
+    [[PHImageManager defaultManager]
+     requestLivePhotoForAsset:assetSource
+     targetSize:self.view.frame.size
+     contentMode:PHImageContentModeAspectFit
+     options:liveOptions
+     resultHandler:^(PHLivePhoto * _Nullable livePhoto, NSDictionary * _Nullable info) {
+         livePhotoView.livePhoto = livePhoto;
+     }];
+}
 #pragma mark - Misc. Methods
 
 - (void)dismissUI {
