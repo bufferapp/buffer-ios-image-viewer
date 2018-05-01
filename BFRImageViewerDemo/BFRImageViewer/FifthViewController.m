@@ -45,7 +45,7 @@
     if (status == PHAuthorizationStatusAuthorized) {
         return [self imageViewControllerForLivePhotoDisableAutoplay:NO];
     } else {
-        [self showAuthorizationAlertViewControllerAnimated:YES];
+        [self presentAuthorizationAlertViewControllerAnimated:YES];
         return nil;
     }
 }
@@ -79,33 +79,55 @@
     PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
     
     if (status == PHAuthorizationStatusAuthorized) {
-        BFRImageViewController *imageViewController = [self
-                                                       imageViewControllerForLivePhotoDisableAutoplay:YES];
-        [self presentViewController:imageViewController
-                           animated:YES
-                         completion:nil];
+        [self presentImageViewControllerAnimated:YES];
     } else {
         [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
             if (status == PHAuthorizationStatusAuthorized) {
-                BFRImageViewController *imageViewController = [self imageViewControllerForLivePhotoDisableAutoplay:YES];
-                [self presentViewController:imageViewController
-                                   animated:YES
-                                 completion:nil];
+                [self presentImageViewControllerAnimated:YES];
             } else {
-                [self showAuthorizationAlertViewControllerAnimated:YES];
+                [self presentAuthorizationAlertViewControllerAnimated:YES];
             }
         }];
     }
+}
+
+- (void)presentImageViewControllerAnimated:(BOOL)isAnimated {
+    BFRImageViewController *imageViewController = [self imageViewControllerForLivePhotoDisableAutoplay:YES];
+    
+    if (imageViewController == nil) {
+        [self presentLivePhotoErrorAlertViewControllerAnimated:isAnimated];
+        return;
+    }
+    
+    [self presentViewController:imageViewController
+                       animated:isAnimated
+                     completion:nil];
     
 }
 
-- (void)showAuthorizationAlertViewControllerAnimated:(BOOL)isAnimated {
+- (void)presentAuthorizationAlertViewControllerAnimated:(BOOL)isAnimated {
     UIAlertController *controller = [UIAlertController
                                      alertControllerWithTitle:NSLocalizedString(@"Authorization Failed!", nil)
                                      message:NSLocalizedString(@"In order to access live photo feature, please allow authorization on Settings.", nil)
                                      preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *closeAction = [UIAlertAction
                                   actionWithTitle:NSLocalizedString(@"Close", nil)
+                                  style:UIAlertActionStyleDefault
+                                  handler:nil];
+    [controller addAction:closeAction];
+    
+    [self presentViewController:controller
+                       animated:isAnimated
+                     completion:nil];
+}
+
+- (void)presentLivePhotoErrorAlertViewControllerAnimated:(BOOL)isAnimated {
+    UIAlertController *controller = [UIAlertController
+                                     alertControllerWithTitle:NSLocalizedString(@"Live Photo Fetch Error!", nil)
+                                     message:NSLocalizedString(@"We couldn't fetch any live photo in your photo library. In order to access live photo feature, please take a picture with live photo feature.", nil)
+                                     preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *closeAction = [UIAlertAction
+                                  actionWithTitle:NSLocalizedString(@"OK", nil)
                                   style:UIAlertActionStyleDefault
                                   handler:nil];
     [controller addAction:closeAction];
@@ -124,6 +146,10 @@
     PHFetchResult *allLivePhotos = [PHAsset fetchAssetsWithOptions:options];
     
     PHAsset *firstImage = (PHAsset *)[allLivePhotos firstObject];
+    
+    if (firstImage == nil) {
+        return nil;
+    }
     
     BFRImageViewController *viewController = [[BFRImageViewController alloc]
                                               initWithImageSource:@[firstImage]];
