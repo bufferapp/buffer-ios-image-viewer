@@ -12,7 +12,7 @@
 #import "BFRImageTransitionAnimator.h"
 #import "BFRImageViewerConstants.h"
 
-@interface BFRImageViewController () <UIPageViewControllerDataSource>
+@interface BFRImageViewController () <UIPageViewControllerDataSource, UIScrollViewDelegate>
 
 /*! This view controller just acts as a container to hold a page view controller, which pages between the view controllers that hold an image. */
 @property (strong, nonatomic, nonnull) UIPageViewController *pagerVC;
@@ -35,11 +35,15 @@
 /*! This is used for nothing more than to defer the hiding of the status bar until the view appears to avoid any awkward jumps in the presenting view. */
 @property (nonatomic, getter=shouldHideStatusBar) BOOL hideStatusBar;
 
+/*! This creates the parallax scrolling effect by essentially clipping the scrolled images and moving with the touch point in scrollViewDidScroll. */
+@property (strong, nonatomic, nonnull) UIView *parallaxView;
+
 @end
 
 @implementation BFRImageViewController
 
 #pragma mark - Initializers
+
 - (instancetype)initWithImageSource:(NSArray *)images {
     self = [super init];
     
@@ -50,6 +54,7 @@
         self.enableDoneButton = YES;
         self.showDoneButtonOnLeft = YES;
         self.disableAutoplayForLivePhoto = YES;
+        self.parallaxView = [UIView new];
     }
     
     return self;
@@ -66,12 +71,14 @@
         self.showDoneButtonOnLeft = YES;
         self.usedFor3DTouch = YES;
         self.disableAutoplayForLivePhoto = YES;
+        self.parallaxView = [UIView new];
     }
     
     return self;
 }
 
 #pragma mark - View Lifecycle
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -109,6 +116,22 @@
     [[self view] addSubview:[self.pagerVC view]];
     [self.pagerVC didMoveToParentViewController:self];
     
+    // Attach to pager controller's scrollview for parallax effect when swiping between images
+    for (UIView *subview in self.pagerVC.view.subviews) {
+        if ([subview isKindOfClass:[UIScrollView class]]) {
+            ((UIScrollView *)subview).delegate = self;
+            self.parallaxView.backgroundColor = self.view.backgroundColor;
+            self.parallaxView.hidden = YES;
+            [subview addSubview:self.parallaxView];
+            
+            CGRect parallaxSeparatorFrame = CGRectZero;
+            parallaxSeparatorFrame.size = [self sizeForParallaxView];
+            self.parallaxView.frame = parallaxSeparatorFrame;
+            
+            break;
+        }
+    }
+    
     // Add chrome to UI now if we aren't waiting to be peeked into
     if (!self.isBeingUsedFor3DTouch) {
         [self addChromeToUI];
@@ -126,12 +149,13 @@
     }];
 }
 
-- (void)viewWillLayoutSubviews {
+- (void)viewDidLayoutSubviews {
     [super viewWillLayoutSubviews];
     [self updateChromeFrames];
 }
 
 #pragma mark - Status bar
+
 - (BOOL)prefersStatusBarHidden{
     return self.shouldHideStatusBar;
 }
@@ -141,6 +165,7 @@
 }
 
 #pragma mark - Chrome
+
 - (void)addChromeToUI {
     if (self.enableDoneButton) {
         NSBundle *bundle = [NSBundle bundleForClass:[self class]];
@@ -170,9 +195,12 @@
         
         self.doneButton.frame = CGRectMake(buttonX, closeButtonY, 17, 17);
     }
+    
+    self.parallaxView.hidden = YES;
 }
 
 #pragma mark - Pager Datasource
+
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController {
     NSUInteger index = ((BFRImageContainerViewController *)viewController).pageIndex;
     
@@ -203,7 +231,44 @@
     return vc;
 }
 
+#pragma mark - Scrollview Delegate + Parallax Effect
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    self.parallaxView.hidden = NO;
+}
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self updateParallaxViewFrame:scrollView];
+}
+
+- (void)updateParallaxViewFrame:(UIScrollView *)scrollView {
+    CGRect bounds = scrollView.bounds;
+    CGRect parallaxSeparatorFrame = self.parallaxView.frame;
+
+    CGPoint offset = bounds.origin;
+    CGFloat pageWidth = bounds.size.width;
+
+    NSInteger firstPageIndex = floorf(CGRectGetMinX(bounds) / pageWidth);
+
+    CGFloat x = offset.x - pageWidth * firstPageIndex;
+    CGFloat percentage = x / pageWidth;
+
+    parallaxSeparatorFrame.origin.x = pageWidth * (firstPageIndex + 1) - parallaxSeparatorFrame.size.width * percentage;
+
+    self.parallaxView.frame = parallaxSeparatorFrame;
+}
+
+- (CGSize)sizeForParallaxView {
+    CGSize parallaxSeparatorSize = CGSizeZero;
+    
+    parallaxSeparatorSize.width = PARALLAX_EFFECT_WIDTH * 2;
+    parallaxSeparatorSize.height = self.view.bounds.size.height;
+    
+    return parallaxSeparatorSize;
+}
+
 #pragma mark - Utility methods
+
 - (void)dismiss {
     // If we dismiss from a different image than what was animated in - don't do the custom dismiss transition animation
     if (self.startingIndex != ((BFRImageContainerViewController *)self.pagerVC.viewControllers.firstObject).pageIndex) {
@@ -244,6 +309,7 @@
 }
 
 #pragma mark - Memory Considerations
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     NSLog(@"BFRImageViewer: Dismissing due to memory warning.");

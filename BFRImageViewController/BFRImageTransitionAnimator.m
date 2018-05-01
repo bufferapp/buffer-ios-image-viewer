@@ -25,6 +25,7 @@
 @implementation BFRImageTransitionAnimator
 
 #pragma mark - Initialization
+
 - (instancetype)init {
     self = [super init];
     
@@ -50,6 +51,7 @@
 }
 
 #pragma mark - Utils
+
 - (UIImageView *)temporaryImageView {
     if (self.animatedImage == nil) return nil;
     
@@ -86,6 +88,7 @@
 }
 
 #pragma mark - Animator delegate
+
 - (NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext {
     return self.animationDuration;
 }
@@ -140,7 +143,6 @@
     UIView *fromView = [transitionContext viewForKey:UITransitionContextFromViewKey];
     UIView *destinationView = [transitionContext viewForKey:UITransitionContextToViewKey];
     destinationView.alpha = 0.0f;
-    destinationView.frame = animationContainerView.frame;
     
     // Hide the first image from showing during the animation, and the original image
     fromView.subviews.firstObject.hidden = YES;
@@ -170,6 +172,7 @@
 }
 
 #pragma mark - Transitioning Delegate
+
 - (id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
     return self;
 }

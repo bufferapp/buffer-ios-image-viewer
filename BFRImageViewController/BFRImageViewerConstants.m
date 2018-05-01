@@ -23,4 +23,6 @@ NSString * const GENERAL_OK = @"Ok";
 NSString * const HI_RES_IMG_ERROR_DOMAIN = @"com.bfrImageViewer.backLoadedImgSource";
 NSInteger const HI_RES_IMG_ERROR_CODE = 44;
 
+NSInteger const PARALLAX_EFFECT_WIDTH = 20;
+
 @end
