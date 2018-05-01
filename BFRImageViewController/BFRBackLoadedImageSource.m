@@ -25,6 +25,7 @@
 @implementation BFRBackLoadedImageSource
 
 #pragma mark - Initializers
+
 - (instancetype)initWithInitialImage:(UIImage *)image hiResURL:(NSURL *)url {
     self = [super init];
     
@@ -39,6 +40,7 @@
 }
 
 #pragma mark - Backloading
+
 - (void)loadHighFidelityImage {
     [[PINRemoteImageManager sharedImageManager] downloadImageWithURL:self.url options:PINRemoteImageManagerDisallowAlternateRepresentations progressDownload:nil completion:^(PINRemoteImageManagerResult * _Nonnull result) {
         dispatch_async(dispatch_get_main_queue(), ^{

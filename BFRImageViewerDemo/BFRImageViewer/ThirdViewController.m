@@ -32,8 +32,8 @@
 
     // To use the custom transition animation with BFRImageViewer
     // 1) Have an instance of BFRImageTransitionAnimator around
-    // 2) Set it's aniamtedImage, animatedImageContainer and imageOriginFrame. Optionally, set the desiredContentMode
-    // 3) When you present the BFRImageViewController, set it's transitioningDelegate to your BFRImageTransitionAnimator instance.
+    // 2) Set its animatedImage, animatedImageContainer and imageOriginFrame. Optionally, set the desiredContentMode
+    // 3) When you present the BFRImageViewController, set its transitioningDelegate to your BFRImageTransitionAnimator instance.
     // You can see all of this in action in openImageViewerWithTransition below
     
     // Object to create all the animations
@@ -68,7 +68,7 @@
     self.imageViewAnimator.animatedImageContainer = self.imageView;
     // The image that will be animated
     self.imageViewAnimator.animatedImage = self.imageView.image;
-    // The rect the image will aniamte to and from
+    // The rect the image will animate to and from
     self.imageViewAnimator.imageOriginFrame = self.imageView.frame;
     // Optional - but you'll want this to match the view's content mode that the image is housed in
     self.imageViewAnimator.desiredContentMode = self.imageView.contentMode;
