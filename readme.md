@@ -12,7 +12,7 @@
 ### Summary
 The BFRImageViewer is a turnkey solution to present images within your iOS app 🎉! 
 
-If features swipe gestures to dismiss, automatic image scaling, zooming and panning, supports multiple images, image types, URL backloading, custom view controller transitions, supports live photos and plays nicely with 3D touch! We use it all over the place in [Buffer for iOS](https://itunes.apple.com/us/app/buffer-for-twitter-pinterest/id490474324?mt=8) :-). 
+It features swipe gestures to dismiss, automatic image scaling, zooming and panning, supports multiple images, image types, URL backloading, custom view controller transitions, built in parallax effect, live photos and plays nicely with 3D touch! We use it all over the place in [Buffer for iOS](https://itunes.apple.com/us/app/buffer-for-twitter-pinterest/id490474324?mt=8) :-). 
 
 We've got code samples of each feature in the demo app, feel free to take a peek 👀.
 
@@ -26,7 +26,7 @@ pod 'BFRImageViewer'
 ### Quickstart
 To get up and running quickly with BFRImageViewer, just initialize it - that's really about it!
 ```objc
-//Image source can be an array containing a mix of PHAssets, NSURLs, URL strings, UIImage or BFRBackLoadedImageSource
+//Image source can be an array containing a mix of PHAssets, NSURLs, URL strings, UIImage, PHLivePhoto or BFRBackLoadedImageSource
 BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:@[image]];
 ```
 ```swift
