@@ -53,6 +53,7 @@
         self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
         self.enableDoneButton = YES;
         self.showDoneButtonOnLeft = YES;
+        self.disableAutoplayForLivePhoto = YES;
         self.parallaxView = [UIView new];
     }
     
@@ -69,6 +70,7 @@
         self.enableDoneButton = YES;
         self.showDoneButtonOnLeft = YES;
         self.usedFor3DTouch = YES;
+        self.disableAutoplayForLivePhoto = YES;
         self.parallaxView = [UIView new];
     }
     
@@ -98,6 +100,7 @@
         imgVC.useTransparentBackground = self.isUsingTransparentBackground;
         imgVC.disableSharingLongPress = self.shouldDisableSharingLongPress;
         imgVC.disableHorizontalDrag = (self.images.count > 1);
+        imgVC.disableAutoplayForLivePhoto = self.shouldDisableAutoplayForLivePhoto;
         [self.imageViewControllers addObject:imgVC];
     }
     

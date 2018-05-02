@@ -10,6 +10,7 @@
 #import "BFRBackLoadedImageSource.h"
 #import "BFRImageViewerConstants.h"
 #import <Photos/Photos.h>
+#import <PhotosUI/PhotosUI.h>
 #import <DACircularProgress/DACircularProgressView.h>
 #import <PINRemoteImage/PINRemoteImage.h>
 #import <PINRemoteImage/PINImageView+PINRemoteImage.h>
@@ -22,8 +23,14 @@
 /*! The actual view which will display the @c UIImage, this is housed inside of the scrollView property. */
 @property (strong, nonatomic, nullable) FLAnimatedImageView *imgView;
 
+/*! The actual view which will display the @c PHLivePhoto, this is housed inside of the scrollView property. */
+@property (strong, nonatomic, nullable) PHLivePhotoView *livePhotoImgView;
+
 /*! The image created from the passed in imgSrc property. */
 @property (strong, nonatomic, nullable) UIImage *imgLoaded;
+
+/*! The live photo created from the passed in imgSrc property, if the asset's media subtype bitmask contains @t PHAssetMediaSubtypePhotoLive */
+@property (strong, nonatomic, nullable) PHLivePhoto *liveImgLoaded;
 
 /*! The image created from the passed in animatedImgLoaded property. */
 @property (strong, nonatomic, nullable) FLAnimatedImage *animatedImgLoaded;
@@ -37,9 +44,21 @@
 /*! The behavior which allows for the image to "snap" back to the center if it's vertical offset isn't passed the closing points. */
 @property (strong, nonatomic, nonnull) UIAttachmentBehavior *imgAttatchment;
 
+/*! This view will either by a @c FLAnimatedImageView or an instance of @c PHLivePhotoView depending on the asset's type. */
+@property (strong, nonatomic, readonly, nullable) __kindof UIView *activeAssetView;
+
+/*! Currently, this only shows if a live photo is displayed to avoid gesture recognizer conflicts with playback and sharing. */
+@property (strong, nonatomic, nullable) UIBarButtonItem *shareBarButtonItem;
+
 @end
 
 @implementation BFRImageContainerViewController
+
+#pragma mark - Computed Property
+
+- (__kindof UIView *)activeAssetView {
+    return (self.assetType == BFRImageAssetTypeLivePhoto) ? self.livePhotoImgView : self.imgView;
+}
 
 #pragma mark - Lifecycle
 
@@ -61,18 +80,32 @@
     
     // Fetch image - or just display it
     if ([self.imgSrc isKindOfClass:[NSURL class]]) {
+        self.assetType = BFRImageAssetTypeRemoteImage;
         self.progressView = [self createProgressView];
         [self.view addSubview:self.progressView];
         [self retrieveImageFromURL];
     } else if ([self.imgSrc isKindOfClass:[UIImage class]]) {
+        self.assetType = BFRImageAssetTypeImage;
         self.imgLoaded = (UIImage *)self.imgSrc;
         [self addImageToScrollView];
     } else if ([self.imgSrc isKindOfClass:[PHAsset class]]) {
-        [self retrieveImageFromAsset];
+        PHAsset *assetSource = (PHAsset *)self.imgSrc;
+        
+        // Live photo, or regular
+        if (assetSource.mediaSubtypes & PHAssetMediaSubtypePhotoLive) {
+            self.assetType = BFRImageAssetTypeLivePhoto;
+            self.progressView = [self createProgressView];
+            [self retrieveLivePhotoFromAsset];
+        } else {
+            self.assetType = BFRImageAssetTypeRemoteImage;
+            [self retrieveImageFromAsset];
+        }
     } else if ([self.imgSrc isKindOfClass:[FLAnimatedImage class]]) {
+        self.assetType = BFRImageAssetTypeGIF;
         self.imgLoaded = ((FLAnimatedImage *)self.imgSrc).posterImage;
         [self retrieveImageFromFLAnimatedImage];
     } else if ([self.imgSrc isKindOfClass:[NSString class]]) {
+        self.assetType = BFRImageAssetTypeRemoteImage;
         // Loading view
         NSURL *url = [NSURL URLWithString:self.imgSrc];
         self.imgSrc = url;
@@ -80,10 +113,12 @@
         [self.view addSubview:self.progressView];
         [self retrieveImageFromURL];
     } else if ([self.imgSrc isKindOfClass:[BFRBackLoadedImageSource class]]) {
+        self.assetType = BFRImageAssetTypeRemoteImage;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleHiResImageDownloaded:) name:NOTE_HI_RES_IMG_DOWNLOADED object:nil];
         self.imgLoaded = ((BFRBackLoadedImageSource *)self.imgSrc).image;
         [self addImageToScrollView];
     } else {
+        self.assetType = BFRImageAssetTypeUnknown;
         [self showError];
     }
 }
@@ -110,7 +145,7 @@
 
     // Check for any NaNs, which should get corrected in the next drawing cycle
     BOOL isInvalidRect = (isnan(leftOffset) || isnan(topOffset) || isnan(newWidth) || isnan(newHeight));
-    self.imgView.frame = isInvalidRect ? CGRectZero : newRect;
+    self.activeAssetView.frame = isInvalidRect ? self.view.bounds : newRect;
 }
 
 - (void)dealloc {
@@ -150,19 +185,22 @@
     return progressView;
 }
 
-- (FLAnimatedImageView *)createImageView {
-    FLAnimatedImageView *resizableImageView;
+- (void)createActiveAssetView {
+    __kindof UIView *resizableImageView;
     
-    if(self.animatedImgLoaded){
-        resizableImageView = [[FLAnimatedImageView alloc] init];
+    if (self.assetType == BFRImageAssetTypeLivePhoto) {
+        resizableImageView = [[PHLivePhotoView alloc] initWithFrame:CGRectZero];
+        ((PHLivePhotoView *)resizableImageView).livePhoto = self.liveImgLoaded;
+    } else if (self.assetType == BFRImageAssetTypeGIF) {
+        resizableImageView = [FLAnimatedImageView new];
         [resizableImageView setAnimatedImage:self.animatedImgLoaded];
-    } else {
+    } else if (self.imgView == nil) {
         resizableImageView = [[FLAnimatedImageView alloc] initWithImage:self.imgLoaded];
     }
     
     resizableImageView.frame = self.view.bounds;
     resizableImageView.clipsToBounds = YES;
-    resizableImageView.contentMode = UIViewContentModeScaleAspectFill;
+    resizableImageView.contentMode = UIViewContentModeScaleAspectFit;
     resizableImageView.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
     resizableImageView.layer.cornerRadius = self.isBeingUsedFor3DTouch ? 14.0f : 0.0f;
     
@@ -178,8 +216,8 @@
     [resizableImageView addGestureRecognizer:doubleImgTap];
     
     // Share options
-    if (self.shouldDisableSharingLongPress == NO) {
-        UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showActivitySheet:)];
+    if (self.shouldDisableSharingLongPress == NO && (self.assetType != BFRImageAssetTypeLivePhoto)) {
+        UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleShareLongPress:)];
         [resizableImageView addGestureRecognizer:longPress];
         [singleImgTap requireGestureRecognizerToFail:longPress];
     }
@@ -194,15 +232,21 @@
     }
     [resizableImageView addGestureRecognizer:panImg];
     
-    return resizableImageView;
+    if (self.assetType == BFRImageAssetTypeLivePhoto) {
+        self.livePhotoImgView = (PHLivePhotoView *)resizableImageView;
+        
+        if (self.shouldDisableAutoplayForLivePhoto == NO) {
+            self.livePhotoImgView.playbackGestureRecognizer.enabled = NO;
+        }
+    } else {
+        self.imgView = (FLAnimatedImageView *)resizableImageView;
+    }
 }
 
 - (void)addImageToScrollView {
-    if (!self.imgView) {
-        self.imgView = [self createImageView];
-        [self.scrollView addSubview:self.imgView];
-        [self setMaxMinZoomScalesForCurrentBounds];
-    }
+    [self createActiveAssetView];
+    [self.scrollView addSubview:self.activeAssetView];
+    [self setMaxMinZoomScalesForCurrentBounds];
 }
 
 #pragma mark - Backloaded Image Notification
@@ -239,9 +283,10 @@
 
 /*! This calculates the correct zoom scale for the scrollview once we have the image's size */
 - (void)setMaxMinZoomScalesForCurrentBounds {
+    
     // Sizes
     CGSize boundsSize = self.scrollView.bounds.size;
-    CGSize imageSize = self.imgView.frame.size;
+    CGSize imageSize = self.activeAssetView.frame.size;
 
     // Calculate Min
     CGFloat xScale = boundsSize.width / imageSize.width;
@@ -267,7 +312,7 @@
 /*! Called during zooming of the image to ensure it stays centered */
 - (void)centerScrollViewContents {
     CGSize boundsSize = self.scrollView.bounds.size;
-    CGRect contentsFrame = self.imgView.frame;
+    CGRect contentsFrame = self.activeAssetView.frame;
     
     if (contentsFrame.size.width < boundsSize.width) {
         contentsFrame.origin.x = (boundsSize.width - contentsFrame.size.width) / 2.0f;
@@ -281,7 +326,7 @@
         contentsFrame.origin.y = 0.0f;
     }
     
-    self.imgView.frame = contentsFrame;
+    self.activeAssetView.frame = contentsFrame;
 }
 
 /*! Called when an image is double tapped. Either zooms out or to specific point */
@@ -300,17 +345,17 @@
 #pragma mark - Dragging and Long Press Methods
 /*! This method has three different states due to the gesture recognizer. In them, we either add the required behaviors using UIDynamics, update the image's position based off of the touch points of the drag, or if it's ended we snap it back to the center or dismiss this view controller if the vertical offset meets the requirements. */
 - (void)handleDrag:(UIPanGestureRecognizer *)recognizer {
-    
+
     if (recognizer.state == UIGestureRecognizerStateBegan) {
         [self.animator removeAllBehaviors];
         
         CGPoint location = [recognizer locationInView:self.scrollView];
-        CGPoint imgLocation = [recognizer locationInView:self.imgView];
+        CGPoint imgLocation = [recognizer locationInView:self.activeAssetView];
         
-        UIOffset centerOffset = UIOffsetMake(imgLocation.x - CGRectGetMidX(self.imgView.bounds),
-                                             imgLocation.y - CGRectGetMidY(self.imgView.bounds));
+        UIOffset centerOffset = UIOffsetMake(imgLocation.x - CGRectGetMidX(self.activeAssetView.bounds),
+                                             imgLocation.y - CGRectGetMidY(self.activeAssetView.bounds));
         
-        self.imgAttatchment = [[UIAttachmentBehavior alloc] initWithItem:self.imgView offsetFromCenter:centerOffset attachedToAnchor:location];
+        self.imgAttatchment = [[UIAttachmentBehavior alloc] initWithItem:self.activeAssetView offsetFromCenter:centerOffset attachedToAnchor:location];
         [self.animator addBehavior:self.imgAttatchment];
     } else if (recognizer.state == UIGestureRecognizerStateChanged) {
         [self.imgAttatchment setAnchorPoint:[recognizer locationInView:self.scrollView]];
@@ -322,10 +367,10 @@
         // Check if we should close - or just snap back to the center
         if (CGRectContainsPoint(closeTopThreshhold, location) || CGRectContainsPoint(closeBottomThreshhold, location)) {
             [self.animator removeAllBehaviors];
-            self.imgView.userInteractionEnabled = NO;
+            self.activeAssetView.userInteractionEnabled = NO;
             self.scrollView.userInteractionEnabled = NO;
             
-            UIGravityBehavior *exitGravity = [[UIGravityBehavior alloc] initWithItems:@[self.imgView]];
+            UIGravityBehavior *exitGravity = [[UIGravityBehavior alloc] initWithItems:@[self.activeAssetView]];
             if (CGRectContainsPoint(closeTopThreshhold, location)) {
                 exitGravity.gravityDirection = CGVectorMake(0.0, -1.0);
             }
@@ -333,52 +378,90 @@
             [self.animator addBehavior:exitGravity];
             
             [UIView animateWithDuration:0.25f animations:^ {
-                self.imgView.alpha = 0.25f;
+                self.activeAssetView.alpha = 0.25f;
             } completion:^ (BOOL done) {
-                self.imgView.alpha = 0.0f;
+                self.activeAssetView.alpha = 0.0f;
                 [self dimissUIFromDraggingGesture];
             }];
             
         } else {
             [self.scrollView setZoomScale:self.scrollView.minimumZoomScale animated:YES];
-            UISnapBehavior *snapBack = [[UISnapBehavior alloc] initWithItem:self.imgView snapToPoint:self.scrollView.center];
+            UISnapBehavior *snapBack = [[UISnapBehavior alloc] initWithItem:self.activeAssetView snapToPoint:self.scrollView.center];
             [self.animator addBehavior:snapBack];
         }
     }
 }
 
-- (void)showActivitySheet:(UILongPressGestureRecognizer *)longPress {
-    UIActivityViewController *activityVC;
+- (void)handleShareLongPress:(UILongPressGestureRecognizer *)longPress {
     if (longPress.state == UIGestureRecognizerStateBegan) {
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[self.imgLoaded] applicationActivities:nil];
-            [self presentViewController:activityVC animated:YES completion:nil];
+        [self presentActivityController];
+    }
+}
+
+- (void)presentActivityController {
+    id activityItem = (self.assetType == BFRImageAssetTypeLivePhoto) ? self.liveImgLoaded : self.imgLoaded;
+    if (activityItem == nil) return;
+    
+    UIActivityViewController *activityVC;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[activityItem] applicationActivities:nil];
+        [self presentViewController:activityVC animated:YES completion:nil];
+    } else {
+        activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[activityItem] applicationActivities:nil];
+        activityVC.modalPresentationStyle = UIModalPresentationPopover;
+        activityVC.preferredContentSize = CGSizeMake(320,400);
+        UIPopoverPresentationController *popoverVC = activityVC.popoverPresentationController;
+        popoverVC.sourceView = self.activeAssetView;
+        
+        CGPoint touchPoint;
+        if (self.assetType == BFRImageAssetTypeLivePhoto) {
+            popoverVC.barButtonItem = self.shareBarButtonItem;
         } else {
-            activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[self.imgLoaded] applicationActivities:nil];
-            activityVC.modalPresentationStyle = UIModalPresentationPopover;
-            activityVC.preferredContentSize = CGSizeMake(320,400);
-            UIPopoverPresentationController *popoverVC = activityVC.popoverPresentationController;
-            popoverVC.sourceView = self.imgView;
-            CGPoint touchPoint = [longPress locationInView:self.imgView];
+            // Grab the long press
+            UILongPressGestureRecognizer *longPress;
+            for (UIGestureRecognizer *gesture in self.activeAssetView.gestureRecognizers) {
+                if ([gesture isKindOfClass:[UILongPressGestureRecognizer class]]) {
+                    longPress = (UILongPressGestureRecognizer *)gesture;
+                    break;
+                }
+            }
+            
+            touchPoint = [longPress locationInView:self.activeAssetView];
             popoverVC.sourceRect = CGRectMake(touchPoint.x, touchPoint.y, 1, 1);
-            [self presentViewController:activityVC animated:YES completion:nil];
         }
+    
+        [self presentViewController:activityVC animated:YES completion:nil];
     }
 }
 
 #pragma mark - Image Asset Retrieval
 
 - (void)retrieveImageFromAsset {
-    if (![self.imgSrc isKindOfClass:[PHAsset class]]) {
-        return;
-    }
-    
     PHImageRequestOptions *reqOptions = [PHImageRequestOptions new];
     reqOptions.synchronous = YES;
+    
     [[PHImageManager defaultManager] requestImageDataForAsset:self.imgSrc options:reqOptions resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
         self.imgLoaded = [UIImage imageWithData:imageData];
         [self addImageToScrollView];
     }];
+}
+
+- (void)retrieveLivePhotoFromAsset {
+    PHLivePhotoRequestOptions *liveOptions = [PHLivePhotoRequestOptions new];
+    liveOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    liveOptions.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.progressView setProgress:progress];
+        });
+    };
+    
+    PHAsset *asset = (PHAsset *)self.imgSrc;
+    [[PHImageManager defaultManager] requestLivePhotoForAsset:(PHAsset *)self.imgSrc targetSize:CGSizeMake(asset.pixelWidth, asset.pixelHeight) contentMode:PHImageContentModeAspectFit options:liveOptions resultHandler:^(PHLivePhoto *livePhoto, NSDictionary *info) {
+        [self.progressView removeFromSuperview];
+        self.liveImgLoaded = livePhoto;
+        [self addImageToScrollView];
+        [self createLivePhotoChrome];
+     }];
 }
 
 - (void)retrieveImageFromFLAnimatedImage {
@@ -411,19 +494,48 @@
             }
             
             if(result.alternativeRepresentation){
+                self.assetType = BFRImageAssetTypeGIF;
                 self.imgSrc = result.alternativeRepresentation;
                 [self retrieveImageFromFLAnimatedImage];
             } else {
                 self.imgLoaded = result.image;
+                [self addImageToScrollView];
             }
-            
-            [self addImageToScrollView];
+        
             [self.progressView removeFromSuperview];
         });
     }];
 }
 
 #pragma mark - Misc. Methods
+
+// Creates the live photo badge and the share icon.
+- (void)createLivePhotoChrome {
+    UIImage *livePhotoBadge = [PHLivePhotoView livePhotoBadgeImageWithOptions:PHLivePhotoBadgeOptionsOverContent];
+    UIBarButtonItem *livePhotoBarButton = [[UIBarButtonItem alloc] initWithImage:livePhotoBadge style:UIBarButtonItemStylePlain target:nil action:nil];
+    
+    UIBarButtonItem *flexSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    
+    self.shareBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(presentActivityController)];
+    
+    UIToolbar *tb = [UIToolbar new];
+    tb.tintColor = [UIColor whiteColor];
+    [self.view addSubview:tb];
+    tb.items = @[livePhotoBarButton, flexSpace, self.shareBarButtonItem];
+    [tb setBackgroundImage:[UIImage new] forToolbarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
+    [tb setShadowImage:[UIImage new] forToolbarPosition:UIBarPositionAny];
+    tb.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    if (@available(iOS 11.0, *)) {
+        [tb.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor].active = YES;
+        [tb.widthAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.widthAnchor].active = YES;
+        [tb.centerXAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor].active = YES;
+    } else {
+        [tb.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
+        [tb.widthAnchor constraintEqualToAnchor:self.view.widthAnchor].active = YES;
+        [tb.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor].active = YES;
+    }
+}
 
 - (void)dismissUI {
     [[NSNotificationCenter defaultCenter] postNotificationName:NOTE_VC_SHOULD_DISMISS object:nil];
@@ -444,7 +556,7 @@
 }
 
 - (void)handlePop {
-    self.imgView.layer.cornerRadius = 0.0f;
+    self.activeAssetView.layer.cornerRadius = 0.0f;
 }
 
 @end
