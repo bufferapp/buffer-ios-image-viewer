@@ -20,6 +20,9 @@
 /*! Represents the device orientation state when the controller is presented. If that changes when dismissal occurs, the custom transition animation isn't used. This is because it can be quite difficult for consumers to get the correct frame that the image should animate back to upon rotation. This may be supported in the future. */
 @property (nonatomic) UIDeviceOrientation presentedDeviceOrientation;
 
+/*!Kept around to make sure the presenting view's Y coodinates are persisted upon dismissal. */
+@property (nonatomic) CGFloat presentingViewY;
+
 @end
 
 @implementation BFRImageTransitionAnimator
@@ -106,8 +109,10 @@
     self.presentedDeviceOrientation = [[UIDevice currentDevice] orientation];
     
     UIView *animationContainerView = transitionContext.containerView;
+    UIView *presentingView = [transitionContext viewForKey:UITransitionContextFromViewKey];
     UIView *destinationView = [transitionContext viewForKey:UITransitionContextToViewKey];
     
+    self.presentingViewY = presentingView.frame.origin.y;
     destinationView.alpha = 0.0f;
     
     // Hide the first image from showing during the animation
@@ -142,6 +147,13 @@
     UIView *animationContainerView = transitionContext.containerView;
     UIView *fromView = [transitionContext viewForKey:UITransitionContextFromViewKey];
     UIView *destinationView = [transitionContext viewForKey:UITransitionContextToViewKey];
+    
+    // Size back the presenting view to ensure it looks fine it rotations occurred
+    CGSize destinationViewTargetSize = animationContainerView.bounds.size;
+    CGPoint destinationViewTargetPoint = CGPointMake(0, self.presentingViewY);
+    CGRect destinationViewRect = CGRectMake(destinationViewTargetPoint.x, destinationViewTargetPoint.y,
+                                            destinationViewTargetSize.width, destinationViewTargetSize.height);
+    destinationView.frame = destinationViewRect;
     destinationView.alpha = 0.0f;
     
     // Hide the first image from showing during the animation, and the original image
@@ -151,7 +163,7 @@
     [animationContainerView addSubview:destinationView];
     
     if (self.shouldDismissWithoutCustomTransition == NO) {
-         [animationContainerView addSubview:temporaryAnimatedImageView];
+        [animationContainerView addSubview:temporaryAnimatedImageView];
     } else {
         self.animatedImageContainer.alpha = 1.0f;
     }
