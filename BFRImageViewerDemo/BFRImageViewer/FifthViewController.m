@@ -123,13 +123,42 @@
     options.includeAllBurstAssets = NO;
     PHFetchResult *allLivePhotos = [PHAsset fetchAssetsWithOptions:options];
     
-    PHAsset *firstImage = (PHAsset *)[allLivePhotos firstObject];
+    NSMutableArray *livePhotosToShow = [NSMutableArray new];
     
-    BFRImageViewController *viewController = [[BFRImageViewController alloc]
-                                              initWithImageSource:@[firstImage]];
-    viewController.disableAutoplayForLivePhoto = shouldDisableAutoPlay;
-    return viewController;
+    if (allLivePhotos.count > 0) {
+        NSInteger maxResults = 4;
+        NSInteger currentFetchCount = 0;
+        
+        for (PHFetchResult *result in allLivePhotos) {
+            if (currentFetchCount == maxResults) {
+                break;
+            }
+            
+            [livePhotosToShow addObject:result];
+            currentFetchCount++;
+        }
+        
+        BFRImageViewController *viewController = [[BFRImageViewController alloc]
+                                                  initWithImageSource:[livePhotosToShow copy]];
+        viewController.disableAutoplayForLivePhoto = shouldDisableAutoPlay;
+        return viewController;
+    } else {
+        UIAlertController *controller = [UIAlertController
+                                         alertControllerWithTitle:@"No Live Photos"
+                                         message:@"There doesn't appear to be any live photos on your device."
+                                         preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *closeAction = [UIAlertAction
+                                      actionWithTitle:NSLocalizedString(@"Close", nil)
+                                      style:UIAlertActionStyleDefault
+                                      handler:nil];
+        [controller addAction:closeAction];
+        
+        [self presentViewController:controller
+                           animated:YES
+                         completion:nil];
+        
+        return nil;
+    }
 }
-
 
 @end
