@@ -36,6 +36,9 @@
 /*! Allows you to assign an index which to show first when opening multiple images. */
 @property (nonatomic, assign) NSInteger startingIndex;
 
+/*! Retrieve the index of the currently showing image. */
+@property (nonatomic, assign, readonly) NSInteger currentIndex;
+
 /*! Allows you to enable autoplay for peek&play feature on photo live view. Default to YES */
 @property (nonatomic, getter=shouldDisableAutoplayForLivePhoto) BOOL disableAutoplayForLivePhoto;
 

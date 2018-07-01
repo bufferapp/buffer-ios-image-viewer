@@ -186,6 +186,11 @@
     [self reinitializeUI];
 }
 
+- (NSInteger)currentIndex
+{
+    return ((BFRImageContainerViewController *)self.pagerVC.viewControllers.firstObject).pageIndex;
+}
+
 #pragma mark - Chrome
 
 - (void)addChromeToUI {
@@ -297,7 +302,7 @@
 
 - (void)dismissWithCompletion:(void (^ __nullable)(void))completion {
     // If we dismiss from a different image than what was animated in - don't do the custom dismiss transition animation
-    if (self.startingIndex != ((BFRImageContainerViewController *)self.pagerVC.viewControllers.firstObject).pageIndex) {
+    if (self.startingIndex != self.currentIndex) {
         [self dismissWithoutCustomAnimationWithCompletion:completion];
         return;
     }
