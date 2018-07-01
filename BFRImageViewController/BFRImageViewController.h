@@ -36,4 +36,16 @@
 /*! Allows you to enable autoplay for peek&play feature on photo live view. Default to YES */
 @property (nonatomic, getter=shouldDisableAutoplayForLivePhoto) BOOL disableAutoplayForLivePhoto;
 
+/*! Dismiss properly with animations */
+- (void)dismiss;
+
+/*! Dismiss properly with animations */
+- (void)dismissWithCompletion:(void (^ __nullable)(void))completion;
+
+/*! Dismiss properly without custom animations */
+- (void)dismissWithoutCustomAnimation;
+
+/*! Dismiss properly without custom animations */
+- (void)dismissWithoutCustomAnimationWithCompletion:(void (^ __nullable)(void))completion;
+
 @end

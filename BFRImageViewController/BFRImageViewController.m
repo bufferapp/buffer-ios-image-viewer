@@ -270,21 +270,29 @@
 #pragma mark - Utility methods
 
 - (void)dismiss {
+    [self dismissWithCompletion:nil];
+}
+
+- (void)dismissWithCompletion:(void (^ __nullable)(void))completion {
     // If we dismiss from a different image than what was animated in - don't do the custom dismiss transition animation
     if (self.startingIndex != ((BFRImageContainerViewController *)self.pagerVC.viewControllers.firstObject).pageIndex) {
-        [self dismissWithoutCustomAnimation];
+        [self dismissWithoutCustomAnimationWithCompletion:completion];
         return;
     }
     
     self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES completion:completion];
 }
 
 - (void)dismissWithoutCustomAnimation {
+    [self dismissWithoutCustomAnimationWithCompletion:nil];
+}
+
+- (void)dismissWithoutCustomAnimationWithCompletion:(void (^ __nullable)(void))completion {
     [[NSNotificationCenter defaultCenter] postNotificationName:NOTE_VC_SHOULD_CANCEL_CUSTOM_TRANSITION object:@(1)];
 
     self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    [self dismissViewControllerAnimated:YES completion:nil];
+    [self dismissViewControllerAnimated:YES completion:completion];
 }
 
 - (void)handlePop {
@@ -293,7 +301,7 @@
 }
 
 - (void)handleDoneAction {
-    [self dismiss];
+    [self dismissWithCompletion:nil];
 }
 
 /*! The images and scrollview are not part of this view controller, so instances of @c BFRimageContainerViewController will post notifications when they are touched for things to happen. */
