@@ -77,17 +77,44 @@
     return self;
 }
 
-#pragma mark - View Lifecycle
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
+- (void)reinitializeUI {
     
-    // View setup
-    self.view.backgroundColor = self.isUsingTransparentBackground ? [UIColor clearColor] : [UIColor blackColor];
-
     // Ensure starting index won't trap
     if (self.startingIndex >= self.images.count || self.startingIndex < 0) {
         self.startingIndex = 0;
+    }
+    
+    if (!self.imageViewControllers) {
+        // Set up pager
+        if (!self.pagerVC) {
+            self.pagerVC = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
+        }
+        
+        // Add pager to view hierarchy
+        [self addChildViewController:self.pagerVC];
+        [[self view] addSubview:[self.pagerVC view]];
+        [self.pagerVC didMoveToParentViewController:self];
+        
+        // Attach to pager controller's scrollview for parallax effect when swiping between images
+        for (UIView *subview in self.pagerVC.view.subviews) {
+            if ([subview isKindOfClass:[UIScrollView class]]) {
+                ((UIScrollView *)subview).delegate = self;
+                self.parallaxView.backgroundColor = self.view.backgroundColor;
+                self.parallaxView.hidden = YES;
+                [subview addSubview:self.parallaxView];
+                
+                CGRect parallaxSeparatorFrame = CGRectZero;
+                parallaxSeparatorFrame.size = [self sizeForParallaxView];
+                self.parallaxView.frame = parallaxSeparatorFrame;
+                
+                break;
+            }
+        }
+        
+        // Add chrome to UI now if we aren't waiting to be peeked into
+        if (!self.isBeingUsedFor3DTouch) {
+            [self addChromeToUI];
+        }
     }
     
     // Setup image view controllers
@@ -104,38 +131,25 @@
         [self.imageViewControllers addObject:imgVC];
     }
     
-    // Set up pager
-    self.pagerVC = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
+    // Reset pager to the existing view controllers
     if (self.imageViewControllers.count > 1) {
         self.pagerVC.dataSource = self;
+    } else {
+        self.pagerVC.dataSource = nil;
     }
     [self.pagerVC setViewControllers:@[self.imageViewControllers[self.startingIndex]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+}
+
+#pragma mark - View Lifecycle
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
     
-    // Add pager to view hierarchy
-    [self addChildViewController:self.pagerVC];
-    [[self view] addSubview:[self.pagerVC view]];
-    [self.pagerVC didMoveToParentViewController:self];
-    
-    // Attach to pager controller's scrollview for parallax effect when swiping between images
-    for (UIView *subview in self.pagerVC.view.subviews) {
-        if ([subview isKindOfClass:[UIScrollView class]]) {
-            ((UIScrollView *)subview).delegate = self;
-            self.parallaxView.backgroundColor = self.view.backgroundColor;
-            self.parallaxView.hidden = YES;
-            [subview addSubview:self.parallaxView];
-            
-            CGRect parallaxSeparatorFrame = CGRectZero;
-            parallaxSeparatorFrame.size = [self sizeForParallaxView];
-            self.parallaxView.frame = parallaxSeparatorFrame;
-            
-            break;
-        }
-    }
-    
-    // Add chrome to UI now if we aren't waiting to be peeked into
-    if (!self.isBeingUsedFor3DTouch) {
-        [self addChromeToUI];
-    }
+    // View setup
+    self.view.backgroundColor = self.isUsingTransparentBackground ? [UIColor clearColor] : [UIColor blackColor];
+
+    // Prepare the UI
+    [self reinitializeUI];
     
     // Register for touch events on the images/scrollviews to hide UI chrome
     [self registerNotifcations];
@@ -162,6 +176,14 @@
 
 - (UIStatusBarAnimation)preferredStatusBarUpdateAnimation {
     return UIStatusBarAnimationSlide;
+}
+
+#pragma mark - Accessors
+
+- (void)setImageSource:(NSArray *)images {
+    self.images = images;
+    
+    [self reinitializeUI];
 }
 
 #pragma mark - Chrome
