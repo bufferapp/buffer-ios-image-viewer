@@ -77,6 +77,57 @@
     return self;
 }
 
+#pragma mark - View Lifecycle
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    // View setup
+    self.view.backgroundColor = self.isUsingTransparentBackground ? [UIColor clearColor] : [UIColor blackColor];
+
+    // Prepare the UI
+    [self reinitializeUI];
+    
+    // Register for touch events on the images/scrollviews to hide UI chrome
+    [self registerNotifcations];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.hideStatusBar = YES;
+    [UIView animateWithDuration:0.1 animations:^{
+        [self setNeedsStatusBarAppearanceUpdate];
+    }];
+}
+
+- (void)viewDidLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    [self updateChromeFrames];
+}
+
+#pragma mark - Status bar
+
+- (BOOL)prefersStatusBarHidden{
+    return self.shouldHideStatusBar;
+}
+
+- (UIStatusBarAnimation)preferredStatusBarUpdateAnimation {
+    return UIStatusBarAnimationSlide;
+}
+
+#pragma mark - Accessors
+
+- (void)setImageSource:(NSArray *)images {
+    self.images = images;
+    [self reinitializeUI];
+}
+
+- (NSInteger)currentIndex {
+    return ((BFRImageContainerViewController *)self.pagerVC.viewControllers.firstObject).pageIndex;
+}
+
+#pragma mark - Chrome/UI
+
 - (void)reinitializeUI {
     
     // Ensure starting index won't trap
@@ -87,7 +138,9 @@
     if (!self.imageViewControllers) {
         // Set up pager
         if (!self.pagerVC) {
-            self.pagerVC = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:nil];
+            self.pagerVC = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll
+                                                           navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal
+                                                                         options:nil];
         }
         
         // Add pager to view hierarchy
@@ -132,66 +185,12 @@
     }
     
     // Reset pager to the existing view controllers
-    if (self.imageViewControllers.count > 1) {
-        self.pagerVC.dataSource = self;
-    } else {
-        self.pagerVC.dataSource = nil;
-    }
-    [self.pagerVC setViewControllers:@[self.imageViewControllers[self.startingIndex]] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+    self.pagerVC.dataSource = self.imageViewControllers.count > 1 ? self : nil;
+    [self.pagerVC setViewControllers:@[self.imageViewControllers[self.startingIndex]]
+                           direction:UIPageViewControllerNavigationDirectionForward
+                            animated:NO
+                          completion:nil];
 }
-
-#pragma mark - View Lifecycle
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    // View setup
-    self.view.backgroundColor = self.isUsingTransparentBackground ? [UIColor clearColor] : [UIColor blackColor];
-
-    // Prepare the UI
-    [self reinitializeUI];
-    
-    // Register for touch events on the images/scrollviews to hide UI chrome
-    [self registerNotifcations];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    self.hideStatusBar = YES;
-    [UIView animateWithDuration:0.1 animations:^{
-        [self setNeedsStatusBarAppearanceUpdate];
-    }];
-}
-
-- (void)viewDidLayoutSubviews {
-    [super viewWillLayoutSubviews];
-    [self updateChromeFrames];
-}
-
-#pragma mark - Status bar
-
-- (BOOL)prefersStatusBarHidden{
-    return self.shouldHideStatusBar;
-}
-
-- (UIStatusBarAnimation)preferredStatusBarUpdateAnimation {
-    return UIStatusBarAnimationSlide;
-}
-
-#pragma mark - Accessors
-
-- (void)setImageSource:(NSArray *)images {
-    self.images = images;
-    
-    [self reinitializeUI];
-}
-
-- (NSInteger)currentIndex
-{
-    return ((BFRImageContainerViewController *)self.pagerVC.viewControllers.firstObject).pageIndex;
-}
-
-#pragma mark - Chrome
 
 - (void)addChromeToUI {
     if (self.enableDoneButton) {
