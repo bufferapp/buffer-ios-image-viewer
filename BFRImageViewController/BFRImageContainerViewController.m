@@ -8,10 +8,10 @@
 
 #import "BFRImageContainerViewController.h"
 #import "BFRBackLoadedImageSource.h"
+#import "BFRImageViewerDownloadProgressView.h"
 #import "BFRImageViewerConstants.h"
 #import <Photos/Photos.h>
 #import <PhotosUI/PhotosUI.h>
-#import <DACircularProgress/DACircularProgressView.h>
 #import <PINRemoteImage/PINRemoteImage.h>
 #import <PINRemoteImage/PINImageView+PINRemoteImage.h>
 
@@ -36,7 +36,7 @@
 @property (strong, nonatomic, nullable) FLAnimatedImage *animatedImgLoaded;
 
 /*! If the imgSrc property requires a network call, this displays inside the view to denote the loading progress. */
-@property (strong, nonatomic, nullable) DACircularProgressView *progressView;
+@property (strong, nonatomic, nullable) BFRImageViewerDownloadProgressView *progressView;
 
 /*! The animator which attaches the behaviors needed to drag the image. */
 @property (strong, nonatomic, nonnull) UIDynamicAnimator *animator;
@@ -81,8 +81,7 @@
     // Fetch image - or just display it
     if ([self.imgSrc isKindOfClass:[NSURL class]]) {
         self.assetType = BFRImageAssetTypeRemoteImage;
-        self.progressView = [self createProgressView];
-        [self.view addSubview:self.progressView];
+        [self setProgressView];
         [self retrieveImageFromURL];
     } else if ([self.imgSrc isKindOfClass:[UIImage class]]) {
         self.assetType = BFRImageAssetTypeImage;
@@ -94,10 +93,10 @@
         // Live photo, or regular
         if (assetSource.mediaSubtypes & PHAssetMediaSubtypePhotoLive) {
             self.assetType = BFRImageAssetTypeLivePhoto;
-            self.progressView = [self createProgressView];
+            [self setProgressView];
             [self retrieveLivePhotoFromAsset];
         } else {
-            self.assetType = BFRImageAssetTypeRemoteImage;
+            self.assetType = BFRImageAssetTypeImage;
             [self retrieveImageFromAsset];
         }
     } else if ([self.imgSrc isKindOfClass:[FLAnimatedImage class]]) {
@@ -109,8 +108,7 @@
         // Loading view
         NSURL *url = [NSURL URLWithString:self.imgSrc];
         self.imgSrc = url;
-        self.progressView = [self createProgressView];
-        [self.view addSubview:self.progressView];
+        [self setProgressView];
         [self retrieveImageFromURL];
     } else if ([self.imgSrc isKindOfClass:[BFRBackLoadedImageSource class]]) {
         self.assetType = BFRImageAssetTypeRemoteImage;
@@ -154,6 +152,18 @@
 
 #pragma mark - UI Methods
 
+- (void)setProgressView {
+    self.progressView = [BFRImageViewerDownloadProgressView new];
+    self.progressView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.progressView];
+    
+    [NSLayoutConstraint activateConstraints:@[[self.progressView.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
+                                              [self.progressView.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor],
+                                              [self.progressView.widthAnchor constraintEqualToConstant:self.progressView.progessSize.width],
+                                              [self.progressView.heightAnchor constraintEqualToConstant:self.progressView.progessSize.height]
+                                              ]];
+}
+
 - (UIScrollView *)createScrollView {
     UIScrollView *sv = [[UIScrollView alloc] initWithFrame:self.view.bounds];
     sv.delegate = self;
@@ -169,20 +179,6 @@
     [sv addGestureRecognizer:singleSVTap];
     
     return sv;
-}
-
-- (DACircularProgressView *)createProgressView {
-    CGFloat screenWidth = self.view.bounds.size.width;
-    CGFloat screenHeight = self.view.bounds.size.height;
-    
-    DACircularProgressView *progressView = [[DACircularProgressView alloc] initWithFrame:CGRectMake((screenWidth-35.)/2., (screenHeight-35.)/2, 35.0f, 35.0f)];
-    [progressView setProgress:0.0f];
-    progressView.thicknessRatio = 0.1;
-    progressView.roundedCorners = NO;
-    progressView.trackTintColor = [UIColor colorWithWhite:0.2 alpha:1];
-    progressView.progressTintColor = [UIColor colorWithWhite:1.0 alpha:1];
-    
-    return progressView;
 }
 
 - (void)createActiveAssetView {
@@ -451,7 +447,7 @@
     liveOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
     liveOptions.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.progressView setProgress:progress];
+            self.progressView.progress = progress;
         });
     };
     
@@ -478,11 +474,11 @@
 
 - (void)retrieveImageFromURL {
     NSURL *url = (NSURL *)self.imgSrc;
-    
+
     [[PINRemoteImageManager sharedImageManager] downloadImageWithURL:url options:0 progressDownload:^(int64_t completedBytes, int64_t totalBytes) {
         float fractionCompleted = (float)completedBytes/(float)totalBytes;
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.progressView setProgress:fractionCompleted];
+            self.progressView.progress = fractionCompleted;
         });
     } completion:^(PINRemoteImageManagerResult * _Nonnull result) {
         

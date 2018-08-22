@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1702C69A1F86BBFC00104D0B /* BFRImageViewerConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 1702C6991F86BBFC00104D0B /* BFRImageViewerConstants.m */; };
 		1702C69C1F86C3A400104D0B /* lowResImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 1702C69B1F86C32100104D0B /* lowResImage.png */; };
+		170BE4FF212DBB2B005703C6 /* BFRImageViewerDownloadProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 170BE4FE212DBB2B005703C6 /* BFRImageViewerDownloadProgressView.m */; };
 		171F4AD01E96BE0500F4AF01 /* BFRBackLoadedImageSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 171F4ACF1E96BE0500F4AF01 /* BFRBackLoadedImageSource.m */; };
 		171F4AD31E96C31400F4AF01 /* FourthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 171F4AD21E96C31400F4AF01 /* FourthViewController.m */; };
 		1797CB8E1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 1797CB8D1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m */; };
@@ -33,6 +34,8 @@
 		1702C6981F86BBFC00104D0B /* BFRImageViewerConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BFRImageViewerConstants.h; sourceTree = "<group>"; };
 		1702C6991F86BBFC00104D0B /* BFRImageViewerConstants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BFRImageViewerConstants.m; sourceTree = "<group>"; };
 		1702C69B1F86C32100104D0B /* lowResImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lowResImage.png; sourceTree = "<group>"; };
+		170BE4FD212DBB2B005703C6 /* BFRImageViewerDownloadProgressView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BFRImageViewerDownloadProgressView.h; sourceTree = "<group>"; };
+		170BE4FE212DBB2B005703C6 /* BFRImageViewerDownloadProgressView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BFRImageViewerDownloadProgressView.m; sourceTree = "<group>"; };
 		171F4ACE1E96BE0500F4AF01 /* BFRBackLoadedImageSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BFRBackLoadedImageSource.h; sourceTree = "<group>"; };
 		171F4ACF1E96BE0500F4AF01 /* BFRBackLoadedImageSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BFRBackLoadedImageSource.m; sourceTree = "<group>"; };
 		171F4AD11E96C31400F4AF01 /* FourthViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FourthViewController.h; sourceTree = "<group>"; };
@@ -162,6 +165,8 @@
 				171F4ACF1E96BE0500F4AF01 /* BFRBackLoadedImageSource.m */,
 				1702C6981F86BBFC00104D0B /* BFRImageViewerConstants.h */,
 				1702C6991F86BBFC00104D0B /* BFRImageViewerConstants.m */,
+				170BE4FD212DBB2B005703C6 /* BFRImageViewerDownloadProgressView.h */,
+				170BE4FE212DBB2B005703C6 /* BFRImageViewerDownloadProgressView.m */,
 			);
 			name = BFRImageViewController;
 			path = ../../BFRImageViewController;
@@ -187,8 +192,6 @@
 				944B4DA71BFFC0C000B9BF87 /* Sources */,
 				944B4DA81BFFC0C000B9BF87 /* Frameworks */,
 				944B4DA91BFFC0C000B9BF87 /* Resources */,
-				978A01AA282D37386C67AD06 /* [CP] Embed Pods Frameworks */,
-				FC7DE66A0F2E7C3D782C1853 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -255,43 +258,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-BFRImageViewer-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		978A01AA282D37386C67AD06 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BFRImageViewer/Pods-BFRImageViewer-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		FC7DE66A0F2E7C3D782C1853 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-BFRImageViewer/Pods-BFRImageViewer-resources.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -302,6 +278,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				944B4DB91BFFC0C000B9BF87 /* SecondViewController.m in Sources */,
+				170BE4FF212DBB2B005703C6 /* BFRImageViewerDownloadProgressView.m in Sources */,
 				1797CB8E1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m in Sources */,
 				1797CB911E81BBB200D9F729 /* ThirdViewController.m in Sources */,
 				95D4797D1F97C348001E54D4 /* FifthViewController.m in Sources */,

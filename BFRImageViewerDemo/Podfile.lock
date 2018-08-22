@@ -1,5 +1,4 @@
 PODS:
-  - DACircularProgress (2.3.1)
   - FLAnimatedImage (1.0.12)
   - PINCache (3.0.1-beta.2):
     - PINCache/Arc-exception-safe (= 3.0.1-beta.2)
@@ -19,8 +18,12 @@ PODS:
     - PINRemoteImage/Core
 
 DEPENDENCIES:
-  - DACircularProgress
   - PINRemoteImage (from `https://github.com/pinterest/PINRemoteImage.git`)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - FLAnimatedImage
+    - PINCache
 
 EXTERNAL SOURCES:
   PINRemoteImage:
@@ -32,11 +35,10 @@ CHECKOUT OPTIONS:
     :git: https://github.com/pinterest/PINRemoteImage.git
 
 SPEC CHECKSUMS:
-  DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
   PINCache: 6d273a6e0754bd26e3f12a38a90dde73cc6a42b2
   PINRemoteImage: ff63baf185088530db6cfa41cb665e2b5126b5c3
 
-PODFILE CHECKSUM: bbfa0df3719b324330008a0f77bd00f55234120a
+PODFILE CHECKSUM: dbe839487dd363bb5f818b4a7bf33c99a444bd2c
 
-COCOAPODS: 1.1.1
+COCOAPODS: 1.5.3
