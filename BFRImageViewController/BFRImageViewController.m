@@ -107,7 +107,11 @@
 
 #pragma mark - Status bar
 
-- (BOOL)prefersStatusBarHidden{
+- (BOOL)prefersStatusBarHidden {
+    if (self.presentingViewController.prefersStatusBarHidden) {
+        return YES;
+    }
+    
     return self.shouldHideStatusBar;
 }
 
