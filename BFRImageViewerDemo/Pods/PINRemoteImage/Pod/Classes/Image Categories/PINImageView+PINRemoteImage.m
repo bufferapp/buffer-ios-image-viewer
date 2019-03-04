@@ -95,10 +95,10 @@
     self.image = image;
 }
 
-- (void)pin_updateUIWithRemoteImageManagerResult:(PINRemoteImageManagerResult *)result
+- (void)pin_updateUIWithImage:(PINImage *)image animatedImage:(FLAnimatedImage *)animatedImage
 {
-    if (result.image) {
-        self.image = result.image;
+    if (image) {
+        self.image = image;
 
 #if PIN_TARGET_IOS
         [self setNeedsLayout];

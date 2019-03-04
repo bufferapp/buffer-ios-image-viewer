@@ -4,9 +4,6 @@
 
 #import "PINMemoryCache.h"
 
-#import <pthread.h>
-#import "PINOperationQueue.h"
-
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_4_0
 #import <UIKit/UIKit.h>
 #endif
@@ -14,8 +11,13 @@
 static NSString * const PINMemoryCachePrefix = @"com.pinterest.PINMemoryCache";
 
 @interface PINMemoryCache ()
-@property (strong, nonatomic) PINOperationQueue *operationQueue;
-@property (assign, nonatomic) pthread_mutex_t mutex;
+#if OS_OBJECT_USE_OBJC
+@property (strong, nonatomic) dispatch_queue_t concurrentQueue;
+@property (strong, nonatomic) dispatch_semaphore_t lockSemaphore;
+#else
+@property (assign, nonatomic) dispatch_queue_t concurrentQueue;
+@property (assign, nonatomic) dispatch_semaphore_t lockSemaphore;
+#endif
 @property (strong, nonatomic) NSMutableDictionary *dictionary;
 @property (strong, nonatomic) NSMutableDictionary *dates;
 @property (strong, nonatomic) NSMutableDictionary *costs;
@@ -42,22 +44,19 @@ static NSString * const PINMemoryCachePrefix = @"com.pinterest.PINMemoryCache";
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-    __unused int result = pthread_mutex_destroy(&_mutex);
-    NSCAssert(result == 0, @"Failed to destroy lock in PINMemoryCache %p. Code: %d", (void *)self, result);
+    #if !OS_OBJECT_USE_OBJC
+    dispatch_release(_concurrentQueue);
+    dispatch_release(_lockSemaphore);
+    _concurrentQueue = nil;
+    #endif
 }
 
 - (instancetype)init
 {
-    return [self initWithOperationQueue:[PINOperationQueue sharedOperationQueue]];
-}
-
-- (instancetype)initWithOperationQueue:(PINOperationQueue *)operationQueue
-{
     if (self = [super init]) {
-        __unused int result = pthread_mutex_init(&_mutex, NULL);
-        NSAssert(result == 0, @"Failed to init lock in PINMemoryCache %@. Code: %d", self, result);
-
-        _operationQueue = operationQueue;
+        _lockSemaphore = dispatch_semaphore_create(1);
+        NSString *queueName = [[NSString alloc] initWithFormat:@"%@.%p", PINMemoryCachePrefix, (void *)self];
+        _concurrentQueue = dispatch_queue_create([queueName UTF8String], DISPATCH_QUEUE_CONCURRENT);
 
         _dictionary = [[NSMutableDictionary alloc] init];
         _dates = [[NSMutableDictionary alloc] init];
@@ -116,19 +115,19 @@ static NSString * const PINMemoryCachePrefix = @"com.pinterest.PINMemoryCache";
 
     __weak PINMemoryCache *weakSelf = self;
 
-    [self.operationQueue addOperation:^{
+    dispatch_async(_concurrentQueue, ^{
         PINMemoryCache *strongSelf = weakSelf;
         if (!strongSelf) {
             return;
         }
-        
+
         [strongSelf lock];
         PINMemoryCacheBlock didReceiveMemoryWarningBlock = strongSelf->_didReceiveMemoryWarningBlock;
         [strongSelf unlock];
-        
+
         if (didReceiveMemoryWarningBlock)
             didReceiveMemoryWarningBlock(strongSelf);
-    } withPriority:PINOperationQueuePriorityHigh];
+    });
 }
 
 - (void)didReceiveEnterBackgroundNotification:(NSNotification *)notification
@@ -138,7 +137,7 @@ static NSString * const PINMemoryCachePrefix = @"com.pinterest.PINMemoryCache";
 
     __weak PINMemoryCache *weakSelf = self;
 
-    [self.operationQueue addOperation:^{
+    dispatch_async(_concurrentQueue, ^{
         PINMemoryCache *strongSelf = weakSelf;
         if (!strongSelf) {
             return;
@@ -150,7 +149,7 @@ static NSString * const PINMemoryCachePrefix = @"com.pinterest.PINMemoryCache";
 
         if (didEnterBackgroundBlock)
             didEnterBackgroundBlock(strongSelf);
-    } withPriority:PINOperationQueuePriorityHigh];
+    });
 }
 
 - (void)removeObjectAndExecuteBlocksForKey:(NSString *)key
@@ -262,12 +261,10 @@ static NSString * const PINMemoryCachePrefix = @"com.pinterest.PINMemoryCache";
     __weak PINMemoryCache *weakSelf = self;
     
     dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(ageLimit * NSEC_PER_SEC));
-    dispatch_after(time, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+    dispatch_after(time, _concurrentQueue, ^(void){
         PINMemoryCache *strongSelf = weakSelf;
-        [strongSelf.operationQueue addOperation:^{
-            PINMemoryCache *strongSelf = weakSelf;
-            [strongSelf trimToAgeLimitRecursively];
-        } withPriority:PINOperationQueuePriorityHigh];
+        
+        [strongSelf trimToAgeLimitRecursively];
     });
 }
 
@@ -280,25 +277,25 @@ static NSString * const PINMemoryCachePrefix = @"com.pinterest.PINMemoryCache";
     
     __weak PINMemoryCache *weakSelf = self;
     
-    [self.operationQueue addOperation:^{
+    dispatch_async(_concurrentQueue, ^{
         PINMemoryCache *strongSelf = weakSelf;
         BOOL containsObject = [strongSelf containsObjectForKey:key];
         
         block(containsObject);
-    } withPriority:PINOperationQueuePriorityHigh];
+    });
 }
 
 - (void)objectForKey:(NSString *)key block:(PINMemoryCacheObjectBlock)block
 {
     __weak PINMemoryCache *weakSelf = self;
     
-    [self.operationQueue addOperation:^{
+    dispatch_async(_concurrentQueue, ^{
         PINMemoryCache *strongSelf = weakSelf;
         id object = [strongSelf objectForKey:key];
         
         if (block)
             block(strongSelf, key, object);
-    } withPriority:PINOperationQueuePriorityHigh];
+    });
 }
 
 - (void)setObject:(id)object forKey:(NSString *)key block:(PINMemoryCacheObjectBlock)block
@@ -310,91 +307,91 @@ static NSString * const PINMemoryCachePrefix = @"com.pinterest.PINMemoryCache";
 {
     __weak PINMemoryCache *weakSelf = self;
     
-    [self.operationQueue addOperation:^{
+    dispatch_async(_concurrentQueue, ^{
         PINMemoryCache *strongSelf = weakSelf;
         [strongSelf setObject:object forKey:key withCost:cost];
         
         if (block)
             block(strongSelf, key, object);
-    } withPriority:PINOperationQueuePriorityHigh];
+    });
 }
 
 - (void)removeObjectForKey:(NSString *)key block:(PINMemoryCacheObjectBlock)block
 {
     __weak PINMemoryCache *weakSelf = self;
     
-    [self.operationQueue addOperation:^{
+    dispatch_async(_concurrentQueue, ^{
         PINMemoryCache *strongSelf = weakSelf;
         [strongSelf removeObjectForKey:key];
         
         if (block)
             block(strongSelf, key, nil);
-    } withPriority:PINOperationQueuePriorityHigh];
+    });
 }
 
 - (void)trimToDate:(NSDate *)trimDate block:(PINMemoryCacheBlock)block
 {
     __weak PINMemoryCache *weakSelf = self;
     
-    [self.operationQueue addOperation:^{
+    dispatch_async(_concurrentQueue, ^{
         PINMemoryCache *strongSelf = weakSelf;
         [strongSelf trimToDate:trimDate];
         
         if (block)
             block(strongSelf);
-    } withPriority:PINOperationQueuePriorityHigh];
+    });
 }
 
 - (void)trimToCost:(NSUInteger)cost block:(PINMemoryCacheBlock)block
 {
     __weak PINMemoryCache *weakSelf = self;
     
-    [self.operationQueue addOperation:^{
+    dispatch_async(_concurrentQueue, ^{
         PINMemoryCache *strongSelf = weakSelf;
         [strongSelf trimToCost:cost];
         
         if (block)
             block(strongSelf);
-    } withPriority:PINOperationQueuePriorityHigh];
+    });
 }
 
 - (void)trimToCostByDate:(NSUInteger)cost block:(PINMemoryCacheBlock)block
 {
     __weak PINMemoryCache *weakSelf = self;
     
-    [self.operationQueue addOperation:^{
+    dispatch_async(_concurrentQueue, ^{
         PINMemoryCache *strongSelf = weakSelf;
         [strongSelf trimToCostByDate:cost];
         
         if (block)
             block(strongSelf);
-    } withPriority:PINOperationQueuePriorityHigh];
+    });
 }
 
 - (void)removeAllObjects:(PINMemoryCacheBlock)block
 {
     __weak PINMemoryCache *weakSelf = self;
     
-    [self.operationQueue addOperation:^{
+    dispatch_async(_concurrentQueue, ^{
         PINMemoryCache *strongSelf = weakSelf;
         [strongSelf removeAllObjects];
         
         if (block)
             block(strongSelf);
-    } withPriority:PINOperationQueuePriorityHigh];
+    });
 }
 
 - (void)enumerateObjectsWithBlock:(PINMemoryCacheObjectBlock)block completionBlock:(PINMemoryCacheBlock)completionBlock
 {
     __weak PINMemoryCache *weakSelf = self;
     
-    [self.operationQueue addOperation:^{
+    dispatch_async(_concurrentQueue, ^{
         PINMemoryCache *strongSelf = weakSelf;
         [strongSelf enumerateObjectsWithBlock:block];
         
         if (completionBlock)
             completionBlock(strongSelf);
-    } withPriority:PINOperationQueuePriorityHigh];
+    });
 }
 
 #pragma mark - Public Synchronous Methods -
@@ -748,14 +745,12 @@ static NSString * const PINMemoryCachePrefix = @"com.pinterest.PINMemoryCache";
 
 - (void)lock
 {
-    __unused int result = pthread_mutex_lock(&_mutex);
-    NSAssert(result == 0, @"Failed to lock PINMemoryCache %@. Code: %d", self, result);
+    dispatch_semaphore_wait(_lockSemaphore, DISPATCH_TIME_FOREVER);
 }
 
 - (void)unlock
 {
-    __unused int result = pthread_mutex_unlock(&_mutex);
-    NSAssert(result == 0, @"Failed to unlock PINMemoryCache %@. Code: %d", self, result);
+    dispatch_semaphore_signal(_lockSemaphore);
 }
 
 @end

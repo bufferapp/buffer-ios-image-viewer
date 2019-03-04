@@ -96,13 +96,13 @@
     self.image = image;
 }
 
-- (void)pin_updateUIWithRemoteImageManagerResult:(PINRemoteImageManagerResult *)result
+- (void)pin_updateUIWithImage:(UIImage *)image animatedImage:(FLAnimatedImage *)animatedImage
 {
-    if (result.alternativeRepresentation && [result.alternativeRepresentation isKindOfClass:[FLAnimatedImage class]]) {
-        self.animatedImage = (FLAnimatedImage *)result.alternativeRepresentation;
+    if (animatedImage) {
+        self.animatedImage = animatedImage;
         [self setNeedsLayout];
-    } else if (result.image) {
-        self.image = result.image;
+    } else if (image) {
+        self.image = image;
         [self setNeedsLayout];
     }
 }

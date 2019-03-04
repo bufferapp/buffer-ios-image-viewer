@@ -8,8 +8,6 @@
 
 #import "PINURLSessionManager.h"
 
-NSString * const PINURLErrorDomain = @"PINURLErrorDomain";
-
 @interface PINURLSessionManager () <NSURLSessionDelegate, NSURLSessionDataDelegate>
 
 @property (nonatomic, strong) NSLock *sessionManagerLock;
@@ -72,16 +70,12 @@ NSString * const PINURLErrorDomain = @"PINURLErrorDomain";
 
 #pragma mark NSURLSessionDataDelegate
 
-- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
+- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler 
 {
     if ([self.delegate respondsToSelector:@selector(didReceiveAuthenticationChallenge:forTask:completionHandler:)]) {
         [self.delegate didReceiveAuthenticationChallenge:challenge forTask:nil completionHandler:completionHandler];
     } else {
-        //Even though this is documented to be non-nil, in the wild it sometimes is
-        if (completionHandler) {
-            completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
-        }
-        
+        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
     }
 }
 
@@ -97,10 +91,7 @@ NSString * const PINURLErrorDomain = @"PINURLErrorDomain";
         if ([strongSelf.delegate respondsToSelector:@selector(didReceiveAuthenticationChallenge:forTask:completionHandler:)]) {
             [strongSelf.delegate didReceiveAuthenticationChallenge:challenge forTask:task completionHandler:completionHandler];
         } else {
-            //Even though this is documented to be non-nil, in the wild it sometimes is
-            if (completionHandler) {
-                completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
-            }
+            completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
         }
     });
 }
@@ -123,13 +114,10 @@ NSString * const PINURLErrorDomain = @"PINURLErrorDomain";
     [self lock];
         dispatch_queue_t delegateQueue = self.delegateQueues[@(task.taskIdentifier)];
     [self unlock];
-    if (!error && [task.response isKindOfClass:[NSHTTPURLResponse class]]) {
-        NSInteger statusCode = [(NSHTTPURLResponse *)task.response statusCode];
-        if (statusCode >= 400) {
-            error = [NSError errorWithDomain:PINURLErrorDomain
-                                        code:statusCode
-                                    userInfo:@{NSLocalizedDescriptionKey : @"HTTP Error Response."}];
-        }
+    if (!error && [task.response isKindOfClass:[NSHTTPURLResponse class]] && [(NSHTTPURLResponse *)task.response statusCode] == 404) {
+        error = [NSError errorWithDomain:NSURLErrorDomain
+                                    code:NSURLErrorRedirectToNonExistentLocation
+                                userInfo:@{NSLocalizedDescriptionKey : @"The requested URL was not found on this server."}];
     }
     __weak typeof(self) weakSelf = self;
     dispatch_async(delegateQueue, ^{

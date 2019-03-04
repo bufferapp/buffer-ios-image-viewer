@@ -11,7 +11,9 @@
 #import "PINRemoteImage.h"
 #import "PINRemoteImageCallbacks.h"
 
-@interface PINRemoteImageDownloadTask ()
+@interface PINRemoteImageDownloadTask () {
+    BOOL _canSetDataTaskPriority;
+}
 
 @end
 
@@ -20,7 +22,7 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        _numberOfRetries = 0;
+        _canSetDataTaskPriority = [NSURLSessionTask instancesRespondToSelector:@selector(setPriority:)];
     }
     return self;
 }
@@ -65,7 +67,7 @@
             dispatch_async(queue, ^
             {
                 progressImageBlock([PINRemoteImageManagerResult imageResultWithImage:image
-                                                           alternativeRepresentation:nil
+                                                                       animatedImage:nil
                                                                        requestLength:CACurrentMediaTime() - requestTime
                                                                                error:nil
                                                                           resultType:PINRemoteImageResultTypeProgress
@@ -91,7 +93,7 @@
 - (void)setPriority:(PINRemoteImageManagerPriority)priority
 {
     [super setPriority:priority];
-    if (PINNSURLSessionTaskSupportsPriority) {
+    if (_canSetDataTaskPriority) {
         self.urlSessionTaskOperation.dataTask.priority = dataTaskPriorityWithImageManagerPriority(priority);
     }
     self.urlSessionTaskOperation.queuePriority = operationPriorityWithImageManagerPriority(priority);

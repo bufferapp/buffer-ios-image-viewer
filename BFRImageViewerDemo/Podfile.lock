@@ -1,44 +1,28 @@
 PODS:
   - FLAnimatedImage (1.0.12)
-  - PINCache (3.0.1-beta.2):
-    - PINCache/Arc-exception-safe (= 3.0.1-beta.2)
-    - PINCache/Core (= 3.0.1-beta.2)
-  - PINCache/Arc-exception-safe (3.0.1-beta.2):
-    - PINCache/Core
-  - PINCache/Core (3.0.1-beta.2)
-  - PINRemoteImage (3.0.0-beta.7):
-    - PINRemoteImage/FLAnimatedImage (= 3.0.0-beta.7)
-    - PINRemoteImage/PINCache (= 3.0.0-beta.7)
-  - PINRemoteImage/Core (3.0.0-beta.7)
-  - PINRemoteImage/FLAnimatedImage (3.0.0-beta.7):
+  - PINCache (2.3)
+  - PINRemoteImage (2.1.4):
+    - PINRemoteImage/FLAnimatedImage (= 2.1.4)
+  - PINRemoteImage/Core (2.1.4):
+    - PINCache (>= 2.1)
+  - PINRemoteImage/FLAnimatedImage (2.1.4):
     - FLAnimatedImage (>= 1.0)
-    - PINRemoteImage/Core
-  - PINRemoteImage/PINCache (3.0.0-beta.7):
-    - PINCache (= 3.0.1-beta.2)
     - PINRemoteImage/Core
 
 DEPENDENCIES:
-  - PINRemoteImage (from `https://github.com/pinterest/PINRemoteImage.git`)
+  - PINRemoteImage
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - FLAnimatedImage
     - PINCache
-
-EXTERNAL SOURCES:
-  PINRemoteImage:
-    :git: https://github.com/pinterest/PINRemoteImage.git
-
-CHECKOUT OPTIONS:
-  PINRemoteImage:
-    :commit: fe20ef4868150a97cb8e27c0ad7a18b33b948876
-    :git: https://github.com/pinterest/PINRemoteImage.git
+    - PINRemoteImage
 
 SPEC CHECKSUMS:
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
-  PINCache: 6d273a6e0754bd26e3f12a38a90dde73cc6a42b2
-  PINRemoteImage: ff63baf185088530db6cfa41cb665e2b5126b5c3
+  PINCache: ce36ed282031b92fc7733ffe831f474ff80fddc2
+  PINRemoteImage: 4ac4011c5caefd6befd99758e09becede05d3226
 
-PODFILE CHECKSUM: dbe839487dd363bb5f818b4a7bf33c99a444bd2c
+PODFILE CHECKSUM: d2f01c43e1ac69f53e91ca2506d0387945a81779
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.1
