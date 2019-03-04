@@ -1,1 +1,1 @@
-../../../PINRemoteImage/Pod/Classes/PINRemoteImageManagerResult.h
+../../../PINRemoteImage/Source/Classes/PINRemoteImageManagerResult.h

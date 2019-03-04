@@ -1,1 +1,1 @@
-../../../PINRemoteImage/Pod/Classes/PINRemoteLock.h
+../../../PINRemoteImage/Source/Classes/PINRemoteLock.h

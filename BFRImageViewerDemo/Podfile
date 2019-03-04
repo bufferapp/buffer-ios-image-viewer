@@ -4,6 +4,6 @@ inhibit_all_warnings!
 
 target 'BFRImageViewer' do
 
-pod 'PINRemoteImage'
+  pod 'PINRemoteImage', :git => 'https://github.com/pinterest/PINRemoteImage.git', :branch => 'master'
 
 end
