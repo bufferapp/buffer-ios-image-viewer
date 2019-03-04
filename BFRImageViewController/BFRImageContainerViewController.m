@@ -12,6 +12,7 @@
 #import "BFRImageViewerConstants.h"
 #import <Photos/Photos.h>
 #import <PhotosUI/PhotosUI.h>
+#import <PINRemoteImage/PINAnimatedImageView.h>
 #import <PINRemoteImage/PINRemoteImage.h>
 #import <PINRemoteImage/PINImageView+PINRemoteImage.h>
 
@@ -21,7 +22,7 @@
 @property (strong, nonatomic, nonnull) UIScrollView *scrollView;
 
 /*! The actual view which will display the @c UIImage, this is housed inside of the scrollView property. */
-@property (strong, nonatomic, nullable) FLAnimatedImageView *imgView;
+@property (strong, nonatomic, nullable) PINAnimatedImageView *imgView;
 
 /*! The actual view which will display the @c PHLivePhoto, this is housed inside of the scrollView property. */
 @property (strong, nonatomic, nullable) PHLivePhotoView *livePhotoImgView;
@@ -33,7 +34,7 @@
 @property (strong, nonatomic, nullable) PHLivePhoto *liveImgLoaded;
 
 /*! The image created from the passed in animatedImgLoaded property. */
-@property (strong, nonatomic, nullable) FLAnimatedImage *animatedImgLoaded;
+@property (strong, nonatomic, nullable) NSData *animatedImgLoaded;
 
 /*! If the imgSrc property requires a network call, this displays inside the view to denote the loading progress. */
 @property (strong, nonatomic, nullable) BFRImageViewerDownloadProgressView *progressView;
@@ -44,7 +45,7 @@
 /*! The behavior which allows for the image to "snap" back to the center if it's vertical offset isn't passed the closing points. */
 @property (strong, nonatomic, nonnull) UIAttachmentBehavior *imgAttatchment;
 
-/*! This view will either by a @c FLAnimatedImageView or an instance of @c PHLivePhotoView depending on the asset's type. */
+/*! This view will either by a @c PINAnimatedImageView or an instance of @c PHLivePhotoView depending on the asset's type. */
 @property (strong, nonatomic, readonly, nullable) __kindof UIView *activeAssetView;
 
 /*! Currently, this only shows if a live photo is displayed to avoid gesture recognizer conflicts with playback and sharing. */
@@ -99,9 +100,10 @@
             self.assetType = BFRImageAssetTypeImage;
             [self retrieveImageFromAsset];
         }
-    } else if ([self.imgSrc isKindOfClass:[FLAnimatedImage class]]) {
+    } else if ([self.imgSrc isKindOfClass:[NSData class]]) {
         self.assetType = BFRImageAssetTypeGIF;
-        self.imgLoaded = ((FLAnimatedImage *)self.imgSrc).posterImage;
+        // TODO: FIX MEHHH
+        //self.imgLoaded = ((FLAnimatedImage *)self.imgSrc).posterImage;
         [self retrieveImageFromFLAnimatedImage];
     } else if ([self.imgSrc isKindOfClass:[NSString class]]) {
         self.assetType = BFRImageAssetTypeRemoteImage;
@@ -188,10 +190,11 @@
         resizableImageView = [[PHLivePhotoView alloc] initWithFrame:CGRectZero];
         ((PHLivePhotoView *)resizableImageView).livePhoto = self.liveImgLoaded;
     } else if (self.assetType == BFRImageAssetTypeGIF) {
-        resizableImageView = [FLAnimatedImageView new];
-        [resizableImageView setAnimatedImage:self.animatedImgLoaded];
+        resizableImageView = [PINAnimatedImageView new];
+        // TODO: FIX MEH
+        //[resizableImageView setAnimatedImage:self.animatedImgLoaded];
     } else if (self.imgView == nil) {
-        resizableImageView = [[FLAnimatedImageView alloc] initWithImage:self.imgLoaded];
+        resizableImageView = [[PINAnimatedImageView alloc] initWithImage:self.imgLoaded];
     }
     
     resizableImageView.frame = self.view.bounds;
@@ -235,7 +238,7 @@
             self.livePhotoImgView.playbackGestureRecognizer.enabled = NO;
         }
     } else {
-        self.imgView = (FLAnimatedImageView *)resizableImageView;
+        self.imgView = (PINAnimatedImageView *)resizableImageView;
     }
 }
 
@@ -461,13 +464,14 @@
 }
 
 - (void)retrieveImageFromFLAnimatedImage {
-    if (![self.imgSrc isKindOfClass:[FLAnimatedImage class]]) {
-        return;
-    }
-    
-    FLAnimatedImage *image = (FLAnimatedImage *)self.imgSrc;
-    self.imgLoaded = image.posterImage;
-    self.animatedImgLoaded = image;
+    // TODO: FIX MEH
+//    if (![self.imgSrc isKindOfClass:[NSData class]]) {
+//        return;
+//    }
+//    
+//    FLAnimatedImage *image = (FLAnimatedImage *)self.imgSrc;
+//    self.imgLoaded = image.posterImage;
+//    self.animatedImgLoaded = image;
     
     [self addImageToScrollView];
 }
