@@ -16,28 +16,19 @@ PODS:
     - PINRemoteImage/Core
 
 DEPENDENCIES:
-  - PINRemoteImage (from `https://github.com/pinterest/PINRemoteImage.git`, branch `master`)
+  - PINRemoteImage (~> 3.0.0-beta.14)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - PINCache
     - PINOperation
-
-EXTERNAL SOURCES:
-  PINRemoteImage:
-    :branch: master
-    :git: https://github.com/pinterest/PINRemoteImage.git
-
-CHECKOUT OPTIONS:
-  PINRemoteImage:
-    :commit: 4a791d5d8aefe3dea38c9645858421ab6184a1a3
-    :git: https://github.com/pinterest/PINRemoteImage.git
+    - PINRemoteImage
 
 SPEC CHECKSUMS:
   PINCache: 7cb9ae068c8f655717f7c644ef1dff9fd573e979
   PINOperation: a6219e6fc9db9c269eb7a7b871ac193bcf400aac
   PINRemoteImage: 81bbff853acc71c6de9e106e9e489a791b8bbb08
 
-PODFILE CHECKSUM: 3c2887f0d18bb3fb2b2da970cc5fd1dd14912ac1
+PODFILE CHECKSUM: 8fec22f8e1938434a3672e37befc450029f9b3e9
 
 COCOAPODS: 1.6.1
