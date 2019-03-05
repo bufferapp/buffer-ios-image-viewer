@@ -33,9 +33,6 @@
 /*! The live photo created from the passed in imgSrc property, if the asset's media subtype bitmask contains @t PHAssetMediaSubtypePhotoLive */
 @property (strong, nonatomic, nullable) PHLivePhoto *liveImgLoaded;
 
-/*! The image created from the passed in animatedImgLoaded property. */
-@property (strong, nonatomic, nullable) NSData *animatedImgLoaded;
-
 /*! If the imgSrc property requires a network call, this displays inside the view to denote the loading progress. */
 @property (strong, nonatomic, nullable) BFRImageViewerDownloadProgressView *progressView;
 
@@ -68,7 +65,6 @@
     [super viewDidLoad];
     
     // View setup
-    self.automaticallyAdjustsScrollViewInsets = NO;
     self.view.backgroundColor = [UIColor clearColor];
     
     // Scrollview (for pinching in and out of image)
@@ -77,7 +73,10 @@
     
     // Animator - used to snap the image back to the center when done dragging
     self.animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.scrollView];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePop) name:NOTE_VC_POPPED object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handlePop)
+                                                 name:NOTE_VC_POPPED
+                                               object:nil];
     
     // Fetch image - or just display it
     if ([self.imgSrc isKindOfClass:[NSURL class]]) {
@@ -100,11 +99,9 @@
             self.assetType = BFRImageAssetTypeImage;
             [self retrieveImageFromAsset];
         }
-    } else if ([self.imgSrc isKindOfClass:[NSData class]]) {
+    } else if ([self.imgSrc isKindOfClass:[PINCachedAnimatedImage class]]) {
         self.assetType = BFRImageAssetTypeGIF;
-        // TODO: FIX MEHHH
-        //self.imgLoaded = ((FLAnimatedImage *)self.imgSrc).posterImage;
-        [self retrieveImageFromFLAnimatedImage];
+        [self retrieveImageFromPINCachedAnimatedImage];
     } else if ([self.imgSrc isKindOfClass:[NSString class]]) {
         self.assetType = BFRImageAssetTypeRemoteImage;
         // Loading view
@@ -173,6 +170,7 @@
     sv.showsVerticalScrollIndicator = NO;
     sv.decelerationRate = UIScrollViewDecelerationRateFast;
     sv.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    sv.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     
     //For UI Toggling
     UITapGestureRecognizer *singleSVTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissUI)];
@@ -190,9 +188,7 @@
         resizableImageView = [[PHLivePhotoView alloc] initWithFrame:CGRectZero];
         ((PHLivePhotoView *)resizableImageView).livePhoto = self.liveImgLoaded;
     } else if (self.assetType == BFRImageAssetTypeGIF) {
-        resizableImageView = [PINAnimatedImageView new];
-        // TODO: FIX MEH
-        //[resizableImageView setAnimatedImage:self.animatedImgLoaded];
+        resizableImageView = [[PINAnimatedImageView alloc] initWithAnimatedImage:self.imgSrc];
     } else if (self.imgView == nil) {
         resizableImageView = [[PINAnimatedImageView alloc] initWithImage:self.imgLoaded];
     }
@@ -463,15 +459,13 @@
      }];
 }
 
-- (void)retrieveImageFromFLAnimatedImage {
-    // TODO: FIX MEH
-//    if (![self.imgSrc isKindOfClass:[NSData class]]) {
-//        return;
-//    }
-//    
-//    FLAnimatedImage *image = (FLAnimatedImage *)self.imgSrc;
-//    self.imgLoaded = image.posterImage;
-//    self.animatedImgLoaded = image;
+- (void)retrieveImageFromPINCachedAnimatedImage {
+    if (![self.imgSrc isKindOfClass:[PINCachedAnimatedImage class]]) {
+        return;
+    }
+    
+    PINCachedAnimatedImage *image = (PINCachedAnimatedImage *)self.imgSrc;
+    self.imgLoaded = image.coverImage;
     
     [self addImageToScrollView];
 }
@@ -487,7 +481,7 @@
     } completion:^(PINRemoteImageManagerResult * _Nonnull result) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (!result.image && !result.alternativeRepresentation) {
+            if (result.error || (!result.image && !result.alternativeRepresentation)) {
                 [self.progressView removeFromSuperview];
                 [self showError];
                 return;
@@ -496,7 +490,7 @@
             if(result.alternativeRepresentation){
                 self.assetType = BFRImageAssetTypeGIF;
                 self.imgSrc = result.alternativeRepresentation;
-                [self retrieveImageFromFLAnimatedImage];
+                [self retrieveImageFromPINCachedAnimatedImage];
             } else {
                 self.imgLoaded = result.image;
                 [self addImageToScrollView];
@@ -526,15 +520,11 @@
     [tb setShadowImage:[UIImage new] forToolbarPosition:UIBarPositionAny];
     tb.translatesAutoresizingMaskIntoConstraints = NO;
     
-    if (@available(iOS 11.0, *)) {
-        [tb.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor].active = YES;
-        [tb.widthAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.widthAnchor].active = YES;
-        [tb.centerXAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor].active = YES;
-    } else {
-        [tb.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
-        [tb.widthAnchor constraintEqualToAnchor:self.view.widthAnchor].active = YES;
-        [tb.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor].active = YES;
-    }
+    [tb.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor].active = YES;
+    [tb.widthAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.widthAnchor].active = YES;
+    [tb.centerXAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor].active = YES;[tb.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor].active = YES;
+    [tb.widthAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.widthAnchor].active = YES;
+    [tb.centerXAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor].active = YES;
 }
 
 - (void)dismissUI {
