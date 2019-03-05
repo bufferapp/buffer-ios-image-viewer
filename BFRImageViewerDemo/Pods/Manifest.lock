@@ -16,7 +16,7 @@ PODS:
     - PINRemoteImage/Core
 
 DEPENDENCIES:
-  - PINRemoteImage (~> 3.0.0-beta.14)
+  - PINRemoteImage (~> 3.0.0-beta.13)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -29,6 +29,6 @@ SPEC CHECKSUMS:
   PINOperation: a6219e6fc9db9c269eb7a7b871ac193bcf400aac
   PINRemoteImage: 81bbff853acc71c6de9e106e9e489a791b8bbb08
 
-PODFILE CHECKSUM: 8fec22f8e1938434a3672e37befc450029f9b3e9
+PODFILE CHECKSUM: cd727c70f3abf6afeadd5623912a69fe095b2ede
 
 COCOAPODS: 1.6.1
