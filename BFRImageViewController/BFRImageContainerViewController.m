@@ -188,7 +188,8 @@
         resizableImageView = [[PHLivePhotoView alloc] initWithFrame:CGRectZero];
         ((PHLivePhotoView *)resizableImageView).livePhoto = self.liveImgLoaded;
     } else if (self.assetType == BFRImageAssetTypeGIF) {
-        resizableImageView = [[PINAnimatedImageView alloc] initWithAnimatedImage:self.imgSrc];
+        resizableImageView = [PINAnimatedImageView new];
+        [((PINAnimatedImageView *)resizableImageView) setAnimatedImage:self.imgSrc];
     } else if (self.imgView == nil) {
         resizableImageView = [[PINAnimatedImageView alloc] initWithImage:self.imgLoaded];
     }
