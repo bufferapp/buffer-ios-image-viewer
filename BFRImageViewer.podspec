@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "BFRImageViewer"
-    s.version      = "1.2.3"
+    s.version      = "1.2.4"
     s.summary      = "A turnkey solution to display photos and images of all kinds in your app."
     s.description  = <<-DESC
                     The BFRImageViewer is a turnkey solution to present images within your iOS app 🎉! 
@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   	s.authors       = {"Andrew Yates" => "andy@bufferapp.com",
   					           "Jordan Morgan" => "jordan@bufferapp.com"}
   	s.social_media_url = "https://twitter.com/bufferdevs"
-    s.source       = { :git => "https://github.com/bufferapp/buffer-ios-image-viewer.git", :tag => '1.2.3'  }
+    s.source       = { :git => "https://github.com/bufferapp/buffer-ios-image-viewer.git", :tag => '1.2.4'  }
     s.source_files = 'Classes', 'BFRImageViewController/**/*.{h,m}'
     s.resources    = ['BFRImageViewController/**/BFRImageViewerLocalizations.bundle','BFRImageViewController/**/*.{png}']
     s.exclude_files = 'BFRImageViewController/**/lowResImage.png'
