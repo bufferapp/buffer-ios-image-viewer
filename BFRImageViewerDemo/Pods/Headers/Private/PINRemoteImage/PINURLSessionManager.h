@@ -1,1 +1,1 @@
-../../../PINRemoteImage/Pod/Classes/PINURLSessionManager.h
+../../../PINRemoteImage/Source/Classes/PINURLSessionManager.h

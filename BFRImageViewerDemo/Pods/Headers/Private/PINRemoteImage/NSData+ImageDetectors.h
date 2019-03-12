@@ -1,1 +1,1 @@
-../../../PINRemoteImage/Pod/Classes/Categories/NSData+ImageDetectors.h
+../../../PINRemoteImage/Source/Classes/Categories/NSData+ImageDetectors.h

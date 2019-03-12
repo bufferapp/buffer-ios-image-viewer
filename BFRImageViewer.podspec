@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
     s.description  = <<-DESC
                     The BFRImageViewer is a turnkey solution to present images within your iOS app 🎉! 
 
-                    If features swipe gestures to dismiss, image scaling, zooming and panning, supports multiple images, image types, and plays nicely with 3D touch! We use it all over the place in Buffer for iOS :-).
+                    If features swipe gestures to dismiss, parallax scrolling, image scaling, zooming and panning, supports multiple images, image types, and plays nicely with 3D touch! We use it all over the place in Buffer for iOS :-).
                    DESC
     s.homepage      = "https://github.com/bufferapp/buffer-ios-image-viewer"
   	s.screenshot    = "https://github.com/bufferapp/buffer-ios-image-viewer/blob/master/demo.gif?raw=true"
@@ -17,8 +17,8 @@ Pod::Spec.new do |s|
     s.source_files = 'Classes', 'BFRImageViewController/**/*.{h,m}'
     s.resources    = ['BFRImageViewController/**/BFRImageViewerLocalizations.bundle','BFRImageViewController/**/*.{png}']
     s.exclude_files = 'BFRImageViewController/**/lowResImage.png'
-    s.platform     = :ios, '10.0'
+    s.platform     = :ios, '11.0'
     s.requires_arc = true
     s.frameworks = "UIKit", "Photos"
-    s.dependency 'PINRemoteImage', '~> 3.0.0-beta.12'
+    s.dependency 'PINRemoteImage', '~> 3.0.0-beta.14'
 end

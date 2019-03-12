@@ -1,1 +1,1 @@
-../../../PINRemoteImage/Pod/Classes/PINAlternateRepresentationProvider.h
+../../../PINRemoteImage/Source/Classes/PINAlternateRepresentationProvider.h

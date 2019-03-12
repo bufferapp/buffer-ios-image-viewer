@@ -1,44 +1,34 @@
 PODS:
-  - FLAnimatedImage (1.0.12)
-  - PINCache (3.0.1-beta.2):
-    - PINCache/Arc-exception-safe (= 3.0.1-beta.2)
-    - PINCache/Core (= 3.0.1-beta.2)
-  - PINCache/Arc-exception-safe (3.0.1-beta.2):
+  - PINCache (3.0.1-beta.7):
+    - PINCache/Arc-exception-safe (= 3.0.1-beta.7)
+    - PINCache/Core (= 3.0.1-beta.7)
+  - PINCache/Arc-exception-safe (3.0.1-beta.7):
     - PINCache/Core
-  - PINCache/Core (3.0.1-beta.2)
-  - PINRemoteImage (3.0.0-beta.7):
-    - PINRemoteImage/FLAnimatedImage (= 3.0.0-beta.7)
-    - PINRemoteImage/PINCache (= 3.0.0-beta.7)
-  - PINRemoteImage/Core (3.0.0-beta.7)
-  - PINRemoteImage/FLAnimatedImage (3.0.0-beta.7):
-    - FLAnimatedImage (>= 1.0)
-    - PINRemoteImage/Core
-  - PINRemoteImage/PINCache (3.0.0-beta.7):
-    - PINCache (= 3.0.1-beta.2)
+  - PINCache/Core (3.0.1-beta.7):
+    - PINOperation (~> 1.1.1)
+  - PINOperation (1.1.1)
+  - PINRemoteImage (3.0.0-beta.14):
+    - PINRemoteImage/PINCache (= 3.0.0-beta.14)
+  - PINRemoteImage/Core (3.0.0-beta.14):
+    - PINOperation
+  - PINRemoteImage/PINCache (3.0.0-beta.14):
+    - PINCache (= 3.0.1-beta.7)
     - PINRemoteImage/Core
 
 DEPENDENCIES:
-  - PINRemoteImage (from `https://github.com/pinterest/PINRemoteImage.git`)
+  - PINRemoteImage (~> 3.0.0-beta.14)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
-    - FLAnimatedImage
     - PINCache
-
-EXTERNAL SOURCES:
-  PINRemoteImage:
-    :git: https://github.com/pinterest/PINRemoteImage.git
-
-CHECKOUT OPTIONS:
-  PINRemoteImage:
-    :commit: fe20ef4868150a97cb8e27c0ad7a18b33b948876
-    :git: https://github.com/pinterest/PINRemoteImage.git
+    - PINOperation
+    - PINRemoteImage
 
 SPEC CHECKSUMS:
-  FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
-  PINCache: 6d273a6e0754bd26e3f12a38a90dde73cc6a42b2
-  PINRemoteImage: ff63baf185088530db6cfa41cb665e2b5126b5c3
+  PINCache: 7cb9ae068c8f655717f7c644ef1dff9fd573e979
+  PINOperation: a6219e6fc9db9c269eb7a7b871ac193bcf400aac
+  PINRemoteImage: 81bbff853acc71c6de9e106e9e489a791b8bbb08
 
-PODFILE CHECKSUM: dbe839487dd363bb5f818b4a7bf33c99a444bd2c
+PODFILE CHECKSUM: 8fec22f8e1938434a3672e37befc450029f9b3e9
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.1

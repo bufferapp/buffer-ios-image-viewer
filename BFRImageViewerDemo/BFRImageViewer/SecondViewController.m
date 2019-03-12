@@ -38,7 +38,7 @@
         [self check3DTouch];
     }
     
-    NSURL *url1 = [NSURL URLWithString:@"https://bufferblog-wpengine.netdna-ssl.com/wp-content/uploads/2015/10/social-media-icons-800x565.jpg"];
+    NSURL *url1 = [NSURL URLWithString:@"https://open.buffer.com/wp-content/uploads/2017/04/career-framework-maker-manager.png"];
     NSURL *url2 = [NSURL URLWithString:@"https://open.buffer.com/wp-content/uploads/2015/11/new-journey-page.png"];
     NSURL *url3 = [NSURL URLWithString:@"http://i.imgur.com/XBnuETM.jpg"];
     self.imgURLs = @[url1, url2, url3];
@@ -46,7 +46,7 @@
 
 - (void)openImage {
     BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:self.imgURLs];
-    imageVC.startingIndex = 1;
+    imageVC.startingIndex = 0; // Default
     [self presentViewController:imageVC animated:YES completion:nil];
 }
 

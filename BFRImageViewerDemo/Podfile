@@ -1,9 +1,9 @@
-platform :ios, '8.0'
+platform :ios, '11.0'
 
 inhibit_all_warnings!
 
 target 'BFRImageViewer' do
 
-pod 'PINRemoteImage', :git => 'https://github.com/pinterest/PINRemoteImage.git'
+  pod 'PINRemoteImage', '~> 3.0.0-beta.14'
 
 end

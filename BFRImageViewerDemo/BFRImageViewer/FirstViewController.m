@@ -17,7 +17,7 @@
 
 - (instancetype) init {
     if (self = [super init]) {
-        self.title = @"Single Image";
+        self.title = @"Single GIF";
     }
     
     return self;

@@ -12,6 +12,7 @@
 #import "BFRImageViewerConstants.h"
 #import <Photos/Photos.h>
 #import <PhotosUI/PhotosUI.h>
+#import <PINRemoteImage/PINAnimatedImageView.h>
 #import <PINRemoteImage/PINRemoteImage.h>
 #import <PINRemoteImage/PINImageView+PINRemoteImage.h>
 
@@ -21,7 +22,7 @@
 @property (strong, nonatomic, nonnull) UIScrollView *scrollView;
 
 /*! The actual view which will display the @c UIImage, this is housed inside of the scrollView property. */
-@property (strong, nonatomic, nullable) FLAnimatedImageView *imgView;
+@property (strong, nonatomic, nullable) PINAnimatedImageView *imgView;
 
 /*! The actual view which will display the @c PHLivePhoto, this is housed inside of the scrollView property. */
 @property (strong, nonatomic, nullable) PHLivePhotoView *livePhotoImgView;
@@ -32,9 +33,6 @@
 /*! The live photo created from the passed in imgSrc property, if the asset's media subtype bitmask contains @t PHAssetMediaSubtypePhotoLive */
 @property (strong, nonatomic, nullable) PHLivePhoto *liveImgLoaded;
 
-/*! The image created from the passed in animatedImgLoaded property. */
-@property (strong, nonatomic, nullable) FLAnimatedImage *animatedImgLoaded;
-
 /*! If the imgSrc property requires a network call, this displays inside the view to denote the loading progress. */
 @property (strong, nonatomic, nullable) BFRImageViewerDownloadProgressView *progressView;
 
@@ -44,7 +42,7 @@
 /*! The behavior which allows for the image to "snap" back to the center if it's vertical offset isn't passed the closing points. */
 @property (strong, nonatomic, nonnull) UIAttachmentBehavior *imgAttatchment;
 
-/*! This view will either by a @c FLAnimatedImageView or an instance of @c PHLivePhotoView depending on the asset's type. */
+/*! This view will either by a @c PINAnimatedImageView or an instance of @c PHLivePhotoView depending on the asset's type. */
 @property (strong, nonatomic, readonly, nullable) __kindof UIView *activeAssetView;
 
 /*! Currently, this only shows if a live photo is displayed to avoid gesture recognizer conflicts with playback and sharing. */
@@ -67,7 +65,6 @@
     [super viewDidLoad];
     
     // View setup
-    self.automaticallyAdjustsScrollViewInsets = NO;
     self.view.backgroundColor = [UIColor clearColor];
     
     // Scrollview (for pinching in and out of image)
@@ -76,7 +73,10 @@
     
     // Animator - used to snap the image back to the center when done dragging
     self.animator = [[UIDynamicAnimator alloc] initWithReferenceView:self.scrollView];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handlePop) name:NOTE_VC_POPPED object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handlePop)
+                                                 name:NOTE_VC_POPPED
+                                               object:nil];
     
     // Fetch image - or just display it
     if ([self.imgSrc isKindOfClass:[NSURL class]]) {
@@ -99,10 +99,9 @@
             self.assetType = BFRImageAssetTypeImage;
             [self retrieveImageFromAsset];
         }
-    } else if ([self.imgSrc isKindOfClass:[FLAnimatedImage class]]) {
+    } else if ([self.imgSrc isKindOfClass:[PINCachedAnimatedImage class]]) {
         self.assetType = BFRImageAssetTypeGIF;
-        self.imgLoaded = ((FLAnimatedImage *)self.imgSrc).posterImage;
-        [self retrieveImageFromFLAnimatedImage];
+        [self retrieveImageFromPINCachedAnimatedImage];
     } else if ([self.imgSrc isKindOfClass:[NSString class]]) {
         self.assetType = BFRImageAssetTypeRemoteImage;
         // Loading view
@@ -171,6 +170,7 @@
     sv.showsVerticalScrollIndicator = NO;
     sv.decelerationRate = UIScrollViewDecelerationRateFast;
     sv.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    sv.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     
     //For UI Toggling
     UITapGestureRecognizer *singleSVTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissUI)];
@@ -188,10 +188,10 @@
         resizableImageView = [[PHLivePhotoView alloc] initWithFrame:CGRectZero];
         ((PHLivePhotoView *)resizableImageView).livePhoto = self.liveImgLoaded;
     } else if (self.assetType == BFRImageAssetTypeGIF) {
-        resizableImageView = [FLAnimatedImageView new];
-        [resizableImageView setAnimatedImage:self.animatedImgLoaded];
+        resizableImageView = [PINAnimatedImageView new];
+        [((PINAnimatedImageView *)resizableImageView) setAnimatedImage:self.imgSrc];
     } else if (self.imgView == nil) {
-        resizableImageView = [[FLAnimatedImageView alloc] initWithImage:self.imgLoaded];
+        resizableImageView = [[PINAnimatedImageView alloc] initWithImage:self.imgLoaded];
     }
     
     resizableImageView.frame = self.view.bounds;
@@ -235,7 +235,7 @@
             self.livePhotoImgView.playbackGestureRecognizer.enabled = NO;
         }
     } else {
-        self.imgView = (FLAnimatedImageView *)resizableImageView;
+        self.imgView = (PINAnimatedImageView *)resizableImageView;
     }
 }
 
@@ -460,14 +460,13 @@
      }];
 }
 
-- (void)retrieveImageFromFLAnimatedImage {
-    if (![self.imgSrc isKindOfClass:[FLAnimatedImage class]]) {
+- (void)retrieveImageFromPINCachedAnimatedImage {
+    if (![self.imgSrc isKindOfClass:[PINCachedAnimatedImage class]]) {
         return;
     }
     
-    FLAnimatedImage *image = (FLAnimatedImage *)self.imgSrc;
-    self.imgLoaded = image.posterImage;
-    self.animatedImgLoaded = image;
+    PINCachedAnimatedImage *image = (PINCachedAnimatedImage *)self.imgSrc;
+    self.imgLoaded = image.coverImage;
     
     [self addImageToScrollView];
 }
@@ -483,7 +482,7 @@
     } completion:^(PINRemoteImageManagerResult * _Nonnull result) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            if (!result.image && !result.alternativeRepresentation) {
+            if (result.error || (!result.image && !result.alternativeRepresentation)) {
                 [self.progressView removeFromSuperview];
                 [self showError];
                 return;
@@ -492,7 +491,7 @@
             if(result.alternativeRepresentation){
                 self.assetType = BFRImageAssetTypeGIF;
                 self.imgSrc = result.alternativeRepresentation;
-                [self retrieveImageFromFLAnimatedImage];
+                [self retrieveImageFromPINCachedAnimatedImage];
             } else {
                 self.imgLoaded = result.image;
                 [self addImageToScrollView];
@@ -522,15 +521,11 @@
     [tb setShadowImage:[UIImage new] forToolbarPosition:UIBarPositionAny];
     tb.translatesAutoresizingMaskIntoConstraints = NO;
     
-    if (@available(iOS 11.0, *)) {
-        [tb.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor].active = YES;
-        [tb.widthAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.widthAnchor].active = YES;
-        [tb.centerXAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor].active = YES;
-    } else {
-        [tb.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
-        [tb.widthAnchor constraintEqualToAnchor:self.view.widthAnchor].active = YES;
-        [tb.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor].active = YES;
-    }
+    [tb.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor].active = YES;
+    [tb.widthAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.widthAnchor].active = YES;
+    [tb.centerXAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor].active = YES;[tb.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor].active = YES;
+    [tb.widthAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.widthAnchor].active = YES;
+    [tb.centerXAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor].active = YES;
 }
 
 - (void)dismissUI {

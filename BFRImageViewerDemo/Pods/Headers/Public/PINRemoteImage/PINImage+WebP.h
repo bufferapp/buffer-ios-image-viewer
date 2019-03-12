@@ -1,1 +1,1 @@
-../../../PINRemoteImage/Pod/Classes/Categories/PINImage+WebP.h
+../../../PINRemoteImage/Source/Classes/Categories/PINImage+WebP.h
