@@ -139,7 +139,7 @@
     
     // Reposition image view
     CGRect newRect = CGRectMake(leftOffset, topOffset, newWidth, newHeight);
-
+    
     // Check for any NaNs, which should get corrected in the next drawing cycle
     BOOL isInvalidRect = (isnan(leftOffset) || isnan(topOffset) || isnan(newWidth) || isnan(newHeight));
     self.activeAssetView.frame = isInvalidRect ? self.view.bounds : newRect;
@@ -248,11 +248,15 @@
 #pragma mark - Backloaded Image Notification
 
 - (void)handleHiResImageDownloaded:(NSNotification *)note {
-    UIImage *hiResImg = note.object;
+    id hiResResult = note.object;
     
-    if (hiResImg && [hiResImg isKindOfClass:[UIImage class]]) {
-        self.imgLoaded = hiResImg;
+    if ([hiResResult isKindOfClass:[UIImage class]]) {
+        self.imgLoaded = hiResResult;
         self.imgView.image = self.imgLoaded;
+    } else if ([hiResResult isKindOfClass:[PINCachedAnimatedImage class]]) {
+        self.assetType = BFRImageAssetTypeGIF;
+        self.imgSrc = hiResResult;
+        [self retrieveImageFromPINCachedAnimatedImage];
     }
 }
 
@@ -283,7 +287,7 @@
     // Sizes
     CGSize boundsSize = self.scrollView.bounds.size;
     CGSize imageSize = self.activeAssetView.frame.size;
-
+    
     // Calculate Min
     CGFloat xScale = boundsSize.width / imageSize.width;
     CGFloat yScale = boundsSize.height / imageSize.height;
@@ -341,7 +345,7 @@
 #pragma mark - Dragging and Long Press Methods
 /*! This method has three different states due to the gesture recognizer. In them, we either add the required behaviors using UIDynamics, update the image's position based off of the touch points of the drag, or if it's ended we snap it back to the center or dismiss this view controller if the vertical offset meets the requirements. */
 - (void)handleDrag:(UIPanGestureRecognizer *)recognizer {
-
+    
     if (recognizer.state == UIGestureRecognizerStateBegan) {
         [self.animator removeAllBehaviors];
         
@@ -425,7 +429,7 @@
             touchPoint = [longPress locationInView:self.activeAssetView];
             popoverVC.sourceRect = CGRectMake(touchPoint.x, touchPoint.y, 1, 1);
         }
-    
+        
         [self presentViewController:activityVC animated:YES completion:nil];
     }
 }
@@ -457,7 +461,7 @@
         self.liveImgLoaded = livePhoto;
         [self addImageToScrollView];
         [self createLivePhotoChrome];
-     }];
+    }];
 }
 
 - (void)retrieveImageFromPINCachedAnimatedImage {
@@ -473,7 +477,7 @@
 
 - (void)retrieveImageFromURL {
     NSURL *url = (NSURL *)self.imgSrc;
-
+    
     [[PINRemoteImageManager sharedImageManager] downloadImageWithURL:url options:0 progressDownload:^(int64_t completedBytes, int64_t totalBytes) {
         float fractionCompleted = (float)completedBytes/(float)totalBytes;
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -496,7 +500,7 @@
                 self.imgLoaded = result.image;
                 [self addImageToScrollView];
             }
-        
+            
             [self.progressView removeFromSuperview];
         });
     }];

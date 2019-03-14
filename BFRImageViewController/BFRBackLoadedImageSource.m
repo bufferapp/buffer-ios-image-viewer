@@ -42,7 +42,7 @@
 #pragma mark - Backloading
 
 - (void)loadHighFidelityImage {
-    [[PINRemoteImageManager sharedImageManager] downloadImageWithURL:self.url options:PINRemoteImageManagerDisallowAlternateRepresentations progressDownload:nil completion:^(PINRemoteImageManagerResult * _Nonnull result) {
+    [[PINRemoteImageManager sharedImageManager] downloadImageWithURL:self.url options:PINRemoteImageManagerDownloadOptionsNone progressDownload:nil completion:^(PINRemoteImageManagerResult * _Nonnull result) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (self.onCompletion != nil) {
                 if (result.image) {
@@ -56,7 +56,8 @@
                 }
             }
             
-            [[NSNotificationCenter defaultCenter] postNotificationName:NOTE_HI_RES_IMG_DOWNLOADED object:result.image];
+            id returnResult = result.alternativeRepresentation ? result.alternativeRepresentation : result.image;
+            [[NSNotificationCenter defaultCenter] postNotificationName:NOTE_HI_RES_IMG_DOWNLOADED object:returnResult];
         });
     }];
 }
