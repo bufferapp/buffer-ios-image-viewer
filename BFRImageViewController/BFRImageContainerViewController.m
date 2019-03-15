@@ -182,6 +182,9 @@
 }
 
 - (void)createActiveAssetView {
+    [self.imgView removeFromSuperview];
+    [self.livePhotoImgView removeFromSuperview];
+    
     __kindof UIView *resizableImageView;
     
     if (self.assetType == BFRImageAssetTypeLivePhoto) {
