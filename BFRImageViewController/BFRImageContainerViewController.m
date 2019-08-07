@@ -200,7 +200,7 @@
     resizableImageView.frame = self.view.bounds;
     resizableImageView.clipsToBounds = YES;
     resizableImageView.contentMode = UIViewContentModeScaleAspectFit;
-    resizableImageView.backgroundColor = [UIColor colorWithWhite:0 alpha:1];
+    resizableImageView.backgroundColor = [UIColor clearColor];
     resizableImageView.layer.cornerRadius = self.isBeingUsedFor3DTouch ? 14.0f : 0.0f;
     
     // Toggle UI controls
