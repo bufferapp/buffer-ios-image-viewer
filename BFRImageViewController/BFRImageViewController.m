@@ -50,11 +50,7 @@
     if (self) {
         NSAssert(images.count > 0, @"You must supply at least one image source to use this class.");
         self.images = images;
-        self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-        self.enableDoneButton = YES;
-        self.showDoneButtonOnLeft = YES;
-        self.disableAutoplayForLivePhoto = YES;
-        self.parallaxView = [UIView new];
+        [self commonInit];
     }
     
     return self;
@@ -66,15 +62,20 @@
     if (self) {
         NSAssert(images.count > 0, @"You must supply at least one image source to use this class.");
         self.images = images;
-        self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-        self.enableDoneButton = YES;
-        self.showDoneButtonOnLeft = YES;
         self.usedFor3DTouch = YES;
-        self.disableAutoplayForLivePhoto = YES;
-        self.parallaxView = [UIView new];
+        [self commonInit];
     }
     
     return self;
+}
+
+- (void)commonInit {
+    self.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    self.modalPresentationStyle = UIModalPresentationFullScreen;
+    self.enableDoneButton = YES;
+    self.showDoneButtonOnLeft = YES;
+    self.disableAutoplayForLivePhoto = YES;
+    self.parallaxView = [UIView new];
 }
 
 #pragma mark - View Lifecycle

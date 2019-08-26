@@ -219,7 +219,7 @@
 			};
 			buildConfigurationList = 944B4DA61BFFC0C000B9BF87 /* Build configuration list for PBXProject "BFRImageViewer" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
