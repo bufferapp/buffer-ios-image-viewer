@@ -199,7 +199,7 @@
 
 - (void)addChromeToUI {
     if (self.enableDoneButton) {
-        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+        NSBundle *bundle = [NSBundle bundleForClass:[BFRImageViewController class]];
         NSString *imagePath = [bundle pathForResource:@"cross" ofType:@"png"];
         UIImage *crossImage = [[UIImage alloc] initWithContentsOfFile:imagePath];
 
