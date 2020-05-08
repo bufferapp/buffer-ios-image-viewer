@@ -12,7 +12,7 @@
 
 NSString * const NOTE_VC_POPPED = @"ViewControllerPopped";
 NSString * const NOTE_HI_RES_IMG_DOWNLOADED = @"HiResDownloadDone";
-NSString * const NOTE_VC_SHOULD_DISMISS = @"DismissUI";
+NSString * const NOTE_VC_SHOULD_DISMISS = @"DismissController";
 NSString * const NOTE_VC_SHOULD_DISMISS_FROM_DRAGGING = @"DimissUIFromDraggingGesture";
 NSString * const NOTE_VC_SHOULD_CANCEL_CUSTOM_TRANSITION = @"CancelCustomDismissalTransition";
 NSString * const NOTE_IMG_FAILED = @"ImageLoadingError";
