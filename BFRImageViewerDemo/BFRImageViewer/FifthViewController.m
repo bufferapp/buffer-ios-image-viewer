@@ -10,11 +10,13 @@
 #import "FifthViewController.h"
 #import "BFRImageViewController.h"
 
-@interface FifthViewController () <UIViewControllerPreviewingDelegate>
+@interface FifthViewController () <UIViewControllerPreviewingDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
 @end
 
 @implementation FifthViewController
+
+#pragma mark - Initializer and Lifecycle
 
 - (instancetype) init {
     if (self = [super init]) {
@@ -26,13 +28,12 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     [self check3DTouch];
-    
-    [self addImageButtonToView];
+    [self addButtonsToView];
 }
 
 #pragma mark - 3D Touch
+
 - (void)check3DTouch {
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
         [self registerForPreviewingWithDelegate:self sourceView:self.view];
@@ -61,16 +62,53 @@
 }
 
 #pragma mark - Misc
-- (void)addImageButtonToView {
+
+- (void)addButtonsToView {
     UIButton *openImageFromURL = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     openImageFromURL.translatesAutoresizingMaskIntoConstraints = NO;
-    [openImageFromURL setTitle:@"Open Image" forState:UIControlStateNormal];
+    [openImageFromURL setTitle:@"Open 1st Found Live Photo" forState:UIControlStateNormal];
     [openImageFromURL addTarget:self
                          action:@selector(openImage:)
                forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:openImageFromURL];
     [openImageFromURL.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor].active = YES;
     [openImageFromURL.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor].active = YES;
+    
+    UIButton *openImagePicker = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    openImagePicker.translatesAutoresizingMaskIntoConstraints = NO;
+    [openImagePicker setTitle:@"Select Image" forState:UIControlStateNormal];
+    [openImagePicker addTarget:self
+                         action:@selector(presentImagePicker)
+               forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:openImagePicker];
+    [openImagePicker.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor].active = YES;
+    [openImagePicker.topAnchor constraintEqualToAnchor:openImageFromURL.bottomAnchor].active = YES;
+}
+
+#pragma mark - Image Picker
+
+- (void)presentImagePicker {
+    UIImagePickerController *picker = [UIImagePickerController new];
+    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    picker.mediaTypes = @[@"public.image"];
+    picker.delegate = self;
+    [self.tabBarController presentViewController:picker animated:YES completion:nil];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
+    [picker dismissViewControllerAnimated:YES completion:^{
+        if (info[UIImagePickerControllerPHAsset]) {
+            BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:@[info[UIImagePickerControllerPHAsset]]];
+            
+            [self presentViewController:imageVC
+                               animated:YES
+                             completion:nil];
+        }
+    }];
 }
 
 #pragma mark - Actions

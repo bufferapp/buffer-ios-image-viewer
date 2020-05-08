@@ -81,7 +81,7 @@
     // Fetch image - or just display it
     if ([self.imgSrc isKindOfClass:[NSURL class]]) {
         self.assetType = BFRImageAssetTypeRemoteImage;
-        [self setProgressView];
+        [self createProgressView];
         [self retrieveImageFromURL];
     } else if ([self.imgSrc isKindOfClass:[UIImage class]]) {
         self.assetType = BFRImageAssetTypeImage;
@@ -93,7 +93,7 @@
         // Live photo, or regular
         if (assetSource.mediaSubtypes & PHAssetMediaSubtypePhotoLive) {
             self.assetType = BFRImageAssetTypeLivePhoto;
-            [self setProgressView];
+            [self createProgressView];
             [self retrieveLivePhotoFromAsset];
         } else {
             self.assetType = BFRImageAssetTypeImage;
@@ -107,7 +107,7 @@
         // Loading view
         NSURL *url = [NSURL URLWithString:self.imgSrc];
         self.imgSrc = url;
-        [self setProgressView];
+        [self createProgressView];
         [self retrieveImageFromURL];
     } else if ([self.imgSrc isKindOfClass:[BFRBackLoadedImageSource class]]) {
         self.assetType = BFRImageAssetTypeRemoteImage;
@@ -151,7 +151,7 @@
 
 #pragma mark - UI Methods
 
-- (void)setProgressView {
+- (void)createProgressView {
     self.progressView = [BFRImageViewerDownloadProgressView new];
     self.progressView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.progressView];
@@ -172,8 +172,7 @@
     sv.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     sv.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     
-    //For UI Toggling
-    UITapGestureRecognizer *singleSVTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissUI)];
+    UITapGestureRecognizer *singleSVTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissImageViewer)];
     singleSVTap.numberOfTapsRequired = 1;
     singleSVTap.cancelsTouchesInView = NO;
     [sv addGestureRecognizer:singleSVTap];
@@ -203,8 +202,7 @@
     resizableImageView.backgroundColor = [UIColor clearColor];
     resizableImageView.layer.cornerRadius = self.isBeingUsedFor3DTouch ? 14.0f : 0.0f;
     
-    // Toggle UI controls
-    UITapGestureRecognizer *singleImgTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissUI)];
+    UITapGestureRecognizer *singleImgTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissImageViewer)];
     singleImgTap.numberOfTapsRequired = 1;
     [resizableImageView setUserInteractionEnabled:YES];
     [resizableImageView addGestureRecognizer:singleImgTap];
@@ -442,7 +440,7 @@
 - (void)retrieveImageFromAsset {
     PHImageRequestOptions *reqOptions = [PHImageRequestOptions new];
     reqOptions.synchronous = YES;
-    
+
     [[PHImageManager defaultManager] requestImageDataForAsset:self.imgSrc options:reqOptions resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
         self.imgLoaded = [UIImage imageWithData:imageData];
         [self addImageToScrollView];
@@ -451,9 +449,11 @@
 
 - (void)retrieveLivePhotoFromAsset {
     PHLivePhotoRequestOptions *liveOptions = [PHLivePhotoRequestOptions new];
+    liveOptions.networkAccessAllowed = YES;
     liveOptions.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
     liveOptions.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
         dispatch_async(dispatch_get_main_queue(), ^{
+            if (self.progressView == nil) [self createProgressView];
             self.progressView.progress = progress;
         });
     };
@@ -535,7 +535,7 @@
     [tb.centerXAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.centerXAnchor].active = YES;
 }
 
-- (void)dismissUI {
+- (void)dismissImageViewer {
     [[NSNotificationCenter defaultCenter] postNotificationName:NOTE_VC_SHOULD_DISMISS object:nil];
 }
 
