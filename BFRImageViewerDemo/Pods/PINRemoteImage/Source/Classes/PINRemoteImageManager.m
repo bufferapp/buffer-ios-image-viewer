@@ -115,6 +115,7 @@ typedef void (^PINRemoteImageManagerDataCompletion)(NSData *data, NSURLResponse 
 @property (nonatomic, strong) PINURLSessionManager *sessionManager;
 @property (nonatomic, strong) NSMutableDictionary <NSString *, __kindof PINRemoteImageTask *> *tasks;
 @property (nonatomic, strong) NSHashTable <NSUUID *> *canceledTasks;
+@property (nonatomic, strong) NSHashTable <NSUUID *> *UUIDs;
 @property (nonatomic, strong) NSArray <NSNumber *> *progressThresholds;
 @property (nonatomic, assign) BOOL shouldBlurProgressive;
 @property (nonatomic, assign) CGSize maxProgressiveRenderSize;
@@ -125,7 +126,7 @@ typedef void (^PINRemoteImageManagerDataCompletion)(NSData *data, NSURLResponse 
 @property (nonatomic, assign) float highQualityBPSThreshold;
 @property (nonatomic, assign) float lowQualityBPSThreshold;
 @property (nonatomic, assign) BOOL shouldUpgradeLowQualityImages;
-@property (nonatomic, strong) PINRemoteImageManagerMetrics metricsCallback;
+@property (nonatomic, strong) PINRemoteImageManagerMetrics metricsCallback API_AVAILABLE(macosx(10.12), ios(10.0), watchos(3.0), tvos(10.0));
 @property (nonatomic, copy) PINRemoteImageManagerAuthenticationChallenge authenticationChallengeHandler;
 @property (nonatomic, copy) id<PINRequestRetryStrategy> (^retryStrategyCreationBlock)(void);
 @property (nonatomic, copy) PINRemoteImageManagerRequestConfigurationHandler requestConfigurationHandler;
@@ -240,6 +241,7 @@ static dispatch_once_t sharedDispatchToken;
         _maxProgressiveRenderSize = configuration.maxProgressiveRenderSize;
         self.tasks = [[NSMutableDictionary alloc] init];
         self.canceledTasks = [[NSHashTable alloc] initWithOptions:NSHashTableWeakMemory capacity:5];
+        self.UUIDs = [NSHashTable weakObjectsHashTable];
         
         if (alternateRepProvider == nil) {
             _defaultAlternateRepresentationProvider = [[PINAlternateRepresentationProvider alloc] init];
@@ -257,6 +259,11 @@ static dispatch_once_t sharedDispatchToken;
 
 - (id<PINRequestRetryStrategy>)defaultRetryStrategy {
     return [[PINRequestExponentialRetryStrategy alloc] initWithRetryMaxCount:3 delayBase:4];
+}
+
+- (void)dealloc
+{
+    [self.sessionManager invalidateSessionAndCancelTasks];
 }
 
 - (id<PINRemoteImageCaching>)defaultImageCache {
@@ -305,9 +312,7 @@ static dispatch_once_t sharedDispatchToken;
         }
         return data;
     } keyEncoder:nil keyDecoder:nil ttlCache:enableTtl];
-    if (enableTtl) {
-        [pinCache.memoryCache setTtlCache:YES]; // https://github.com/pinterest/PINCache/issues/226
-    }
+
     return pinCache;
 #else
     return [[PINRemoteImageBasicCache alloc] init];
@@ -692,6 +697,8 @@ static dispatch_once_t sharedDispatchToken;
             }
             [task addCallbacksWithCompletionBlock:completion progressImageBlock:progressImage progressDownloadBlock:progressDownload withUUID:UUID];
             [self.tasks setObject:task forKey:key];
+            // Relax :), task retain the UUID for us, it's ok to have a weak reference to UUID here.
+            [self.UUIDs addObject:UUID];
         
             NSAssert(taskClass == [task class], @"Task class should be the same!");
         [self unlock];
@@ -1054,6 +1061,23 @@ static dispatch_once_t sharedDispatchToken;
     } withPriority:PINOperationQueuePriorityHigh];
 }
 
+- (void)cancelAllTasks
+{
+    [self cancelAllTasksAndStoreResumeData:NO];
+}
+
+- (void)cancelAllTasksAndStoreResumeData:(BOOL)storeResumeData
+{
+    [_concurrentOperationQueue scheduleOperation:^{
+        [self lock];
+            NSArray<NSUUID *> *uuidToTask = [self.UUIDs allObjects];
+        [self unlock];
+        for (NSUUID *uuid in uuidToTask) {
+            [self cancelTaskWithUUID:uuid storeResumeData:storeResumeData];
+        }
+    } withPriority:PINOperationQueuePriorityHigh];
+}
+
 - (void)setPriority:(PINRemoteImageManagerPriority)priority ofTaskWithUUID:(NSUUID *)UUID
 {
     if (UUID == nil) {
@@ -1225,7 +1249,7 @@ static dispatch_once_t sharedDispatchToken;
     [task didReceiveData:data];
 }
 
-- (void)didCollectMetrics:(nonnull NSURLSessionTaskMetrics *)metrics forURL:(nonnull NSURL *)url
+- (void)didCollectMetrics:(nonnull NSURLSessionTaskMetrics *)metrics forURL:(nonnull NSURL *)url API_AVAILABLE(macosx(10.12), ios(10.0), watchos(3.0), tvos(10.0))
 {
     [self lock];
         if (self.metricsCallback) {
