@@ -4,6 +4,6 @@ inhibit_all_warnings!
 
 target 'BFRImageViewer' do
 
-  pod 'PINRemoteImage', '~> 3.0.0-beta.14'
+  pod 'PINRemoteImage', '~> 3.0.0'
 
 end

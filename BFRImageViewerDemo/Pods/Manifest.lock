@@ -1,34 +1,34 @@
 PODS:
-  - PINCache (3.0.1-beta.7):
-    - PINCache/Arc-exception-safe (= 3.0.1-beta.7)
-    - PINCache/Core (= 3.0.1-beta.7)
-  - PINCache/Arc-exception-safe (3.0.1-beta.7):
+  - PINCache (3.0.1-beta.8):
+    - PINCache/Arc-exception-safe (= 3.0.1-beta.8)
+    - PINCache/Core (= 3.0.1-beta.8)
+  - PINCache/Arc-exception-safe (3.0.1-beta.8):
     - PINCache/Core
-  - PINCache/Core (3.0.1-beta.7):
+  - PINCache/Core (3.0.1-beta.8):
     - PINOperation (~> 1.1.1)
-  - PINOperation (1.1.1)
-  - PINRemoteImage (3.0.0-beta.14):
-    - PINRemoteImage/PINCache (= 3.0.0-beta.14)
-  - PINRemoteImage/Core (3.0.0-beta.14):
+  - PINOperation (1.1.2)
+  - PINRemoteImage (3.0.0):
+    - PINRemoteImage/PINCache (= 3.0.0)
+  - PINRemoteImage/Core (3.0.0):
     - PINOperation
-  - PINRemoteImage/PINCache (3.0.0-beta.14):
-    - PINCache (= 3.0.1-beta.7)
+  - PINRemoteImage/PINCache (3.0.0):
+    - PINCache (= 3.0.1-beta.8)
     - PINRemoteImage/Core
 
 DEPENDENCIES:
-  - PINRemoteImage (~> 3.0.0-beta.14)
+  - PINRemoteImage (~> 3.0.0)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - PINCache
     - PINOperation
     - PINRemoteImage
 
 SPEC CHECKSUMS:
-  PINCache: 7cb9ae068c8f655717f7c644ef1dff9fd573e979
-  PINOperation: a6219e6fc9db9c269eb7a7b871ac193bcf400aac
-  PINRemoteImage: 81bbff853acc71c6de9e106e9e489a791b8bbb08
+  PINCache: 534fd41d358d828dfdf227a0d327f3673a65e20b
+  PINOperation: 24b774353ca248fcf87d67b2d61eef42087c125a
+  PINRemoteImage: e2b89e19fb6e77ffc099f9d9f3b3fe1745e3f9f9
 
-PODFILE CHECKSUM: 8fec22f8e1938434a3672e37befc450029f9b3e9
+PODFILE CHECKSUM: bd8576d10d6da43026b2a9b5e4ab6e65be761e4b
 
-COCOAPODS: 1.6.1
+COCOAPODS: 1.9.1
