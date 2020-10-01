@@ -12,7 +12,7 @@
 ### Summary
 The BFRImageViewer is a turnkey solution to present images within your iOS app 🎉! 
 
-It features swipe gestures to dismiss, automatic image scaling, zooming and panning, supports multiple images, image types, URL backloading, custom view controller transitions, built in parallax effect, live photos and plays nicely with 3D touch! We use it all over the place in [Buffer for iOS](https://itunes.apple.com/us/app/buffer-for-twitter-pinterest/id490474324?mt=8) :-). 
+It has features of swipe gestures to dismiss, automatic image scaling, zooming and panning, supports multiple images, image types, URL backloading, custom view controller transitions, built in parallax effect, live photos and plays nicely with 3D touch! We use it all over the place in [Buffer for iOS](https://itunes.apple.com/us/app/buffer-for-twitter-pinterest/id490474324?mt=8) :-). 
 
 We've got code samples of each feature in the demo app, feel free to take a peek 👀.
 
