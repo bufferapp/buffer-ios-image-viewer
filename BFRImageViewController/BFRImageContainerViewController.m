@@ -490,6 +490,7 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             if (result.error || (!result.image && !result.alternativeRepresentation)) {
+                NSLog(@"Error %@", result.error);
                 [self.progressView removeFromSuperview];
                 [self showError];
                 return;
