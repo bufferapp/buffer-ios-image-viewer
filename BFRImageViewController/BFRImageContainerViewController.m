@@ -305,7 +305,7 @@
     }
     
     // Apply zoom
-    self.scrollView.maximumZoomScale = maxScale;
+    self.scrollView.maximumZoomScale = self.imageMaxScale == 0 ? maxScale : self.imageMaxScale;
     self.scrollView.minimumZoomScale = minScale;
     self.scrollView.zoomScale = minScale;
 }

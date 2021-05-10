@@ -42,6 +42,9 @@
 /*! Allows you to enable autoplay for peek&play feature on photo live view. Default to YES */
 @property (nonatomic, getter=shouldDisableAutoplayForLivePhoto) BOOL disableAutoplayForLivePhoto;
 
+/*! Allows you to set image max scale */
+@property (nonatomic, assign) CGFloat maxScale;
+
 /*! Dismiss properly with animations */
 - (void)dismiss;
 
