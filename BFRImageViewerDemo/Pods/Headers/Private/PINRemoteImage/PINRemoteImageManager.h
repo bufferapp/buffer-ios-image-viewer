@@ -1,1 +1,1 @@
-../../../PINRemoteImage/Source/Classes/PINRemoteImageManager.h
+../../../PINRemoteImage/Source/Classes/include/PINRemoteImageManager.h

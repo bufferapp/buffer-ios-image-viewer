@@ -404,7 +404,7 @@
     if (activityItem == nil) return;
     
     UIActivityViewController *activityVC;
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         activityVC = [[UIActivityViewController alloc] initWithActivityItems:@[activityItem] applicationActivities:nil];
         [self presentViewController:activityVC animated:YES completion:nil];
     } else {
@@ -441,7 +441,7 @@
     PHImageRequestOptions *reqOptions = [PHImageRequestOptions new];
     reqOptions.synchronous = YES;
 
-    [[PHImageManager defaultManager] requestImageDataForAsset:self.imgSrc options:reqOptions resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+    [[PHImageManager defaultManager] requestImageDataAndOrientationForAsset:self.imgSrc options:reqOptions resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, CGImagePropertyOrientation orientation, NSDictionary * _Nullable info) {
         self.imgLoaded = [UIImage imageWithData:imageData];
         [self addImageToScrollView];
     }];

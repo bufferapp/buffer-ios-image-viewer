@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name         = "BFRImageViewer"
-    s.version      = "1.2.9"
+    s.version      = "1.3.0"
     s.summary      = "A turnkey solution to display photos and images of all kinds in your app."
     s.description  = <<-DESC
                     The BFRImageViewer is a turnkey solution to present images within your iOS app 🎉! 
@@ -13,11 +13,11 @@ Pod::Spec.new do |s|
   	s.authors       = {"Andrew Yates" => "andy@bufferapp.com",
   					           "Jordan Morgan" => "jordan@bufferapp.com"}
   	s.social_media_url = "https://twitter.com/bufferdevs"
-    s.source       = { :git => "https://github.com/bufferapp/buffer-ios-image-viewer.git", :tag => '1.2.9'  }
+    s.source       = { :git => "https://github.com/bufferapp/buffer-ios-image-viewer.git", :tag => '1.3.0'  }
     s.source_files = 'Classes', 'BFRImageViewController/**/*.{h,m}'
-    s.resources    = ['BFRImageViewController/**/BFRImageViewerLocalizations.bundle','BFRImageViewController/**/*.{png}']
+    s.resources    = ['BFRImageViewController/**/BFRImageViewerLocalizations.bundle']
     s.exclude_files = 'BFRImageViewController/**/lowResImage.png'
-    s.platform     = :ios, '11.0'
+    s.platform     = :ios, '13.0'
     s.requires_arc = true
     s.frameworks = "UIKit", "Photos"
     s.dependency 'PINRemoteImage/iOS', '~> 3.0.0'

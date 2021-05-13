@@ -1,1 +1,1 @@
-../../../PINRemoteImage/Source/Classes/PINProgressiveImage.h
+../../../PINRemoteImage/Source/Classes/include/PINProgressiveImage.h

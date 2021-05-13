@@ -1,8 +1,8 @@
 PODS:
-  - PINOperation (1.2)
-  - PINRemoteImage/Core (3.0.1):
+  - PINOperation (1.2.1)
+  - PINRemoteImage/Core (3.0.3):
     - PINOperation
-  - PINRemoteImage/iOS (3.0.1):
+  - PINRemoteImage/iOS (3.0.3):
     - PINRemoteImage/Core
 
 DEPENDENCIES:
@@ -14,9 +14,9 @@ SPEC REPOS:
     - PINRemoteImage
 
 SPEC CHECKSUMS:
-  PINOperation: 3a967a927e7867e61976c6cc23e5770416449fbc
-  PINRemoteImage: 3b7cedb118c2d357f87e9eabc7c81ba0202cb236
+  PINOperation: 00c935935f1e8cf0d1e2d6b542e75b88fc3e5e20
+  PINRemoteImage: f1295b29f8c5e640e25335a1b2bd9d805171bd01
 
 PODFILE CHECKSUM: 9a080f8a24bf4d7e3dd1b620f4fb743f1f4c8104
 
-COCOAPODS: 1.10.0.rc.1
+COCOAPODS: 1.10.1

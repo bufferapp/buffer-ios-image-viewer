@@ -9,7 +9,7 @@
 #import "SecondViewController.h"
 #import "BFRImageViewController.h"
 
-@interface SecondViewController () <UIViewControllerPreviewingDelegate>
+@interface SecondViewController ()
 @property (strong, nonatomic) NSArray *imgURLs;
 @end
 
@@ -34,12 +34,8 @@
     [openImageFromURL.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor].active = YES;
     [openImageFromURL.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor].active = YES;
     
-    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
-        [self check3DTouch];
-    }
-    
-    NSURL *url1 = [NSURL URLWithString:@"https://open.buffer.com/wp-content/uploads/2017/04/career-framework-maker-manager.png"];
-    NSURL *url2 = [NSURL URLWithString:@"https://open.buffer.com/wp-content/uploads/2015/11/new-journey-page.png"];
+    NSURL *url1 = [NSURL URLWithString:@"https://images.unsplash.com/photo-1593642634443-44adaa06623a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2425&q=80"];
+    NSURL *url2 = [NSURL URLWithString:@"https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2700&q=80"];
     NSURL *url3 = [NSURL URLWithString:@"http://i.imgur.com/XBnuETM.jpg"];
     self.imgURLs = @[url1, url2, url3];
 }
@@ -50,22 +46,4 @@
     [self presentViewController:imageVC animated:YES completion:nil];
 }
 
-#pragma mark - 3D Touch
-- (void)check3DTouch {
-    [self registerForPreviewingWithDelegate:self sourceView:self.view];
-}
-
-- (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext viewControllerForLocation:(CGPoint)location {
-    return [[BFRImageViewController alloc] initWithImageSource:self.imgURLs];
-}
-
-- (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext commitViewController:(UIViewController *)viewControllerToCommit {
-    [self presentViewController:viewControllerToCommit animated:YES completion:nil];
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
-    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
-        [self check3DTouch];
-    }
-}
 @end

@@ -1,1 +1,1 @@
-../../../PINRemoteImage/Source/Classes/PINRemoteImageMacros.h
+../../../PINRemoteImage/Source/Classes/include/PINRemoteImageMacros.h

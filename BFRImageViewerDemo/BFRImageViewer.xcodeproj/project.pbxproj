@@ -8,17 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		1702C69A1F86BBFC00104D0B /* BFRImageViewerConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 1702C6991F86BBFC00104D0B /* BFRImageViewerConstants.m */; };
-		1702C69C1F86C3A400104D0B /* lowResImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 1702C69B1F86C32100104D0B /* lowResImage.png */; };
 		170BE4FF212DBB2B005703C6 /* BFRImageViewerDownloadProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 170BE4FE212DBB2B005703C6 /* BFRImageViewerDownloadProgressView.m */; };
 		171F4AD01E96BE0500F4AF01 /* BFRBackLoadedImageSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 171F4ACF1E96BE0500F4AF01 /* BFRBackLoadedImageSource.m */; };
 		171F4AD31E96C31400F4AF01 /* FourthViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 171F4AD21E96C31400F4AF01 /* FourthViewController.m */; };
 		1797CB8E1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 1797CB8D1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m */; };
 		1797CB911E81BBB200D9F729 /* ThirdViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1797CB901E81BBB200D9F729 /* ThirdViewController.m */; };
 		17C1AAB61D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 17C1AAB51D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle */; };
+		33625B75264D71130003310C /* lowResImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 33625B74264D71130003310C /* lowResImage.png */; };
 		3D65F036BBCC181E7FD291F7 /* libPods-BFRImageViewer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76763DB871F085556628E1C6 /* libPods-BFRImageViewer.a */; };
-		578DFD5B1CB6F17B00BFBD00 /* cross.png in Resources */ = {isa = PBXBuildFile; fileRef = 578DFD581CB6F17B00BFBD00 /* cross.png */; };
-		578DFD5C1CB6F17B00BFBD00 /* cross@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 578DFD591CB6F17B00BFBD00 /* cross@2x.png */; };
-		578DFD5D1CB6F17B00BFBD00 /* cross@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 578DFD5A1CB6F17B00BFBD00 /* cross@3x.png */; };
 		944B4DB01BFFC0C000B9BF87 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DAF1BFFC0C000B9BF87 /* main.m */; };
 		944B4DB31BFFC0C000B9BF87 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DB21BFFC0C000B9BF87 /* AppDelegate.m */; };
 		944B4DB61BFFC0C000B9BF87 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DB51BFFC0C000B9BF87 /* FirstViewController.m */; };
@@ -33,7 +30,6 @@
 		1264A436520DEA8753316972 /* Pods-BFRImageViewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BFRImageViewer.release.xcconfig"; path = "Pods/Target Support Files/Pods-BFRImageViewer/Pods-BFRImageViewer.release.xcconfig"; sourceTree = "<group>"; };
 		1702C6981F86BBFC00104D0B /* BFRImageViewerConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BFRImageViewerConstants.h; sourceTree = "<group>"; };
 		1702C6991F86BBFC00104D0B /* BFRImageViewerConstants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BFRImageViewerConstants.m; sourceTree = "<group>"; };
-		1702C69B1F86C32100104D0B /* lowResImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lowResImage.png; sourceTree = "<group>"; };
 		170BE4FD212DBB2B005703C6 /* BFRImageViewerDownloadProgressView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BFRImageViewerDownloadProgressView.h; sourceTree = "<group>"; };
 		170BE4FE212DBB2B005703C6 /* BFRImageViewerDownloadProgressView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BFRImageViewerDownloadProgressView.m; sourceTree = "<group>"; };
 		171F4ACE1E96BE0500F4AF01 /* BFRBackLoadedImageSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BFRBackLoadedImageSource.h; sourceTree = "<group>"; };
@@ -46,10 +42,8 @@
 		1797CB901E81BBB200D9F729 /* ThirdViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThirdViewController.m; sourceTree = "<group>"; };
 		17C1AAB51D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = BFRImageViewerLocalizations.bundle; sourceTree = "<group>"; };
 		17C1AAB91D9D702E00FF1B67 /* BFRImageViewerLocalizations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BFRImageViewerLocalizations.h; sourceTree = "<group>"; };
+		33625B74264D71130003310C /* lowResImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lowResImage.png; sourceTree = "<group>"; };
 		3C46F30D2C78F64E6BC23C87 /* Pods-BFRImageViewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BFRImageViewer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BFRImageViewer/Pods-BFRImageViewer.debug.xcconfig"; sourceTree = "<group>"; };
-		578DFD581CB6F17B00BFBD00 /* cross.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cross.png; sourceTree = "<group>"; };
-		578DFD591CB6F17B00BFBD00 /* cross@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cross@2x.png"; sourceTree = "<group>"; };
-		578DFD5A1CB6F17B00BFBD00 /* cross@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "cross@3x.png"; sourceTree = "<group>"; };
 		76763DB871F085556628E1C6 /* libPods-BFRImageViewer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BFRImageViewer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		944B4DAB1BFFC0C000B9BF87 /* BFRImageViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BFRImageViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		944B4DAF1BFFC0C000B9BF87 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -92,10 +86,7 @@
 		578DFD551CB6E7F400BFBD00 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				1702C69B1F86C32100104D0B /* lowResImage.png */,
-				578DFD581CB6F17B00BFBD00 /* cross.png */,
-				578DFD591CB6F17B00BFBD00 /* cross@2x.png */,
-				578DFD5A1CB6F17B00BFBD00 /* cross@3x.png */,
+				33625B74264D71130003310C /* lowResImage.png */,
 				17C1AAB51D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle */,
 			);
 			path = Resources;
@@ -208,7 +199,7 @@
 		944B4DA31BFFC0C000B9BF87 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1010;
+				LastUpgradeCheck = 1250;
 				ORGANIZATIONNAME = "Andrew Yates";
 				TargetAttributes = {
 					944B4DAA1BFFC0C000B9BF87 = {
@@ -240,12 +231,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1702C69C1F86C3A400104D0B /* lowResImage.png in Resources */,
-				578DFD5C1CB6F17B00BFBD00 /* cross@2x.png in Resources */,
 				944B4DC11BFFC0C000B9BF87 /* LaunchScreen.storyboard in Resources */,
-				578DFD5D1CB6F17B00BFBD00 /* cross@3x.png in Resources */,
-				578DFD5B1CB6F17B00BFBD00 /* cross.png in Resources */,
 				17C1AAB61D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle in Resources */,
+				33625B75264D71130003310C /* lowResImage.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -330,6 +318,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -354,7 +343,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -385,6 +374,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -403,7 +393,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -418,7 +408,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = UYDA63C4EC;
 				INFOPLIST_FILE = BFRImageViewer/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.buffer.BFRImageViewer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -432,7 +422,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = UYDA63C4EC;
 				INFOPLIST_FILE = BFRImageViewer/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.buffer.BFRImageViewer;
 				PRODUCT_NAME = "$(TARGET_NAME)";

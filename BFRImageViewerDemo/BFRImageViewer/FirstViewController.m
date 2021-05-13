@@ -9,7 +9,7 @@
 #import "FirstViewController.h"
 #import "BFRImageViewController.h"
 
-@interface FirstViewController () <UIViewControllerPreviewingDelegate>
+@interface FirstViewController ()
 @property (strong, nonatomic) NSURL *imgURL;
 @end
 
@@ -28,7 +28,6 @@
     [super viewDidLoad];
 
     [self addImageButtonToView];
-    [self check3DTouch];
     
     self.imgURL = [NSURL URLWithString:@"https://media0.giphy.com/media/huJmPXfeir5JlpPAx0/200.gif"];
 }
@@ -37,27 +36,6 @@
     //Here, the image source could be an array containing/a mix of URL strings, NSURLs, PHAssets, or UIImages
     BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:@[self.imgURL]];    
     [self presentViewController:imageVC animated:YES completion:nil];
-}
-
-#pragma mark - 3D Touch
-- (void)check3DTouch {
-    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
-        [self registerForPreviewingWithDelegate:self sourceView:self.view];
-    }
-}
-
-- (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext viewControllerForLocation:(CGPoint)location {
-    return [[BFRImageViewController alloc] initWithImageSource:@[self.imgURL]];
-}
-
-- (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext commitViewController:(UIViewController *)viewControllerToCommit {
-    [self presentViewController:viewControllerToCommit animated:YES completion:nil];
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
-    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
-        [self check3DTouch];
-    }
 }
 
 #pragma mark - Misc 

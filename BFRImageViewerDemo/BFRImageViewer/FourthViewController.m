@@ -46,14 +46,14 @@
 }
 
 - (void)openImageViewer {
-    BFRBackLoadedImageSource *backloadedImage = [[BFRBackLoadedImageSource alloc] initWithInitialImage:[UIImage imageNamed:@"lowResImage"] hiResURL:[NSURL URLWithString:@"https://overflow.buffer.com/wp-content/uploads/2016/12/1-hByZ0VpJusdVwpZd-Z4-Zw.png"]];
+    BFRBackLoadedImageSource *backloadedImage = [[BFRBackLoadedImageSource alloc] initWithInitialImage:[UIImage imageNamed:@"lowResImage"] hiResURL:[NSURL URLWithString:@"https://images.unsplash.com/photo-1620910423680-80b93f872962?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1234&q=80"]];
     
     BFRImageViewController *imageVC = [[BFRImageViewController alloc] initWithImageSource:@[backloadedImage]];
     [self presentViewController:imageVC animated:YES completion:nil];
 }
 
 - (void)openImageViewerWithCompletionHandler {
-    BFRBackLoadedImageSource *backloadedImage = [[BFRBackLoadedImageSource alloc] initWithInitialImage:[UIImage imageNamed:@"lowResImage"] hiResURL:[NSURL URLWithString:@"https://overflow.buffer.com/wp-content/uploads/2016/12/1-hByZ0VpJusdVwpZd-Z4-Zw.png"]];
+    BFRBackLoadedImageSource *backloadedImage = [[BFRBackLoadedImageSource alloc] initWithInitialImage:[UIImage imageNamed:@"lowResImage"] hiResURL:[NSURL URLWithString:@"https://images.unsplash.com/photo-1620910423680-80b93f872962?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1234&q=80"]];
     
     backloadedImage.onCompletion = ^(UIImage * _Nullable img, NSError * _Nullable error) {
         UIAlertController *alertVC = [UIAlertController alertControllerWithTitle:@"Download Done" message:[NSString stringWithFormat:@"Finished downloading hi res image.\nImage:%@\nError:%@", img, error] preferredStyle:UIAlertControllerStyleAlert];
@@ -61,8 +61,7 @@
         UIAlertAction *close = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
         [alertVC addAction:close];
         
-
-        UIViewController *topController = [UIApplication sharedApplication].keyWindow.rootViewController;
+        UIViewController *topController = self.view.window.windowScene.windows.firstObject.rootViewController;
         while (topController.presentedViewController) {
             topController = topController.presentedViewController;
         }

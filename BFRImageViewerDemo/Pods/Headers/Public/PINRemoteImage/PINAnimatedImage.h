@@ -1,1 +1,1 @@
-../../../PINRemoteImage/Source/Classes/AnimatedImages/PINAnimatedImage.h
+../../../PINRemoteImage/Source/Classes/include/PINAnimatedImage.h

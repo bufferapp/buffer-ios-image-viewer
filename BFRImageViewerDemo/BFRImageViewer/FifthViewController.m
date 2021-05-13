@@ -10,7 +10,7 @@
 #import "FifthViewController.h"
 #import "BFRImageViewController.h"
 
-@interface FifthViewController () <UIViewControllerPreviewingDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface FifthViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
 @end
 
@@ -28,37 +28,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self check3DTouch];
     [self addButtonsToView];
-}
-
-#pragma mark - 3D Touch
-
-- (void)check3DTouch {
-    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
-        [self registerForPreviewingWithDelegate:self sourceView:self.view];
-    }
-}
-
-- (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext viewControllerForLocation:(CGPoint)location {
-    PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
-    
-    if (status == PHAuthorizationStatusAuthorized) {
-        return [self imageViewControllerForLivePhotoDisableAutoplay:NO];
-    } else {
-        [self showAuthorizationAlertViewControllerAnimated:YES];
-        return nil;
-    }
-}
-
-- (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext commitViewController:(UIViewController *)viewControllerToCommit {
-    [self presentViewController:viewControllerToCommit animated:YES completion:nil];
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
-    if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
-        [self check3DTouch];
-    }
 }
 
 #pragma mark - Misc

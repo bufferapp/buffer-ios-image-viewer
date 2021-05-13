@@ -1,1 +1,1 @@
-../../../PINRemoteImage/Source/Classes/PINRequestRetryStrategy.h
+../../../PINRemoteImage/Source/Classes/include/PINRequestRetryStrategy.h
