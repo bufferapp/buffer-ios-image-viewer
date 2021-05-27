@@ -224,9 +224,8 @@
     
     // Dragging to dismiss
     UIPanGestureRecognizer *panImg = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleDrag:)];
-    if (self.shouldDisableHorizontalDrag) {
-        panImg.delegate = self;
-    }
+    panImg.delegate = self;
+    
     [resizableImageView addGestureRecognizer:panImg];
     
     if (self.assetType == BFRImageAssetTypeLivePhoto) {
@@ -266,6 +265,9 @@
 // If we have more than one image, this will cancel out dragging horizontally to make it easy to navigate between images
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     CGPoint velocity = [(UIPanGestureRecognizer *)gestureRecognizer velocityInView:self.scrollView];
+    if (self.scrollView.zoomScale > 1) {
+        return  NO;
+    }
     return fabs(velocity.y) > fabs(velocity.x);
 }
 
@@ -370,7 +372,6 @@
             [self.animator removeAllBehaviors];
             self.activeAssetView.userInteractionEnabled = NO;
             self.scrollView.userInteractionEnabled = NO;
-            
             UIGravityBehavior *exitGravity = [[UIGravityBehavior alloc] initWithItems:@[self.activeAssetView]];
             if (CGRectContainsPoint(closeTopThreshhold, location)) {
                 exitGravity.gravityDirection = CGVectorMake(0.0, -1.0);
