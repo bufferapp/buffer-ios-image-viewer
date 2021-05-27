@@ -184,7 +184,6 @@
         imgVC.usedFor3DTouch = self.isBeingUsedFor3DTouch;
         imgVC.useTransparentBackground = self.isUsingTransparentBackground;
         imgVC.disableSharingLongPress = self.shouldDisableSharingLongPress;
-        imgVC.disableHorizontalDrag = (self.images.count > 1);
         imgVC.disableAutoplayForLivePhoto = self.shouldDisableAutoplayForLivePhoto;
         imgVC.imageMaxScale = self.maxScale;
         [self.imageViewControllers addObject:imgVC];

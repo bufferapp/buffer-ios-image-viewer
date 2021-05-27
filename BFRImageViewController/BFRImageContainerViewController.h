@@ -37,9 +37,6 @@ typedef NS_ENUM(NSUInteger, BFRImageAssetType) {
 /*! Assigning YES to this property will disable long pressing media to present the activity view controller. You typically don't set this property yourself, instead, the value is derived from the containing @c BFRImageViewController instance. */
 @property (nonatomic, getter=shouldDisableSharingLongPress) BOOL disableSharingLongPress;
 
-/*! If there is more than one image in the containing @c BFRImageViewController - this property is set to YES to make swiping from image to image easier. */
-@property (nonatomic, getter=shouldDisableHorizontalDrag) BOOL disableHorizontalDrag;
-
 /*! Assigning YES to this property will disable autoplay for live photos when it used with 3DTouch peek feature */
 @property (nonatomic, getter=shouldDisableAutoplayForLivePhoto) BOOL disableAutoplayForLivePhoto;
 @property (nonatomic, assign) CGFloat imageMaxScale;

@@ -224,9 +224,8 @@
     
     // Dragging to dismiss
     UIPanGestureRecognizer *panImg = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleDrag:)];
-    if (self.shouldDisableHorizontalDrag) {
-        panImg.delegate = self;
-    }
+    panImg.delegate = self;
+    
     [resizableImageView addGestureRecognizer:panImg];
     
     if (self.assetType == BFRImageAssetTypeLivePhoto) {
