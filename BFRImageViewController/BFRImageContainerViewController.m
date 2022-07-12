@@ -246,9 +246,10 @@ API_AVAILABLE(ios(16.0))
     
     // Live Text
     if (@available(iOS 16.0, *)) {
-        if ([LiveTextManager isLiveTextAvailable] && self.assetType == BFRImageAssetTypeImage) {
+        if ([LiveTextManager isLiveTextAvailable] &&
+            (self.assetType == BFRImageAssetTypeImage || self.assetType == BFRImageAssetTypeRemoteImage)) {
             self.liveTextManager = [LiveTextManager new];
-            [self.liveTextManager analyzeImageViewWithView:self.imgView image:(UIImage *)self.imgSrc completionHandler:^{
+            [self.liveTextManager analyzeImageViewWithView:self.imgView image:(UIImage *)self.imgLoaded completionHandler:^{
                             
             }];
         }
