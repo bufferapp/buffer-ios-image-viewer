@@ -10,12 +10,14 @@
 #import "BFRBackLoadedImageSource.h"
 #import "BFRImageViewerDownloadProgressView.h"
 #import "BFRImageViewerConstants.h"
+#import "BFRImageViewer-Swift.h"
 #import <Photos/Photos.h>
 #import <PhotosUI/PhotosUI.h>
 #import <PINRemoteImage/PINAnimatedImageView.h>
 #import <PINRemoteImage/PINRemoteImage.h>
 #import <PINRemoteImage/PINImageView+PINRemoteImage.h>
 
+API_AVAILABLE(ios(16.0))
 @interface BFRImageContainerViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 
 /*! This is responsible for panning and zooming the images. */
@@ -47,6 +49,8 @@
 
 /*! Currently, this only shows if a live photo is displayed to avoid gesture recognizer conflicts with playback and sharing. */
 @property (strong, nonatomic, nullable) UIBarButtonItem *shareBarButtonItem;
+
+@property (strong, nonatomic, nullable) LiveTextManager *liveTextManager API_AVAILABLE(ios(16));
 
 @end
 
@@ -229,6 +233,7 @@
     }
     [resizableImageView addGestureRecognizer:panImg];
     
+    // Live Photo Autoplay
     if (self.assetType == BFRImageAssetTypeLivePhoto) {
         self.livePhotoImgView = (PHLivePhotoView *)resizableImageView;
         
@@ -237,6 +242,16 @@
         }
     } else {
         self.imgView = (PINAnimatedImageView *)resizableImageView;
+    }
+    
+    // Live Text
+    if (@available(iOS 16.0, *)) {
+        if ([LiveTextManager isLiveTextAvailable] && self.assetType == BFRImageAssetTypeImage) {
+            self.liveTextManager = [LiveTextManager new];
+            [self.liveTextManager analyzeImageViewWithView:self.imgView image:(UIImage *)self.imgSrc completionHandler:^{
+                            
+            }];
+        }
     }
 }
 

@@ -14,6 +14,7 @@
 		1797CB8E1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 1797CB8D1E81BB4F00D9F729 /* BFRImageTransitionAnimator.m */; };
 		1797CB911E81BBB200D9F729 /* ThirdViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1797CB901E81BBB200D9F729 /* ThirdViewController.m */; };
 		17C1AAB61D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 17C1AAB51D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle */; };
+		333CCA39287DC15B004EF4A5 /* LiveTextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333CCA38287DC15B004EF4A5 /* LiveTextManager.swift */; };
 		33625B75264D71130003310C /* lowResImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 33625B74264D71130003310C /* lowResImage.png */; };
 		3D65F036BBCC181E7FD291F7 /* libPods-BFRImageViewer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76763DB871F085556628E1C6 /* libPods-BFRImageViewer.a */; };
 		944B4DB01BFFC0C000B9BF87 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 944B4DAF1BFFC0C000B9BF87 /* main.m */; };
@@ -42,6 +43,8 @@
 		1797CB901E81BBB200D9F729 /* ThirdViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThirdViewController.m; sourceTree = "<group>"; };
 		17C1AAB51D9D6EBF00FF1B67 /* BFRImageViewerLocalizations.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = BFRImageViewerLocalizations.bundle; sourceTree = "<group>"; };
 		17C1AAB91D9D702E00FF1B67 /* BFRImageViewerLocalizations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BFRImageViewerLocalizations.h; sourceTree = "<group>"; };
+		333CCA37287DC15A004EF4A5 /* BFRImageViewer-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BFRImageViewer-Bridging-Header.h"; sourceTree = "<group>"; };
+		333CCA38287DC15B004EF4A5 /* LiveTextManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveTextManager.swift; sourceTree = "<group>"; };
 		33625B74264D71130003310C /* lowResImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lowResImage.png; sourceTree = "<group>"; };
 		3C46F30D2C78F64E6BC23C87 /* Pods-BFRImageViewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BFRImageViewer.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BFRImageViewer/Pods-BFRImageViewer.debug.xcconfig"; sourceTree = "<group>"; };
 		76763DB871F085556628E1C6 /* libPods-BFRImageViewer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BFRImageViewer.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,6 +78,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		333CCA36287DC147004EF4A5 /* Live Text */ = {
+			isa = PBXGroup;
+			children = (
+				333CCA38287DC15B004EF4A5 /* LiveTextManager.swift */,
+				333CCA37287DC15A004EF4A5 /* BFRImageViewer-Bridging-Header.h */,
+			);
+			path = "Live Text";
+			sourceTree = "<group>";
+		};
 		5191CE176EA32C80E7D64558 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -144,6 +156,7 @@
 		944B4DE41BFFC0E300B9BF87 /* BFRImageViewController */ = {
 			isa = PBXGroup;
 			children = (
+				333CCA36287DC147004EF4A5 /* Live Text */,
 				578DFD551CB6E7F400BFBD00 /* Resources */,
 				944B4DE51BFFC0E300B9BF87 /* BFRImageContainerViewController.h */,
 				944B4DE61BFFC0E300B9BF87 /* BFRImageContainerViewController.m */,
@@ -205,6 +218,7 @@
 					944B4DAA1BFFC0C000B9BF87 = {
 						CreatedOnToolsVersion = 7.1.1;
 						DevelopmentTeam = UYDA63C4EC;
+						LastSwiftMigration = 1400;
 					};
 				};
 			};
@@ -277,6 +291,7 @@
 				1702C69A1F86BBFC00104D0B /* BFRImageViewerConstants.m in Sources */,
 				944B4DE91BFFC0E300B9BF87 /* BFRImageContainerViewController.m in Sources */,
 				944B4DB61BFFC0C000B9BF87 /* FirstViewController.m in Sources */,
+				333CCA39287DC15B004EF4A5 /* LiveTextManager.swift in Sources */,
 				944B4DB01BFFC0C000B9BF87 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -343,7 +358,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -393,7 +408,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -406,12 +421,16 @@
 			baseConfigurationReference = 3C46F30D2C78F64E6BC23C87 /* Pods-BFRImageViewer.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = UYDA63C4EC;
 				INFOPLIST_FILE = BFRImageViewer/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.buffer.BFRImageViewer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "../BFRImageViewController/Live Text/BFRImageViewer-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -420,12 +439,15 @@
 			baseConfigurationReference = 1264A436520DEA8753316972 /* Pods-BFRImageViewer.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = UYDA63C4EC;
 				INFOPLIST_FILE = BFRImageViewer/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.buffer.BFRImageViewer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "../BFRImageViewController/Live Text/BFRImageViewer-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

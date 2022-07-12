@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
     s.source_files = 'Classes', 'BFRImageViewController/**/*.{h,m}'
     s.resources    = ['BFRImageViewController/**/BFRImageViewerLocalizations.bundle']
     s.exclude_files = 'BFRImageViewController/**/lowResImage.png'
-    s.platform     = :ios, '13.0'
+    s.platform     = :ios, '14.0'
     s.requires_arc = true
     s.frameworks = "UIKit", "Photos"
     s.dependency 'PINRemoteImage/iOS', '~> 3.0.0'
