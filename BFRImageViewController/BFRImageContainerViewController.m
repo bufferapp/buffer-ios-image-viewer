@@ -10,7 +10,6 @@
 #import "BFRBackLoadedImageSource.h"
 #import "BFRImageViewerDownloadProgressView.h"
 #import "BFRImageViewerConstants.h"
-#import "BFRImageViewer-Swift.h"
 #import <Photos/Photos.h>
 #import <PhotosUI/PhotosUI.h>
 #import <PINRemoteImage/PINAnimatedImageView.h>
@@ -49,8 +48,6 @@ API_AVAILABLE(ios(16.0))
 
 /*! Currently, this only shows if a live photo is displayed to avoid gesture recognizer conflicts with playback and sharing. */
 @property (strong, nonatomic, nullable) UIBarButtonItem *shareBarButtonItem;
-
-@property (strong, nonatomic, nullable) LiveTextManager *liveTextManager API_AVAILABLE(ios(16));
 
 @end
 
@@ -153,6 +150,15 @@ API_AVAILABLE(ios(16.0))
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark - Public Methods
+
+- (void)analyzeImageIfPossible:(LiveTextManager *)manager {
+    if (self.imgLoaded && self.imgView) {
+        [manager analyzeImageViewWithView:self.imgView
+                                    image:self.imgLoaded];
+    }
+}
+
 #pragma mark - UI Methods
 
 - (void)createProgressView {
@@ -242,17 +248,6 @@ API_AVAILABLE(ios(16.0))
         }
     } else {
         self.imgView = (PINAnimatedImageView *)resizableImageView;
-    }
-    
-    // Live Text
-    if (@available(iOS 16.0, *)) {
-        if ([LiveTextManager isLiveTextAvailable] &&
-            (self.assetType == BFRImageAssetTypeImage || self.assetType == BFRImageAssetTypeRemoteImage)) {
-            self.liveTextManager = [LiveTextManager new];
-            [self.liveTextManager analyzeImageViewWithView:self.imgView image:(UIImage *)self.imgLoaded completionHandler:^{
-                            
-            }];
-        }
     }
 }
 

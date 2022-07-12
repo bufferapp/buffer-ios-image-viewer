@@ -39,8 +39,11 @@
 /*! Retrieve the index of the currently showing image. */
 @property (nonatomic, assign, readonly) NSInteger currentIndex;
 
-/*! Allows you to enable autoplay for peek&play feature on photo live view. Default to YES */
+/*! Allows you to enable autoplay for peek&play feature on photo live view. Defaults to YES */
 @property (nonatomic, getter=shouldDisableAutoplayForLivePhoto) BOOL disableAutoplayForLivePhoto;
+
+/*! Performs Live Text analysis on the image. Defaults to YES */
+@property (nonatomic, getter=shouldPerformLiveTextAnalysis) BOOL performLiveTextAnalysis;
 
 /*! Allows you to set image max scale */
 @property (nonatomic, assign) CGFloat maxScale;

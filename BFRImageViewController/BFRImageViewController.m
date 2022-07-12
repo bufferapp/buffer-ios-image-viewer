@@ -11,6 +11,7 @@
 #import "BFRImageViewerLocalizations.h"
 #import "BFRImageTransitionAnimator.h"
 #import "BFRImageViewerConstants.h"
+#import "BFRImageViewer-Swift.h"
 
 @interface BFRImageViewController () <UIPageViewControllerDataSource, UIScrollViewDelegate>
 
@@ -37,6 +38,9 @@
 
 /*! This creates the parallax scrolling effect by essentially clipping the scrolled images and moving with the touch point in scrollViewDidScroll. */
 @property (strong, nonatomic, nonnull) UIView *parallaxView;
+
+/*! Analyzes images for Live Text detectors. */
+@property (strong, nonatomic, nullable) LiveTextManager *liveTextManager API_AVAILABLE(ios(16));
 
 @end
 
@@ -75,7 +79,13 @@
     self.enableDoneButton = YES;
     self.showDoneButtonOnLeft = YES;
     self.disableAutoplayForLivePhoto = YES;
+    self.performLiveTextAnalysis = YES;
     self.parallaxView = [UIView new];
+    
+    // Add Live Text analysis
+    if (@available(iOS 16.0, *)) {
+        self.liveTextManager = [LiveTextManager new];
+    }
 }
 
 #pragma mark - View Lifecycle
@@ -271,6 +281,32 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     [self updateParallaxViewFrame:scrollView];
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    // Live Text Interaction
+    if (@available(iOS 16.0, *)) {
+        BFRImageContainerViewController *activeVC = (BFRImageContainerViewController *)self.imageViewControllers[self.currentIndex];
+        
+        BOOL hasAnalyzeableType = (activeVC.assetType == BFRImageAssetTypeImage || activeVC.assetType == BFRImageAssetTypeRemoteImage);
+        
+        if (self.shouldPerformLiveTextAnalysis && hasAnalyzeableType) {
+            [activeVC analyzeImageIfPossible:self.liveTextManager];
+        }
+    }
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    // Live Text checks
+    CGPoint windowPoint = [gestureRecognizer locationInView:nil];
+    if (@available(iOS 16, *)) {
+        if (self.shouldPerformLiveTextAnalysis &&
+            [self.liveTextManager hasLiveTextInteractionAtPoint:windowPoint]) {
+            return NO;
+        }
+    }
+    
+    return YES;
 }
 
 - (void)updateParallaxViewFrame:(UIScrollView *)scrollView {

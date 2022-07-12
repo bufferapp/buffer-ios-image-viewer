@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BFRImageViewer-Swift.h"
 
 typedef NS_ENUM(NSUInteger, BFRImageAssetType) {
     BFRImageAssetTypeImage,
@@ -42,6 +43,11 @@ typedef NS_ENUM(NSUInteger, BFRImageAssetType) {
 
 /*! Assigning YES to this property will disable autoplay for live photos when it used with 3DTouch peek feature */
 @property (nonatomic, getter=shouldDisableAutoplayForLivePhoto) BOOL disableAutoplayForLivePhoto;
+
+/*! The max scale the image can be maginified at. */
 @property (nonatomic, assign) CGFloat imageMaxScale;
+
+/*! Kicks off image analysis if the image has been properly loaded. */
+- (void)analyzeImageIfPossible:(LiveTextManager * _Nonnull)manager API_AVAILABLE(ios(16));
 
 @end
